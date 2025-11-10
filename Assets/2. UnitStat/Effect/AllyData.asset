@@ -16,3 +16,4 @@ MonoBehaviour:
   effects:
   - {fileID: 7938384439400024403, guid: b6e54acc881a03c4a9719b161a25a3e3, type: 3}
   - {fileID: 4109064841345302812, guid: 2a409ab125c5216449bc5f005ec045f0, type: 3}
+  _statGrowthRate: 0.5

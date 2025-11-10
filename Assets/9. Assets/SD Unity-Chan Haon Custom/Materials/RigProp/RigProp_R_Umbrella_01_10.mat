@@ -229,8 +229,8 @@ Material:
     - _AutoRenderQueue: 1
     - _BaseColorOverridden: 0
     - _BaseColorVisible: 1
-    - _BaseColor_Step: 0.5
-    - _BaseShade_Feather: 0.0001
+    - _BaseColor_Step: 0.527
+    - _BaseShade_Feather: 0.087
     - _Base_Speed: 0
     - _BlendMode: 0
     - _BlurLevelMatcap: 0

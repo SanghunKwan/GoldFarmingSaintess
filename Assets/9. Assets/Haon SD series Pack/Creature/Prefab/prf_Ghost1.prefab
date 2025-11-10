@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4305024238096502}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone08_skirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4090366944268190}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dummy02_bot_body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,7 +75,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4915190178546408}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone01_ghost_head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4054336466314856}
   - component: {fileID: 137564469782994820}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GHOST_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,7 +207,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4230089027848298}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone13_ghost_R_Hand1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,7 +239,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4621360649537016}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone013_add
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -270,7 +270,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4517455801729644}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Particle View 001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -301,7 +301,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4804291990301894}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone07_skirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -332,7 +332,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4926126305203884}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: _root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -364,7 +364,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4363115468122954}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone05_ghost_L_Hand2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,7 +395,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4760536056181874}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -427,7 +427,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4591604732696710}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bip001_axle_Dummy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -459,7 +459,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4642280970486316}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dummy01_top_body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -492,7 +492,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4430947836312862}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone09_skirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -523,7 +523,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4283740437198328}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone14_skirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -554,7 +554,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4104052730192538}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Point001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -586,7 +586,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4591136143665074}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone05_ghost_L_Hand1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -618,7 +618,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4094415450531998}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone13_ghost_R_Hand2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -649,7 +649,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4729865449171972}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -682,7 +682,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4224613935814436}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -713,7 +713,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4117569911027980}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Point02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -746,7 +746,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4910160516415220}
   - component: {fileID: 95543641812165324}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: prf_Ghost1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

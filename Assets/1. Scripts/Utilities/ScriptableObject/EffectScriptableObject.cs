@@ -7,4 +7,5 @@ public class EffectScriptableObject : ScriptableObject
 {
     public Force _force;
     public GameObject[] effects;
+    public float _statGrowthRate;
 }

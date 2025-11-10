@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _type: 4
   _stat:
-  - _hp: 0
-    _attack: 0
+  - _hp: 18
+    _attack: 18
     _defend: 0
-    _range: 0
-    _atkSpeed: 0
-    _movSpeed: 0
-  - _hp: 24
+    _range: 6
+    _atkSpeed: 2
+    _movSpeed: 2
+  - _hp: 21
     _attack: 20
     _defend: 1
     _range: 7
-    _atkSpeed: 1
-    _movSpeed: 2
+    _atkSpeed: 2
+    _movSpeed: 3

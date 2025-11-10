@@ -46,11 +46,11 @@ ModelImporter:
       internalID: 0
       firstFrame: 0
       lastFrame: 54
-      wrapMode: 1
+      wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
-      loop: 1
+      loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1
       loopBlend: 0
@@ -139,8 +139,8 @@ ModelImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 84992
-  packageName: Haon SD series Bundle
-  packageVersion: 3.1
-  assetPath: Assets/SD Unity-Chan Haon Custom/_Guide/Animation/DummyCube.fbx
-  uploadId: 418201
+  productId: 180964
+  packageName: Novice Witch - SD Unity-chan Haon Custom 3.0
+  packageVersion: 3.01
+  assetPath: Assets/9. Assets/SD Unity-Chan Haon Custom/_Guide/Animation/DummyCube.fbx
+  uploadId: 397664

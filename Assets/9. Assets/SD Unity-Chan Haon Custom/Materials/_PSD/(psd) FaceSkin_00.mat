@@ -136,7 +136,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: a9bb9dffad489574a838970baf21cc72, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0c4e44983caa1da48970375ebc5cd5e7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskMap:
@@ -490,7 +490,7 @@ Material:
     - _isUnityToonshader: 1
     - _simpleUI: 2
     - _utsTechnique: 1
-    - _utsVersion: 2.075
+    - _utsVersion: 2.06
     - _utsVersionX: 0
     - _utsVersionY: 11
     - _utsVersionZ: 0

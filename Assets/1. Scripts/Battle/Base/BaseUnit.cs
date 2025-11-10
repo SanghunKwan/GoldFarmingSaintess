@@ -14,7 +14,7 @@ namespace GFSBattle
         protected UnitMove _unitMove;
 
         public float attackableTime { get; protected set; }
-
+        Transform _effectTr;
 
 
         public UnitTypes _type { get; private set; }
@@ -31,11 +31,15 @@ namespace GFSBattle
 
         LinkedList<Action> _dieEventList;
 
-        public void InitUnit()
+        public void InitUnit(int starCount)
         {
             _force = _effect._force;
             _type = _originalStat._type;
+            _starCount = starCount;
+
             _stat = _originalStat._stat[(int)_force];
+            _effectTr = transform.Find("Effect");
+            CallStarInfluence();
             _currentStat = _stat;
 
             _unitMove = GetComponent<UnitMove>();
@@ -109,12 +113,24 @@ namespace GFSBattle
             Debug.Log("노드 삭제");
         }
         #endregion Targetting
-
-        public void StarEffect(BaseUnit target)
+        #region Init
+        void CallStarInfluence()
         {
+            if (_starCount <= 1) return;
 
+            ChangeStatusByStarCount();
+            ActivateStarEffect();
+        }
+        void ChangeStatusByStarCount()
+        {
+            _stat.Multiply((_starCount - 1) * _effect._statGrowthRate);
         }
 
+        void ActivateStarEffect()
+        {
+            Instantiate(_effect.effects[_starCount - 2], _effectTr);
+        }
+        #endregion Init
     }
 }
 

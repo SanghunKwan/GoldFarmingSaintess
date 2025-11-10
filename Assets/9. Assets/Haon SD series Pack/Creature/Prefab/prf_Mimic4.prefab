@@ -60,13 +60,45 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4035475102724618423, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: -2861799580064033907, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: cc37350187d9a7f4db05b8c5e5063f74, type: 2}
+    - target: {fileID: -2138170916415263036, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -1862041345781496264, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -1488474748302402970, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
       propertyPath: m_Name
       value: prf_Mimic4
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2056962414287667370, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4187912055664819614, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4939329822824294922, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7391067639608416317, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
       propertyPath: m_LocalRotation.w
@@ -95,6 +127,22 @@ PrefabInstance:
     - target: {fileID: 7391067639608416317, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7888261959015045862, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8371970380428288515, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8453992373068197002, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8478374318197678994, guid: 13cc9ab9bf498984ea110c46aa0d4e24, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

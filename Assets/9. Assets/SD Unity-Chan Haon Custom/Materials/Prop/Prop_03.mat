@@ -272,7 +272,7 @@ Material:
     - _BaseColorOverridden: 0
     - _BaseColorVisible: 1
     - _BaseColor_Step: 0.5
-    - _BaseShade_Feather: 0.11
+    - _BaseShade_Feather: 0.153
     - _Base_Speed: 0
     - _BlendMode: 0
     - _BlurLevelMatcap: 0
