@@ -2,10 +2,14 @@ using GFSUtilities;
 using GFSUtilities.Unit;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EffectScriptableObject", menuName = "Scriptable Objects/EffectScriptableObject")]
-public class EffectScriptableObject : ScriptableObject
+namespace GFSBattle
 {
-    public Force _force;
-    public GameObject[] effects;
-    public float _statGrowthRate;
+    [CreateAssetMenu(fileName = "EffectScriptableObject", menuName = "Scriptable Objects/EffectScriptableObject")]
+    public class EffectScriptableObject : ScriptableObject
+    {
+        public Force _force;
+        public GameObject[] effects;
+        public float _statGrowthRate;
+    }
 }
+

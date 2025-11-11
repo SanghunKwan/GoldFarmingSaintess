@@ -26,3 +26,4 @@ MonoBehaviour:
     _range: 1
     _atkSpeed: 4
     _movSpeed: 5
+  _radius: 0.5

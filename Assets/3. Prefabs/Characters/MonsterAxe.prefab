@@ -13,6 +13,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: c5d33d78e0ec714429192ea2d6d61393, type: 2}
     - target: {fileID: 249148538578442802, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: _radius
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 249148538578442802, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: _originalStat
       value: 
       objectReference: {fileID: 11400000, guid: 49b458dbf694ad447ab1544dea4cd45c, type: 2}
@@ -20,17 +24,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: MonsterAxe
       objectReference: {fileID: 0}
+    - target: {fileID: 996172945084821269, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: m_Radius
+      value: 0.45
+      objectReference: {fileID: 0}
     - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.7
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.7
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.7
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.015
       objectReference: {fileID: 0}
     - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_ConstrainProportionsScale

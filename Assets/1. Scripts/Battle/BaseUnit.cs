@@ -1,7 +1,7 @@
 using UnityEngine;
 using GFSUtilities.Unit;
 using GFSUtilities;
-using GFSManager;
+using GFSManagers;
 using System.Collections.Generic;
 using System;
 
@@ -9,6 +9,7 @@ namespace GFSBattle
 {
     public class BaseUnit : MonoBehaviour
     {
+        //대분자 시작 프로퍼티는 외부 호출용.
         [SerializeField] StatusScriptableObject _originalStat;
         [SerializeField] EffectScriptableObject _effect;
         protected UnitMove _unitMove;
@@ -26,6 +27,8 @@ namespace GFSBattle
         public ref readonly Status _RefStat => ref _currentStat;
         public bool _IsAttackable => Time.time >= attackableTime;
         public bool _IsDead { get; protected set; }
+        [SerializeField] float _radius;
+        public float _Radius => _radius;
 
         public LinkedListNode<BaseUnit> _sceneNode { get; private set; }
 
@@ -50,6 +53,7 @@ namespace GFSBattle
             _dieEventList = new LinkedList<Action>();
         }
 
+        #region Action
         public void Attack(BaseUnit target)
         {
             Debug.Log(_currentStat._attack + "로 공격했다!");
@@ -66,7 +70,11 @@ namespace GFSBattle
                 Die();
             else
             {
-                if (!_unitMove._IsInDistance)
+                //조건1 : attacker 현재 타겟이 아닐 경우
+                //조건2 : 대상이 공격범위 바깥에 있을 경우.
+
+                //현재 타겟이 아니고 현재 타겟이 바깥에 있을 경우.
+                if (_unitMove._NeedChangeNode(attacker))
                     _unitMove.SetTarget(attacker);
             }
         }
@@ -92,9 +100,13 @@ namespace GFSBattle
             }
             _dieEventList.Clear();
 
-            _unitMove.StopMove();
+            _unitMove.PlayDead();
         }
-
+        public void ClearInAlive()
+        {
+            _unitMove.BattleEnd();
+        }
+        #endregion Action
 
         #region Targetting
         public void NewTargetting()
@@ -131,6 +143,14 @@ namespace GFSBattle
             Instantiate(_effect.effects[_starCount - 2], _effectTr);
         }
         #endregion Init
+        #region Transfer
+        public void BattleStart(float second)
+        {
+            _unitMove.BattleStart();
+            StartCoroutine(GFSManager.WaitForSecond(second, NewTargetting));
+        }
+        #endregion Transfer
+
     }
 }
 

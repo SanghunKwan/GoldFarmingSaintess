@@ -4,7 +4,7 @@ using GFSUtilities.Unit;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GFSManager
+namespace GFSManagers
 {
     public class GameSceneManager : MonoBehaviour
     {
@@ -14,6 +14,8 @@ namespace GFSManager
 
         LinkedList<BaseUnit> _ally;
         LinkedList<BaseUnit> _enemy;
+
+
 
 
         float GetsqrDistance(in Vector3 vec1, in Vector3 vec2)
@@ -36,7 +38,12 @@ namespace GFSManager
         public void UnenrollUnit(LinkedListNode<BaseUnit> node)
         {
             Debug.Log("등록 해제");
-            node.List.Remove(node);
+
+            LinkedList<BaseUnit> tempList = node.List;
+            tempList.Remove(node);
+
+            if (tempList.Count <= 0)
+                BattleEndCall((tempList != _ally) ? _ally : _enemy);
         }
 
 
@@ -65,7 +72,25 @@ namespace GFSManager
             return target;
         }
 
+        public void BattleStart(float second)
+        {
+            foreach (var item in _ally)
+                item.BattleStart(second);
+            foreach (var item in _enemy)
+                item.BattleStart(second);
+        }
 
+        void BattleEndCall(LinkedList<BaseUnit> leftList)
+        {
+            StartCoroutine(GFSManager.WaitForSecond(2, () =>
+            {
+                foreach (var item in leftList)
+                {
+                    item.ClearInAlive();
+                }
+            }));
+
+        }
 
         #region BattleManager Transfer
         public void Attack(BaseUnit attacker, BaseUnit defender)

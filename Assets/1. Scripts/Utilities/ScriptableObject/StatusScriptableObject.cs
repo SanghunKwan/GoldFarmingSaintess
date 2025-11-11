@@ -1,7 +1,8 @@
 using GFSUtilities.Unit;
+using GFSUtilities;
 using UnityEngine;
 
-namespace GFSUtilities
+namespace GFSBattle
 {
     [CreateAssetMenu(fileName = "StatScriptableObject", menuName = "Scriptable Objects/StatusScriptableObject")]
     public class StatusScriptableObject : ScriptableObject

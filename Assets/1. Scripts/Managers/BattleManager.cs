@@ -1,15 +1,17 @@
-using GFSBattle;
 using UnityEngine;
 
-public class BattleManager
+
+namespace GFSBattle
 {
-
-
-    public void CalculateDamage(BaseUnit attacker, BaseUnit defender, int minValue)
+    public class BattleManager
     {
-        int damage = Mathf.Max(attacker._RefStat._attack - defender._RefStat._defend, minValue);
-        defender.HittByEnemy(damage, attacker);
+        public void CalculateDamage(BaseUnit attacker, BaseUnit defender, int minValue)
+        {
+            int damage = Mathf.Max(attacker._RefStat._attack - defender._RefStat._defend, minValue);
+            defender.HittByEnemy(damage, attacker);
+        }
+
+
     }
-
-
 }
+

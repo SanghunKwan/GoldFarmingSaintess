@@ -13,12 +13,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 5a25ddd4b60746c418ab139b85ba55e8, type: 2}
     - target: {fileID: 249148538578442802, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: _radius
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 249148538578442802, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: _originalStat
       value: 
       objectReference: {fileID: 11400000, guid: acd625dba142d7248a823e0edcc75c87, type: 2}
     - target: {fileID: 544415502052955227, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_Name
       value: HeroAxe
+      objectReference: {fileID: 0}
+    - target: {fileID: 996172945084821269, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: m_Radius
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 9213527521372270062, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -124,6 +132,14 @@ PrefabInstance:
     - target: {fileID: 8062157943529065004, guid: b2dfadfada0fd634ebbfc36909e42c1c, type: 3}
       propertyPath: m_Name
       value: Set Costume_02 SD Yuko
+      objectReference: {fileID: 0}
+    - target: {fileID: 8062157943538563164, guid: b2dfadfada0fd634ebbfc36909e42c1c, type: 3}
+      propertyPath: m_CullingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8062157943538563164, guid: b2dfadfada0fd634ebbfc36909e42c1c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
