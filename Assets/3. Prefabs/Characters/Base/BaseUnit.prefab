@@ -120,7 +120,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4291050625248856506}
   m_Layer: 6
-  m_Name: Effect
+  m_Name: BaseEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

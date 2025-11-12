@@ -41,7 +41,7 @@ namespace GFSBattle
             _starCount = starCount;
 
             _stat = _originalStat._stat[(int)_force];
-            _effectTr = transform.Find("Effect");
+            _effectTr = transform.Find("BaseEffect");
             CallStarInfluence();
             _currentStat = _stat;
 
@@ -149,7 +149,7 @@ namespace GFSBattle
 
         private void OnMouseUpAsButton()
         {
-            Debug.Log("Å¬¸¯" + gameObject.name);
+            GameSceneManager.Instance.ClickUnit(this);
         }
     }
 }

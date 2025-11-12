@@ -1,6 +1,7 @@
 using GFSBattle;
 using GFSUtilities;
 using GFSUtilities.Unit;
+using GFSUtilities.Upgrade;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,21 +12,27 @@ namespace GFSManagers
         public static GameSceneManager Instance { get; private set; }
 
         BattleManager _battleManager;
+        [SerializeField] UpgradeScriptableObjects upgradeObjects;
 
         LinkedList<BaseUnit> _ally;
         LinkedList<BaseUnit> _enemy;
 
-        public int[] _upgrades;
 
 
         float GetsqrDistance(in Vector3 vec1, in Vector3 vec2)
-   => (vec1 - vec2).sqrMagnitude;
+            => (vec1 - vec2).sqrMagnitude;
+
+
 
         private void Awake()
         {
             Instance = this;
             _battleManager = new BattleManager();
-            _battleManager.InitManger(_upgrades);
+
+            int[] upgrades = GameManager.Instance._healUpgrade;
+            _battleManager.InitManger(GetUpgradeCalculated(upgrades, UpgradeType.HealAmount)
+                                    , GetUpgradeCalculated(upgrades, UpgradeType.HealCount));
+
 
             _ally = new LinkedList<BaseUnit>();
             _enemy = new LinkedList<BaseUnit>();
@@ -90,7 +97,15 @@ namespace GFSManagers
                     item.ClearInAlive();
                 }
             }));
+        }
+        int GetUpgradeCalculated(in int[] upgrades, UpgradeType type)
+        {
+            int typeIndex = (int)type;
 
+            int defaultValue = upgradeObjects.defaultArray[typeIndex];
+            int addByUpgrades = Mathf.CeilToInt(upgradeObjects.addArray[typeIndex] * upgrades[typeIndex]);
+
+            return defaultValue + addByUpgrades;
         }
 
         #region BattleManager Transfer
@@ -98,9 +113,9 @@ namespace GFSManagers
         {
             _battleManager.CalculateDamage(attacker, defender, (int)attacker._force);
         }
-        public void Heal(BaseUnit target)
+        public void ClickUnit(BaseUnit target)
         {
-            _battleManager.HealUnit(target, 10);
+            _battleManager.HealUnit(target);
         }
         #endregion BattleManager Transfer
     }

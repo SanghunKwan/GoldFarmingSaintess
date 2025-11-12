@@ -1,3 +1,4 @@
+using GFSUtilities.Upgrade;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -28,7 +29,7 @@ namespace GFSUtilities
 
 
 
-    #region
+    #region 
     public static class GFSManager
     {
         public static IEnumerator WaitForSecond(float second, Action action)
@@ -36,7 +37,9 @@ namespace GFSUtilities
             yield return new WaitForSeconds(second);
             action();
         }
+
     }
+
 
     #endregion
 }

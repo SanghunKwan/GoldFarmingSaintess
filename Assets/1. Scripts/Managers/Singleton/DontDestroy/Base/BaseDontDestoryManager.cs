@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class BaseDontDestoryManager<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class BaseDontDestoryManager<T> : MonoBehaviour where T : BaseDontDestoryManager<T>
 {
     static T _instance;
 
@@ -13,6 +13,7 @@ public abstract class BaseDontDestoryManager<T> : MonoBehaviour where T : MonoBe
                 GameObject go = new GameObject(typeof(T).Name);
                 DontDestroyOnLoad(go);
                 _instance = go.AddComponent<T>();
+                _instance.InitManager();
             }
 
             return _instance;
@@ -22,4 +23,6 @@ public abstract class BaseDontDestoryManager<T> : MonoBehaviour where T : MonoBe
             _instance = value;
         }
     }
+
+    public abstract void InitManager();
 }
