@@ -64,7 +64,7 @@ namespace GFSBattle
         {
             if (_IsDead) return;
 
-            Damaged(damage);
+            ChangeHp(-damage);
 
             if (_currentStat._hp <= 0)
                 Die();
@@ -79,16 +79,12 @@ namespace GFSBattle
             }
         }
 
-        public void Damaged(int damage)
+        public void ChangeHp(int plus)
         {
-            _currentStat._hp = _currentStat._hp - damage;
-            Debug.Log(damage + "만큼 데미지를 입었다!  남은 체력:" + _currentStat._hp);
-
+            _currentStat._hp = _currentStat._hp + plus;
         }
         public void Die()
         {
-            Debug.Log("유닛이 사망했다!");
-
             GameSceneManager.Instance.UnenrollUnit(_sceneNode);
             _sceneNode = null;
 
@@ -151,6 +147,10 @@ namespace GFSBattle
         }
         #endregion Transfer
 
+        private void OnMouseUpAsButton()
+        {
+            Debug.Log("클릭" + gameObject.name);
+        }
     }
 }
 

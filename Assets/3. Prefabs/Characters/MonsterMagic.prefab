@@ -18,7 +18,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4910160516415220, guid: bc1a5177f094f9541841edcfd1086a9b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 4910160516415220, guid: bc1a5177f094f9541841edcfd1086a9b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 95543641812165324, guid: bc1a5177f094f9541841edcfd1086a9b, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: f44dc7e277cb0d241b671db60a0fb5ac, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -70,6 +74,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -999347371431382977, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: m_Height
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -999347371431382977, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: m_Radius
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: -999347371431382977, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: m_Center.y
+      value: 0.8
+      objectReference: {fileID: 0}
     - target: {fileID: 249148538578442802, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: _effect
       value: 
@@ -81,7 +97,7 @@ PrefabInstance:
     - target: {fileID: 249148538578442802, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: _originalStat
       value: 
-      objectReference: {fileID: 11400000, guid: 49b458dbf694ad447ab1544dea4cd45c, type: 2}
+      objectReference: {fileID: 11400000, guid: 9b339a51ef425384381213485bdcf5c3, type: 2}
     - target: {fileID: 544415502052955227, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_Name
       value: MonsterMagic
@@ -92,15 +108,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.7
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.7
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.7
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1461771170037308632, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_ConstrainProportionsScale

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 996172945084821269}
   - component: {fileID: 249148538578442802}
   - component: {fileID: 3729969390918088549}
+  - component: {fileID: -999347371431382977}
   m_Layer: 6
   m_Name: BaseUnit
   m_TagString: Untagged
@@ -72,6 +73,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _originalStat: {fileID: 0}
   _effect: {fileID: 0}
+  _radius: 0
 --- !u!114 &3729969390918088549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,6 +87,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshTransform: {fileID: 1461771170037308632}
+--- !u!136 &-999347371431382977
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 544415502052955227}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &7398740461576442382
 GameObject:
   m_ObjectHideFlags: 0

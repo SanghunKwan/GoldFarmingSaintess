@@ -55,6 +55,7 @@ namespace GFSBattle
             _unit = unit;
             _navAgent = GetComponent<NavMeshAgent>();
             _anim = _meshTransform.GetChild(0).GetComponent<Animator>();
+            _anim.SetFloat(HashId.f_Type, (float)_unit._type);
             _targetDieEventNode = null;
 
             ref readonly Status stat = ref _unit._RefStat;

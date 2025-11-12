@@ -15,7 +15,7 @@ namespace GFSManagers
         LinkedList<BaseUnit> _ally;
         LinkedList<BaseUnit> _enemy;
 
-
+        public int[] _upgrades;
 
 
         float GetsqrDistance(in Vector3 vec1, in Vector3 vec2)
@@ -25,6 +25,7 @@ namespace GFSManagers
         {
             Instance = this;
             _battleManager = new BattleManager();
+            _battleManager.InitManger(_upgrades);
 
             _ally = new LinkedList<BaseUnit>();
             _enemy = new LinkedList<BaseUnit>();
@@ -96,6 +97,10 @@ namespace GFSManagers
         public void Attack(BaseUnit attacker, BaseUnit defender)
         {
             _battleManager.CalculateDamage(attacker, defender, (int)attacker._force);
+        }
+        public void Heal(BaseUnit target)
+        {
+            _battleManager.HealUnit(target, 10);
         }
         #endregion BattleManager Transfer
     }

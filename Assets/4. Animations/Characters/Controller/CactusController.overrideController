@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: CactusController
+  m_Controller: {fileID: 9100000, guid: eb638a28931e32b48beb0b240f6dd627, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: b857954cf409f3b44a5f14a6f9c32d74, type: 3}
+    m_OverrideClip: {fileID: 1827226128182048838, guid: 473413c2c1558e140917f0e931e9e906, type: 3}
+  - m_OriginalClip: {fileID: 7400002, guid: 81111fc0767bc77409fabdc39f95f4d3, type: 3}
+    m_OverrideClip: {fileID: 1827226128182048838, guid: 8f974680c4aa66247806f2d05633f7d4, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 1ad607a8dc496084e9652d366f92e911, type: 3}
+    m_OverrideClip: {fileID: 1827226128182048838, guid: fbc52b3c21889b24ab479f91d0ce0d3d, type: 3}
+  - m_OriginalClip: {fileID: 1827226128182048838, guid: eb1c2aa97ea81134d98aeb9ccbb2b1e9, type: 3}
+    m_OverrideClip: {fileID: 1827226128182048838, guid: fbc52b3c21889b24ab479f91d0ce0d3d, type: 3}
+  - m_OriginalClip: {fileID: -203655887218126122, guid: 745d25509bef5d245be8d6e136c74931, type: 3}
+    m_OverrideClip: {fileID: 1827226128182048838, guid: e4654dcfe38d42241b912907f1b6fcc8, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 649d8c454bbc5724d9f6544e0d771e4c, type: 3}
+    m_OverrideClip: {fileID: 1827226128182048838, guid: c0e411d18d9ee73438debeccc633a67a, type: 3}

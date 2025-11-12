@@ -1,6 +1,7 @@
 using GFSUtilities.Unit;
 using GFSUtilities;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GFSBattle
 {
@@ -9,5 +10,6 @@ namespace GFSBattle
     {
         public UnitTypes _type;
         public Status[] _stat;
+        public GameObject[] _weaponEffect;
     }
 }

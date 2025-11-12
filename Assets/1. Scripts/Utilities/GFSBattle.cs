@@ -10,6 +10,7 @@ namespace GFSBattle
         public static readonly int b_Run = Animator.StringToHash("Run");
         public static readonly int t_Dead = Animator.StringToHash("Dead");
         public static readonly int b_OnBattle = Animator.StringToHash("OnBattle");
+        public static readonly int f_Type = Animator.StringToHash("Type");
     }
     class BattleConstant
     {
