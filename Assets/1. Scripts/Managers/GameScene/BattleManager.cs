@@ -22,16 +22,17 @@ namespace GFSBattle
             defender.HittByEnemy(damage, attacker);
         }
 
-        public void HealUnit(BaseUnit target)
+        public bool HealUnit(BaseUnit target)
         {
             if (_LeftHealCount <= 0)
             {
                 Debug.Log("ÀÜ¿© Èú ¾øÀ½");
-                return;
+                return false;
             }
 
-            target.ChangeHp(_HealAmount);
+            target.Healing(_HealAmount);
             _LeftHealCount--;
+            return true;
         }
 
     }

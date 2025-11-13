@@ -1,4 +1,5 @@
 using GFSBattle;
+using GFSUtilities;
 using UnityEngine;
 
 [RequireComponent(typeof(BaseUnit))]
@@ -13,14 +14,14 @@ public class BattleEndMove : MonoBehaviour
     {
         _angularSpeed = angularSpeed;
 
-        Destroy(this, destroyTime);
+        StartCoroutine(GFSManager.WaitForSecond(destroyTime, () => Destroy(this)));
     }
 
     private void Update()
     {
+        if (transform.rotation == _lookDestination) enabled = false;
+
         transform.rotation
             = Quaternion.RotateTowards(transform.rotation, _lookDestination, _angularSpeed * Time.deltaTime);
-
     }
-
 }

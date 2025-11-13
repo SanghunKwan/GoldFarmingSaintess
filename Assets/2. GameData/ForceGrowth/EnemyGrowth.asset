@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63c7ccf07a18e5c4a97e9219e3879866, type: 3}
-  m_Name: EnemyData
+  m_Script: {fileID: 11500000, guid: 4c057dbc7da55d64897862c73e0735e9, type: 3}
+  m_Name: EnemyGrowth
   m_EditorClassIdentifier: 
-  _force: 0
-  effects:
-  - {fileID: 245581523800709616, guid: 9442d241d2d8ecc47b49f256b55325c6, type: 3}
-  - {fileID: 4109064841345302812, guid: 311a9b21226c1594eaada62284436bb7, type: 3}
+  _force: 1
   _statGrowthRate: 0.7

@@ -9,39 +9,46 @@ namespace GFSBattle
 {
     public class BaseUnit : MonoBehaviour
     {
-        //대분자 시작 프로퍼티는 외부 호출용.
+        //대문자 시작 프로퍼티는 외부 호출용.
         [SerializeField] StatusScriptableObject _originalStat;
-        [SerializeField] EffectScriptableObject _effect;
+        [SerializeField] ForceScriptableObject _originalForce;
         protected UnitMove _unitMove;
 
-        public float attackableTime { get; protected set; }
-        Transform _effectTr;
-
+        public float _attackableTime { get; protected set; }
+        Transform[] _baseEffectTr;
 
         public UnitTypes _type { get; private set; }
         public Force _force { get; private set; }
-        public int _starCount { get; private set; }
+        public StarCount _starCount { get; private set; }
         Status _stat;
         Status _currentStat;
-        public Status _Stat => _currentStat;
         public ref readonly Status _RefStat => ref _currentStat;
-        public bool _IsAttackable => Time.time >= attackableTime;
+        public bool _IsAttackable => Time.time >= _attackableTime;
         public bool _IsDead { get; protected set; }
         [SerializeField] float _radius;
         public float _Radius => _radius;
+
 
         public LinkedListNode<BaseUnit> _sceneNode { get; private set; }
 
         LinkedList<Action> _dieEventList;
 
-        public void InitUnit(int starCount)
+        public void InitUnit(StarCount starCount)
         {
-            _force = _effect._force;
+            _force = _originalForce._force;
             _type = _originalStat._type;
             _starCount = starCount;
 
-            _stat = _originalStat._stat[(int)_force];
-            _effectTr = transform.Find("BaseEffect");
+            _stat = _originalStat._stat[(int)_force - 1];
+
+            _baseEffectTr = new Transform[(int)UnitEffectType.Count];
+            for (int i = 0; i < _baseEffectTr.Length; i++)
+            {
+                _baseEffectTr[i] = transform.Find(((UnitEffectType)i + 1).ToString());
+            }
+            EffectTransformByType(UnitEffectType.BaseEffect).localScale = _radius / 3 * Vector3.one;
+            EffectTransformByType(UnitEffectType.HealEffect).localScale = _radius * 1.3f * Vector3.one;
+
             CallStarInfluence();
             _currentStat = _stat;
 
@@ -58,7 +65,7 @@ namespace GFSBattle
         {
             Debug.Log(_currentStat._attack + "로 공격했다!");
             GameSceneManager.Instance.Attack(this, target);
-            attackableTime = Time.time + (10 / _currentStat._atkSpeed);
+            _attackableTime = Time.time + (10 / _currentStat._atkSpeed);
         }
         public void HittByEnemy(int damage, BaseUnit attacker)
         {
@@ -78,7 +85,13 @@ namespace GFSBattle
                     _unitMove.SetTarget(attacker);
             }
         }
+        public void Healing(int healAmount)
+        {
+            ChangeHp(healAmount);
+            GameObject effect = GetEffect(UnitEffectType.HealEffect);
 
+            Destroy(effect, 2);
+        }
         public void ChangeHp(int plus)
         {
             _currentStat._hp = _currentStat._hp + plus;
@@ -124,33 +137,58 @@ namespace GFSBattle
         #region Init
         void CallStarInfluence()
         {
-            if (_starCount <= 1) return;
+            if (_starCount <= StarCount.Beginner) return;
 
             ChangeStatusByStarCount();
-            ActivateStarEffect();
+            GetEffect(UnitEffectType.BaseEffect);
         }
         void ChangeStatusByStarCount()
         {
-            _stat.Multiply((_starCount - 1) * _effect._statGrowthRate);
+            _stat.Multiply((int)_starCount * _originalForce._statGrowthRate);
         }
 
-        void ActivateStarEffect()
+        GameObject GetEffect(UnitEffectType type)
         {
-            Instantiate(_effect.effects[_starCount - 2], _effectTr);
+            GameObject effectPrefab = GameSceneManager.Instance.GetEffect(this, type);
+
+            return Instantiate(effectPrefab, EffectTransformByType(type));
         }
+        Transform EffectTransformByType(UnitEffectType type) => _baseEffectTr[(int)type - 1];
         #endregion Init
         #region Transfer
         public void BattleStart(float second)
         {
+            SetGrab(false);
             _unitMove.BattleStart();
             StartCoroutine(GFSManager.WaitForSecond(second, NewTargetting));
         }
+
+        public void SetGrab(bool isOn)
+        {
+            _unitMove.SetGrabbedByPlayer(isOn);
+            //마우스 위치로 이동.
+
+        }
         #endregion Transfer
 
-        private void OnMouseUpAsButton()
+        #region Mouse Interact
+        public void OnDragStart()
+        {
+            if (_force != Force.Ally) return;
+
+            GameSceneManager.Instance.DragInUnit(this);
+        }
+        public void OnDragEnd()
+        {
+            if (_force != Force.Ally) return;
+
+            GameSceneManager.Instance.DragOutUnit(this);
+        }
+        public void OnClick()
         {
             GameSceneManager.Instance.ClickUnit(this);
         }
+        #endregion Mouse Interact
     }
 }
 

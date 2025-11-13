@@ -160,6 +160,10 @@ PrefabInstance:
       propertyPath: _originalStat
       value: 
       objectReference: {fileID: 11400000, guid: 9b339a51ef425384381213485bdcf5c3, type: 2}
+    - target: {fileID: 249148538578442802, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: _originalForce
+      value: 
+      objectReference: {fileID: 11400000, guid: 69dd7d599b21a5e42bcb4c869a3f9521, type: 2}
     - target: {fileID: 544415502052955227, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_Name
       value: HeroSword

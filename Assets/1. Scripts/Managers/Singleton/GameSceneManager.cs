@@ -12,32 +12,56 @@ namespace GFSManagers
         public static GameSceneManager Instance { get; private set; }
 
         BattleManager _battleManager;
-        [SerializeField] UpgradeScriptableObjects upgradeObjects;
+        EffectManager _effectManager;
+        PlaceManager _placeManager;
+
+        [Header("게임 내 데이터")]
+        [SerializeField] UpgradeScriptableObjects _upgradeObjects;
+        [SerializeField] EffectScriptableObject _effectScriptableObject;
+
+        [Header("씬 내 데이터")]
+        [SerializeField] Transform _unitFolder;
 
         LinkedList<BaseUnit> _ally;
         LinkedList<BaseUnit> _enemy;
-
-
 
         float GetsqrDistance(in Vector3 vec1, in Vector3 vec2)
             => (vec1 - vec2).sqrMagnitude;
 
 
 
+
+
         private void Awake()
         {
             Instance = this;
-            _battleManager = new BattleManager();
-
-            int[] upgrades = GameManager.Instance._healUpgrade;
-            _battleManager.InitManger(GetUpgradeCalculated(upgrades, UpgradeType.HealAmount)
-                                    , GetUpgradeCalculated(upgrades, UpgradeType.HealCount));
-
 
             _ally = new LinkedList<BaseUnit>();
             _enemy = new LinkedList<BaseUnit>();
         }
 
+        private void Start()
+        {
+            InitReady();
+        }
+        void InitReady()
+        {
+            _effectManager = new EffectManager(_effectScriptableObject);
+            _placeManager = new PlaceManager();
+
+            foreach (Transform item in _unitFolder)
+            {
+                item.GetComponent<BaseUnit>().InitUnit(StarCount.Advanced);
+            }
+        }
+        void InitBattle()
+        {
+            _battleManager = new BattleManager();
+
+            int[] upgrades = GameManager.Instance._healUpgrade;
+            _battleManager.InitManger(GetUpgradeCalculated(upgrades, UpgradeType.HealAmount)
+                                    , GetUpgradeCalculated(upgrades, UpgradeType.HealCount));
+        }
 
         public LinkedListNode<BaseUnit> EnrollUnit(BaseUnit unit)
         {
@@ -53,6 +77,17 @@ namespace GFSManagers
             if (tempList.Count <= 0)
                 BattleEndCall((tempList != _ally) ? _ally : _enemy);
         }
+
+        public void BattleStart(float second)
+        {
+            InitBattle();
+
+            foreach (var item in _ally)
+                item.BattleStart(second);
+            foreach (var item in _enemy)
+                item.BattleStart(second);
+        }
+
 
 
         public bool FindTarget(BaseUnit unit, out BaseUnit target)
@@ -80,13 +115,7 @@ namespace GFSManagers
             return target;
         }
 
-        public void BattleStart(float second)
-        {
-            foreach (var item in _ally)
-                item.BattleStart(second);
-            foreach (var item in _enemy)
-                item.BattleStart(second);
-        }
+
 
         void BattleEndCall(LinkedList<BaseUnit> leftList)
         {
@@ -102,22 +131,74 @@ namespace GFSManagers
         {
             int typeIndex = (int)type;
 
-            int defaultValue = upgradeObjects.defaultArray[typeIndex];
-            int addByUpgrades = Mathf.CeilToInt(upgradeObjects.addArray[typeIndex] * upgrades[typeIndex]);
+            int defaultValue = _upgradeObjects.defaultArray[typeIndex];
+            int addByUpgrades = Mathf.CeilToInt(_upgradeObjects.addArray[typeIndex] * upgrades[typeIndex]);
 
             return defaultValue + addByUpgrades;
         }
 
         #region BattleManager Transfer
+
+
         public void Attack(BaseUnit attacker, BaseUnit defender)
         {
             _battleManager.CalculateDamage(attacker, defender, (int)attacker._force);
         }
         public void ClickUnit(BaseUnit target)
         {
+            if (_battleManager == null) return;
+
             _battleManager.HealUnit(target);
         }
         #endregion BattleManager Transfer
+
+        #region EffectManager Transfer
+        public GameObject GetEffect(BaseUnit unit, UnitEffectType type)
+        {
+            GameObject newEffect;
+
+            switch (type)
+            {
+                case UnitEffectType.BaseEffect:
+                    newEffect = GetBaseEffect(unit._force, unit._starCount);
+                    break;
+
+                case UnitEffectType.HealEffect:
+                    newEffect = GetHealEffect(unit._force);
+                    break;
+
+                case UnitEffectType.WeaponEffect:
+                    newEffect = GetHealEffect(unit._force);
+                    break;
+
+                default:
+                    newEffect = null;
+                    Debug.Log("알 수 없는 이펙트 요청");
+                    break;
+            }
+            return newEffect;
+        }
+        GameObject GetBaseEffect(Force force, StarCount starCount)
+        => _effectManager._BaseEffects[force][starCount];
+        GameObject GetHealEffect(Force force)
+         => _effectManager._HealEffects[(int)force];
+
+        #endregion EffectManager Transfer
+
+        #region PlaceManager Transfer
+        public void DragInUnit(BaseUnit target)
+        {
+            if (_placeManager == null) return;
+
+            _placeManager.DragInUnit(target);
+        }
+        public void DragOutUnit(BaseUnit target)
+        {
+            if (_placeManager == null) return;
+
+            _placeManager.DragOutUnit(target);
+        }
+        #endregion PlaceManager Transfer
     }
 }
 

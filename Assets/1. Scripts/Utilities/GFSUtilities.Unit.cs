@@ -5,23 +5,47 @@ namespace GFSUtilities.Unit
     #region Enum
     public enum UnitTypes
     {
-        None =0,
+        None = 0,
 
         Sword,
         Axe,
         Bow,
         Magic,
 
-        Max = 5
+        Count = Magic           //마지막
     }
     public enum Force
     {
-        Enemy = 0,
+        None = 0,
+
+        Enemy,
         Ally,
 
-        Max = 2
+        Count = Ally         //마지막
+    }
+    public enum StarCount
+    {
+        None = 0,
+
+        Beginner,
+        Advanced,
+        Expert,
+
+        Count = Expert          //마지막
     }
 
 
+
+
+    public enum UnitEffectType
+    {
+        None = 0,
+
+        BaseEffect,
+        HealEffect,
+        WeaponEffect,
+
+        Count = WeaponEffect            //마지막
+    }
     #endregion Enum
 }

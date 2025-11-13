@@ -24,6 +24,10 @@ PrefabInstance:
       propertyPath: _originalStat
       value: 
       objectReference: {fileID: 11400000, guid: 49b458dbf694ad447ab1544dea4cd45c, type: 2}
+    - target: {fileID: 249148538578442802, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
+      propertyPath: _originalForce
+      value: 
+      objectReference: {fileID: 11400000, guid: d5e1747f45cc8ce41b6765600f27d8bf, type: 2}
     - target: {fileID: 544415502052955227, guid: b7aa2e011b9d09b43bbc807cccc2fbc9, type: 3}
       propertyPath: m_Name
       value: MonsterAxe

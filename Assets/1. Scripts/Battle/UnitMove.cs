@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 
 
 namespace GFSBattle
@@ -17,8 +16,10 @@ namespace GFSBattle
         float _range;
 
         bool _isRunning;
+        bool _isGrabbed;
 
         NavMeshAgent _navAgent;
+        CapsuleCollider _collider;
         Animator _anim;
         [SerializeField] Transform _meshTransform;
 
@@ -53,7 +54,14 @@ namespace GFSBattle
         public void InitMove(BaseUnit unit)
         {
             _unit = unit;
+            float radius = _unit._Radius;
+
             _navAgent = GetComponent<NavMeshAgent>();
+            _navAgent.radius = radius;
+
+            _collider = GetComponent<CapsuleCollider>();
+            _collider.radius = radius;
+
             _anim = _meshTransform.GetChild(0).GetComponent<Animator>();
             _anim.SetFloat(HashId.f_Type, (float)_unit._type);
             _targetDieEventNode = null;
@@ -97,8 +105,15 @@ namespace GFSBattle
             OnTargetDisable();
             _unit.NewTargetting();
         }
+        void OnTargetDisable()
+        {
+            _targetUnit = null;
+            _targetDieEventNode = null;
+            _navAgent.stoppingDistance = _range;
+        }
         #endregion Tagetting
 
+        #region Action
         void MoveToAttack()
         {
             _navAgent.SetDestination(_targetUnit.transform.position);
@@ -116,14 +131,17 @@ namespace GFSBattle
                     = Quaternion.RotateTowards(transform.rotation, destination, _angularSpeed * Time.deltaTime);
             }
         }
-        void SetRunning(bool onOff)
+        void SetAnimBool(bool isOn, ref bool animBool, int hashName)
         {
-            if (onOff != _isRunning)
-            {
-                _isRunning = onOff;
-                _anim.SetBool(HashId.b_Run, _isRunning);
-            }
+            if (isOn == animBool) return;
+
+            animBool = isOn;
+            _anim.SetBool(hashName, animBool);
         }
+        void SetRunning(bool onOff) => SetAnimBool(onOff, ref _isRunning, HashId.b_Run);
+        void SetGrabbed(bool onOff) => SetAnimBool(onOff, ref _isGrabbed, HashId.b_Grabbed);
+
+
         void PlayAttack()
         {
             if (!_unit._IsAttackable) return;
@@ -144,12 +162,12 @@ namespace GFSBattle
             enabled = false;
             OnTargetDisable();
         }
-        void OnTargetDisable()
+        public void SetGrabbedByPlayer(bool isOn)
         {
-            _targetUnit = null;
-            _targetDieEventNode = null;
-            _navAgent.stoppingDistance = _range;
+            SetGrabbed(isOn);
         }
+        #endregion Action
+
 
         public void BattleStart()
         {
