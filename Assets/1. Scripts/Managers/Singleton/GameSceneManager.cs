@@ -11,13 +11,17 @@ namespace GFSManagers
     {
         public static GameSceneManager Instance { get; private set; }
 
+        //null로 체크할 경우 또 생성하고 삭제해야 하므로 Scene에서 반복하므로 구조 수정 필요.
         BattleManager _battleManager;
         EffectManager _effectManager;
         PlaceManager _placeManager;
+        SettlementManager _settlementManager;
+        SelectManager _selectManager;
 
         [Header("게임 내 데이터")]
         [SerializeField] UpgradeScriptableObjects _upgradeObjects;
         [SerializeField] EffectScriptableObject _effectScriptableObject;
+        [SerializeField] SettlementScriptableObject _settlementScriptableObject;
 
         [Header("씬 내 데이터")]
         [SerializeField] Transform _unitFolder;
@@ -57,6 +61,9 @@ namespace GFSManagers
         void InitBattle()
         {
             _battleManager = new BattleManager();
+            _settlementManager = new SettlementManager(_settlementScriptableObject);
+            _placeManager.EndPlacePhase();
+            _placeManager = null;
 
             int[] upgrades = GameManager.Instance._healUpgrade;
             _battleManager.InitManger(GetUpgradeCalculated(upgrades, UpgradeType.HealAmount)
@@ -69,10 +76,9 @@ namespace GFSManagers
         }
         public void UnenrollUnit(LinkedListNode<BaseUnit> node)
         {
-            Debug.Log("등록 해제");
-
             LinkedList<BaseUnit> tempList = node.List;
             tempList.Remove(node);
+            _settlementManager.AddInSettle(node);
 
             if (tempList.Count <= 0)
                 BattleEndCall((tempList != _ally) ? _ally : _enemy);
@@ -126,6 +132,8 @@ namespace GFSManagers
                     item.ClearInAlive();
                 }
             }));
+
+            StartCoroutine(GFSManager.WaitForSecond(4, StartSettlement));
         }
         int GetUpgradeCalculated(in int[] upgrades, UpgradeType type)
         {
@@ -199,6 +207,18 @@ namespace GFSManagers
             _placeManager.DragOutUnit(target);
         }
         #endregion PlaceManager Transfer
+
+
+        #region SettlementManager Transfer
+        void StartSettlement()
+        {
+            ref readonly Battle battle = ref _selectManager._Battle;
+            _settlementManager.InitManager(battle._participationAidGold, battle._huntingGold, battle._huntingRate);
+            _settlementManager.CallSettlement(_battleManager._LeftHealCount, _battleManager._IsSpecialConditionCompleted
+                                                , _ally.Count != 0);
+        }
+
+        #endregion SettlementManager Transfer
     }
 }
 

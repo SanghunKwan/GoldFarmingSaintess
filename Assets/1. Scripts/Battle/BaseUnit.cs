@@ -3,6 +3,7 @@ using GFSUtilities.Unit;
 using GFSUtilities;
 using GFSManagers;
 using System.Collections.Generic;
+using System.Collections;
 using System;
 
 namespace GFSBattle
@@ -23,6 +24,7 @@ namespace GFSBattle
         Status _stat;
         Status _currentStat;
         public ref readonly Status _RefStat => ref _currentStat;
+        public ref readonly Status _RefFullStat => ref _stat;
         public bool _IsAttackable => Time.time >= _attackableTime;
         public bool _IsDead { get; protected set; }
         [SerializeField] float _radius;
@@ -158,16 +160,16 @@ namespace GFSBattle
         #region Transfer
         public void BattleStart(float second)
         {
-            SetGrab(false);
             _unitMove.BattleStart();
             StartCoroutine(GFSManager.WaitForSecond(second, NewTargetting));
         }
 
-        public void SetGrab(bool isOn)
+        public void SetGrab(bool isOn, IEnumerator grabIEnum)
         {
             _unitMove.SetGrabbedByPlayer(isOn);
-            //마우스 위치로 이동.
 
+            if (isOn)
+                StartCoroutine(grabIEnum);
         }
         #endregion Transfer
 

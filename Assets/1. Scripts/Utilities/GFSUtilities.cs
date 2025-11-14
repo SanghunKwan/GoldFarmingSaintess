@@ -26,6 +26,14 @@ namespace GFSUtilities
             _movSpeed += num;
         }
     }
+
+    public struct Battle
+    {
+        public int _participationAidGold;
+        public int _huntingGold;
+        public float _huntingRate;
+
+    }
     #endregion struct
 
 

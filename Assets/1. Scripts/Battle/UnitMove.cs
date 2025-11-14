@@ -164,6 +164,7 @@ namespace GFSBattle
         }
         public void SetGrabbedByPlayer(bool isOn)
         {
+            _navAgent.enabled = !isOn;
             SetGrabbed(isOn);
         }
         #endregion Action

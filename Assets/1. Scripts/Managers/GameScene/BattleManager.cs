@@ -8,6 +8,7 @@ namespace GFSBattle
         public int _MaxHealCount { get; private set; }
         public int _LeftHealCount { get; private set; }
         public int _HealAmount { get; private set; }
+        public bool _IsSpecialConditionCompleted { get; private set; }
 
         public void InitManger(int healCount, int healAmount)
         {
