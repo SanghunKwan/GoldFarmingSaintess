@@ -1,3 +1,5 @@
+using GFSManagers;
+using GFSUtilities;
 using UnityEngine;
 
 
@@ -8,7 +10,7 @@ namespace GFSBattle
         public int _MaxHealCount { get; private set; }
         public int _LeftHealCount { get; private set; }
         public int _HealAmount { get; private set; }
-        public bool _IsSpecialConditionCompleted { get; private set; }
+        public bool? _IsSpecialConditionCompleted { get; private set; }
 
         public void InitManger(int healCount, int healAmount)
         {
@@ -34,6 +36,18 @@ namespace GFSBattle
             target.Healing(_HealAmount);
             _LeftHealCount--;
             return true;
+        }
+
+        public BattleResult GetResult(bool isWin)
+        {
+            BattleResult result = new BattleResult
+            {
+                _leftHealCount = _LeftHealCount,
+                _isSpecialConditionCompleted = _IsSpecialConditionCompleted,
+                _isWin = isWin
+            };
+
+            return result;
         }
 
     }

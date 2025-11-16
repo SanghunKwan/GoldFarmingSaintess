@@ -18,13 +18,12 @@ namespace GFSManagers
         SettlementManager _settlementManager;
         SelectManager _selectManager;
 
-        [Header("게임 내 데이터")]
-        [SerializeField] UpgradeScriptableObjects _upgradeObjects;
-        [SerializeField] EffectScriptableObject _effectScriptableObject;
-        [SerializeField] SettlementScriptableObject _settlementScriptableObject;
+        [Header("씬 내 매니저")]
+        [SerializeField] BGManager _bgManager;
 
         [Header("씬 내 데이터")]
         [SerializeField] Transform _unitFolder;
+
 
         LinkedList<BaseUnit> _ally;
         LinkedList<BaseUnit> _enemy;
@@ -42,26 +41,46 @@ namespace GFSManagers
 
             _ally = new LinkedList<BaseUnit>();
             _enemy = new LinkedList<BaseUnit>();
+
         }
 
         private void Start()
         {
-            InitReady();
+            _selectManager = new SelectManager();
+            _selectManager.InitManager();
+            _selectManager.MakeBattle();
+            //InitReady();
         }
         void InitReady()
         {
-            _effectManager = new EffectManager(_effectScriptableObject);
+            _effectManager = new EffectManager();
+            _effectManager.InitManager();
             _placeManager = new PlaceManager();
+            _bgManager.InitManager();
 
-            foreach (Transform item in _unitFolder)
+            for (int i = 0; i < _unitFolder.childCount; i++)
             {
-                item.GetComponent<BaseUnit>().InitUnit(StarCount.Advanced);
+                BaseUnit unit = _unitFolder.GetChild(i).GetComponent<BaseUnit>();
+                if (i == 0)
+                {
+                    unit.InitUnit(StarCount.Expert);
+                }
+                else if (i == 1)
+                {
+                    unit.InitUnit(StarCount.Advanced);
+                }
+                else
+                    unit.InitUnit(StarCount.Beginner);
             }
+
+
         }
         void InitBattle()
         {
             _battleManager = new BattleManager();
-            _settlementManager = new SettlementManager(_settlementScriptableObject);
+            _settlementManager = new SettlementManager();
+            _settlementManager.InitManager(_bgManager);
+            _settlementManager.SetData(_selectManager._Battle);
             _placeManager.EndPlacePhase();
             _placeManager = null;
 
@@ -133,14 +152,16 @@ namespace GFSManagers
                 }
             }));
 
-            StartCoroutine(GFSManager.WaitForSecond(4, StartSettlement));
+            StartCoroutine(GFSManager.WaitForSecond(3, StartSettlement));
         }
         int GetUpgradeCalculated(in int[] upgrades, UpgradeType type)
         {
             int typeIndex = (int)type;
 
-            int defaultValue = _upgradeObjects.defaultArray[typeIndex];
-            int addByUpgrades = Mathf.CeilToInt(_upgradeObjects.addArray[typeIndex] * upgrades[typeIndex]);
+            UpgradeScriptableObjects upgradeObject = GameManager.Instance._UpgradeObjects;
+
+            int defaultValue = upgradeObject.defaultArray[typeIndex];
+            int addByUpgrades = Mathf.CeilToInt(upgradeObject.addArray[typeIndex] * upgrades[typeIndex]);
 
             return defaultValue + addByUpgrades;
         }
@@ -208,16 +229,18 @@ namespace GFSManagers
         }
         #endregion PlaceManager Transfer
 
-
         #region SettlementManager Transfer
         void StartSettlement()
         {
-            ref readonly Battle battle = ref _selectManager._Battle;
-            _settlementManager.InitManager(battle._participationAidGold, battle._huntingGold, battle._huntingRate);
-            _settlementManager.CallSettlement(_battleManager._LeftHealCount, _battleManager._IsSpecialConditionCompleted
-                                                , _ally.Count != 0);
+            _settlementManager.SetData(_battleManager.GetResult(_ally.Count != 0));
+            _settlementManager.CalculateSettlement();
+            _settlementManager.ShowWindow();
         }
 
+        public void EndSettlement()
+        {
+            _settlementManager.HideWindow();
+        }
         #endregion SettlementManager Transfer
     }
 }

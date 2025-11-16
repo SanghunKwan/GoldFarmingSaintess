@@ -1,2 +1,15 @@
 fileFormatVersion: 2
 guid: 4c2c3b2dce3943a40a184283f29493dc
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _upgradeObjects: {fileID: 11400000, guid: 6ad3f7cc43474804cac6d46dd1aed3af, type: 2}
+  - _effectScriptableObject: {fileID: 11400000, guid: 5a25ddd4b60746c418ab139b85ba55e8, type: 2}
+  - _settlementScriptableObject: {fileID: 11400000, guid: d9948a8e80f44c34891d65336c9ed209, type: 2}
+  - _unitFolder: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

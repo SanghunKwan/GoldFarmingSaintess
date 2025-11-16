@@ -104,6 +104,7 @@ namespace GFSBattle
             _sceneNode = null;
 
             _IsDead = true;
+            _unitMove.ReleaseTarget();
 
             foreach (Action action in _dieEventList)
             {

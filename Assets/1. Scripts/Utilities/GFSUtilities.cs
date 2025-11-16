@@ -27,12 +27,17 @@ namespace GFSUtilities
         }
     }
 
-    public struct Battle
+    public struct BattleCondition
     {
         public int _participationAidGold;
         public int _huntingGold;
         public float _huntingRate;
-
+    }
+    public struct BattleResult
+    {
+        public int _leftHealCount;
+        public bool _isWin;
+        public bool? _isSpecialConditionCompleted;
     }
     #endregion struct
 
@@ -46,8 +51,25 @@ namespace GFSUtilities
             yield return new WaitForSeconds(second);
             action();
         }
+        public static IEnumerator ActionInOrder(int length, Action<int> action, float waitSecond)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                action(i);
+                yield return new WaitForSeconds(waitSecond);
+            }
+        }
+    }
+    #endregion Static
+
+    #region hash
+    class UIHashID
+    {
+        public static readonly int b_IsBlack = Animator.StringToHash("isBlack");
+
+        public static readonly int t_FadeIn = Animator.StringToHash("FadeIn");
+        public static readonly int t_FadeOut = Animator.StringToHash("FadeOut");
     }
 
-
-    #endregion Static
+    #endregion hash
 }

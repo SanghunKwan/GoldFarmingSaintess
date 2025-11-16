@@ -1,28 +1,32 @@
 using UnityEngine;
 
-public abstract class BaseDontDestoryManager<T> : MonoBehaviour where T : BaseDontDestoryManager<T>
+namespace GFSManagers
 {
-    static T _instance;
-
-    public static T Instance
+    public abstract class BaseDontDestoryManager<T> : MonoBehaviour where T : BaseDontDestoryManager<T>
     {
-        get
+        static T _instance;
+
+        public static T Instance
         {
-            if (_instance == null)
+            get
             {
-                GameObject go = new GameObject(typeof(T).Name);
-                DontDestroyOnLoad(go);
-                _instance = go.AddComponent<T>();
-                _instance.InitManager();
+                if (_instance == null)
+                {
+                    GameObject go = new GameObject(typeof(T).Name);
+                    DontDestroyOnLoad(go);
+                    _instance = go.AddComponent<T>();
+                    _instance.InitManager();
+                }
+
+                return _instance;
             }
+            private set
+            {
+                _instance = value;
+            }
+        }
 
-            return _instance;
-        }
-        private set
-        {
-            _instance = value;
-        }
+        public abstract void InitManager();
     }
-
-    public abstract void InitManager();
 }
+

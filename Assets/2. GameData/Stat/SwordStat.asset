@@ -15,15 +15,14 @@ MonoBehaviour:
   _type: 1
   _stat:
   - _hp: 25
-    _attack: 8
+    _attack: 7
     _defend: 3
     _range: 1
     _atkSpeed: 5
     _movSpeed: 5
   - _hp: 31
-    _attack: 7
+    _attack: 6
     _defend: 5
     _range: 1
     _atkSpeed: 5
     _movSpeed: 6
-  _weaponEffect: []

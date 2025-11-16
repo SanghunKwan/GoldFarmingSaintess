@@ -80,12 +80,16 @@ namespace GFSBattle
         #region Tagetting
         public void SetTarget(BaseUnit target)
         {
-            if (_targetDieEventNode != null)
-                _targetUnit.UnenrollTarget(_targetDieEventNode);
+            ReleaseTarget();
 
             _targetUnit = target;
             _navAgent.stoppingDistance = _range + _targetUnit._Radius;
             _targetDieEventNode = _targetUnit.EnrollTarget(OnTargetDie);
+        }
+        public void ReleaseTarget()
+        {
+            if (_targetDieEventNode != null)
+                _targetUnit.UnenrollTarget(_targetDieEventNode);
         }
         public void FindTarget()
         {
