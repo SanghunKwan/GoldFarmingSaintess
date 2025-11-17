@@ -20,10 +20,14 @@ public class UnitSelectSlot : MonoBehaviour
     {
         _unitCount.text = count.ToString("N0");
     }
-    public void MakeStars(StarCount count)
+    public void SetStars(StarCount count)
     {
-        int length = (int)count;
-        for (int i = 0; i < length; i++)
-            GameManager.Instance.InstantiateResourcePrefab(UIResourceType.SelectStar, _starParentTr);
+        for (int i = 0; i < _starParentTr.childCount; i++)
+            _starParentTr.GetChild(i).gameObject.SetActive((int)count > i);
+    }
+
+    public void SetActive(bool isOn)
+    {
+        gameObject.SetActive(isOn);
     }
 }

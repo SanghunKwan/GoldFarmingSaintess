@@ -8,14 +8,13 @@ using Random = UnityEngine.Random;
 
 namespace GFSManagers
 {
-    public class SelectManager
+    public class SelectManager : BaseBGWindowManager<SelectWindow, SelectManager>
     {
         BGManager _bgManager;
 
-        List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> _allyBattleLists;
-        List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> _enemyBattleLists;
-        List<BattleCondition> _conditions;
-
+        IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[] _allyBattleArrays;
+        IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[] _enemyBattleArrays;
+        BattleCondition[] _conditions;
 
         int _maxCost;
         int _minCost;
@@ -24,10 +23,13 @@ namespace GFSManagers
 
         int[] _costArray;
 
-        BattleCondition _battle;
-        public ref readonly BattleCondition _Battle => ref _battle;
+        int _selectedIndex;
 
-        SelectWindow _window;
+        public ref readonly BattleCondition _Battle => ref _conditions[_selectedIndex];
+        public ref readonly IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int> _AllyUnits
+            => ref _allyBattleArrays[_selectedIndex];
+        public ref readonly IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int> _EnemyUnits
+           => ref _enemyBattleArrays[_selectedIndex];
 
         public void InitManager(BGManager bgManager)
         {
@@ -39,9 +41,9 @@ namespace GFSManagers
             _maxCost = data._maxCost;
             _battleCount = data._battleCount;
 
-            _allyBattleLists = new List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>>(_battleCount);
-            _enemyBattleLists = new List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>>(_battleCount);
-            _conditions = new List<BattleCondition>(_battleCount);
+            _allyBattleArrays = new IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[_battleCount];
+            _enemyBattleArrays = new IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[_battleCount];
+            _conditions = new BattleCondition[_battleCount];
 
             _costArray = new int[(int)StarCount.Count];
             _costArray[(int)StarCount.Beginner - 1] = 1;
@@ -54,15 +56,17 @@ namespace GFSManagers
             for (int i = 0; i < _battleCount; i++)
             {
                 int cost = Random.Range(_minCost, _maxCost + 1);
-                DivideCost(cost, _allyBattleLists);
-                DivideCost(cost, _enemyBattleLists);
+                DivideCost(cost, _allyBattleArrays, i);
+                DivideCost(cost, _enemyBattleArrays, i);
             }
             CalculateCondition();
 
             _window = GameManager.Instance.InstantiatePrefab(UIType.Select, _bgManager.transform).GetComponent<SelectWindow>();
-            _window.SetValue(_allyBattleLists, _enemyBattleLists, _conditions);
+            _window.InitWindow(this);
+            _window.SetValue(_allyBattleArrays, _enemyBattleArrays, _conditions);
         }
-        void DivideCost(int cost, List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> lists)
+
+        void DivideCost(int cost, IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[] lists, int index)
         {
             Dictionary<KeyValuePair<StarCount, UnitTypes>, int> dic = new Dictionary<KeyValuePair<StarCount, UnitTypes>, int>();
             while (cost > 0)
@@ -83,7 +87,7 @@ namespace GFSManagers
                 cost -= usableCost;
 
             }
-            lists.Add(dic);
+            lists[index] = dic;
         }
 
         void CalculateCondition()
@@ -91,17 +95,30 @@ namespace GFSManagers
             for (int i = 0; i < _battleCount; i++)
             {
                 BattleCondition condition = new BattleCondition();
-                condition._huntingRate = 100f / (_allyBattleLists[i].Count + 1);
-                for (int j = 0; j < _enemyBattleLists[i].Count; j++)
+
+                foreach (var dic in _enemyBattleArrays[i])
                 {
-                    condition._huntingGold += 10;
+                    condition._huntingGold += dic.Value * 10;
                 }
-                for (int j = 0; j < _allyBattleLists[i].Count; j++)
+
+                int groupCount = 1;
+                foreach (var dic in _allyBattleArrays[i])
                 {
-                    condition._participationAidGold += 10;
+                    groupCount += dic.Value;
+                    condition._participationAidGold += dic.Value * 10;
                 }
-                _conditions.Add(condition);
+
+                condition._huntingRate = 1f / groupCount;
+                _conditions[i] = condition;
             }
+        }
+        public void SetBattleIndex(int index)
+        {
+            _selectedIndex = index;
+        }
+        public void EndSelect()
+        {
+            GameSceneManager.Instance.EndSelect();
         }
     }
 }

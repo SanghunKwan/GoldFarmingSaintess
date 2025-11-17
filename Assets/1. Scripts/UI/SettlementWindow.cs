@@ -5,7 +5,7 @@ using GFSUtilities.UI;
 using System.Collections;
 using GFSManagers;
 
-public class SettlementWindow : BaseBGWindow
+public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager>
 {
     Animator _anim;
 
@@ -18,9 +18,9 @@ public class SettlementWindow : BaseBGWindow
     [Space(20)]
     [SerializeField] GameObject _button;
 
-    public override void InitWindow()
+    public override void InitWindow(SettlementManager manager)
     {
-        base.InitWindow();
+        base.InitWindow(manager);
         _anim = GetComponent<Animator>();
         gameObject.SetActive(false);
         _button.SetActive(false);
@@ -81,14 +81,22 @@ public class SettlementWindow : BaseBGWindow
     public void SetValues(in string text, SettlementCalculatedType type)
     => _calculatedText[(int)type].text = text;
     #endregion ValueAllocation
+    void EndSettlement()
+    {
+        _manager.HideWindow();
+    }
+    void MakePaceFast()
+    {
+        _paceControl = 0.2f;
+    }
     #region OnEvent
     public void OnClickButton()
     {
-        GameSceneManager.Instance.EndSettlement();
+        EndSettlement();
     }
     public void OnClickWindowBG()
     {
-        _paceControl = 0.2f;
+        MakePaceFast();
     }
     #endregion OnEvent
 }

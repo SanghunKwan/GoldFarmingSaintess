@@ -12,6 +12,7 @@ namespace GFSManagers
 
         UIPrefab,
         UIResourcePrefab,
+        UnitPrefab,
 
         UISprite,
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class SelectWindow : BaseBGWindow
+public class SelectWindow : BaseBGWindow<SelectWindow, SelectManager>
 {
     IReadOnlyList<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> _allyLists;
     IReadOnlyList<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> _enemyLists;
@@ -19,7 +19,17 @@ public class SelectWindow : BaseBGWindow
     [SerializeField] TextMeshProUGUI _aidGold;
     [SerializeField] TextMeshProUGUI _resourceRate;
 
+    int _currentIndex;
 
+    Queue<UnitSelectSlot> _usingSlots;
+    Queue<UnitSelectSlot> _unusingSlots;
+
+    public override void InitWindow(SelectManager manager)
+    {
+        base.InitWindow(manager);
+        _usingSlots = new Queue<UnitSelectSlot>();
+        _unusingSlots = new Queue<UnitSelectSlot>();
+    }
 
     public override void FadeIn()
     {
@@ -28,7 +38,8 @@ public class SelectWindow : BaseBGWindow
 
     public override void FadeOut()
     {
-        throw new System.NotImplementedException();
+        gameObject.SetActive(false);
+        _manager.EndSelect();
     }
 
     public void SetValue(IReadOnlyList<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> allyLists,
@@ -39,7 +50,9 @@ public class SelectWindow : BaseBGWindow
         _enemyLists = enemyLists;
         _conditionList = conditionList;
 
-        PrintList(0);
+        _currentIndex = 0;
+
+        PrintList(_currentIndex);
     }
 
     public void PrintList(int index)
@@ -59,13 +72,60 @@ public class SelectWindow : BaseBGWindow
     {
         foreach (var item in dic)
         {
-            GameObject obj = GameManager.Instance.InstantiateResourcePrefab(UIResourceType.SelectSlot, contentTr);
-            UnitSelectSlot slot = obj.GetComponent<UnitSelectSlot>();
+            UnitSelectSlot slot;
 
-            slot.MakeStars(item.Key.Key);
+            if (_unusingSlots.Count > 0)
+            {
+                slot = _unusingSlots.Dequeue();
+                slot.transform.SetParent(contentTr);
+                slot.SetActive(true);
+            }
+            else
+            {
+                GameObject obj = GameManager.Instance.InstantiateResourcePrefab(UIResourceType.SelectSlot, contentTr);
+                slot = obj.GetComponent<UnitSelectSlot>();
+            }
+
+            _usingSlots.Enqueue(slot);
+            slot.SetStars(item.Key.Key);
             slot.SetImage(GameManager.Instance._UISpriteScriptableObject._sprites[(int)item.Key.Value - 1 + (isEnemyList ? (int)UnitTypes.Count : 0)]);
             slot.SetCount(item.Value);
         }
-
     }
+    void ChagePage(int newPageIndex)
+    {
+        while (_usingSlots.Count > 0)
+            SetDisableSlot(_usingSlots.Dequeue());
+
+        PrintList(newPageIndex);
+    }
+    void SetDisableSlot(UnitSelectSlot slot)
+    {
+        _unusingSlots.Enqueue(slot);
+        slot.SetActive(false);
+    }
+    void TurnPage(int changedPages)
+    {
+        _currentIndex = (_currentIndex + changedPages) % _conditionList.Count;
+        ChagePage(_currentIndex);
+    }
+    void ChooseData()
+    {
+        _manager.SetBattleIndex(_currentIndex);
+        FadeOut();
+    }
+    #region Event
+    public void OnClickBeforeBattle()
+    {
+        TurnPage(-1);
+    }
+    public void OnClickNextBattle()
+    {
+        TurnPage(1);
+    }
+    public void OnClickChooseBattle()
+    {
+        ChooseData();
+    }
+    #endregion Event
 }

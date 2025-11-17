@@ -8,7 +8,7 @@ using GFSUtilities;
 
 namespace GFSManagers
 {
-    public class SettlementManager
+    public class SettlementManager : BaseBGWindowManager<SettlementWindow, SettlementManager>
     {
         BGManager _bgManager;
 
@@ -26,9 +26,6 @@ namespace GFSManagers
         float _huntingRewardRate;
         float _deadReductionRate;
         float _specialConditionRate;
-
-        SettlementWindow _window;
-
 
         public void InitManager(BGManager bgManager)
         {
@@ -81,7 +78,7 @@ namespace GFSManagers
             if (_window == null)
             {
                 _window = GameManager.Instance.InstantiatePrefab(UIType.Settle, _bgManager.transform).GetComponent<SettlementWindow>();
-                _window.InitWindow();
+                _window.InitWindow(this);
             }
 
             SetWindowVariables();

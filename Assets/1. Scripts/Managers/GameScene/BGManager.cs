@@ -39,11 +39,13 @@ namespace GFSManagers
             _bgImage.enabled = false;
         }
 
-        public void CallUI(float second, BaseBGWindow _window)
+        public void CallUI<TWindow, TManager>(float second, BaseBGWindow<TWindow, TManager> window)
+                                                                where TWindow : BaseBGWindow<TWindow, TManager>
+                                                                where TManager : BaseBGWindowManager<TWindow, TManager>
         {
             _CurrentBGUICount++;
 
-            StartCoroutine(GFSManager.WaitForSecond(second, _window.FadeIn));
+            StartCoroutine(GFSManager.WaitForSecond(second, window.FadeIn));
         }
 
         public void ReleaseUI()

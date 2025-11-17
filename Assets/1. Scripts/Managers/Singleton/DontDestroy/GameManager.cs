@@ -1,5 +1,6 @@
 using GFSBattle;
 using GFSUtilities.UI;
+using GFSUtilities.Unit;
 using GFSUtilities.Upgrade;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace GFSManagers
 
         [SerializeField] PrefabScriptableObject _uIPrefabScriptableObject;
         [SerializeField] PrefabScriptableObject _uIResourcePrefabScriptableObject;
+        [SerializeField] PrefabScriptableObject _unitPrefabScriptableObject;
 
         [SerializeField] SpriteScriptableObject _spriteScriptableObject;
 
@@ -42,6 +44,7 @@ namespace GFSManagers
 
             _uIPrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIPrefab];
             _uIResourcePrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIResourcePrefab];
+            _unitPrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UnitPrefab];
 
             _spriteScriptableObject = (SpriteScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UISprite];
         }
@@ -53,6 +56,10 @@ namespace GFSManagers
         public GameObject InstantiateResourcePrefab(UIResourceType type, Transform instantiateParent = null)
         {
             return Instantiate(_uIResourcePrefabScriptableObject._prefabs[(int)type], instantiateParent);
+        }
+        public GameObject InstantiateCharacterPrefab(UnitTypes type, Force force, Transform instantiateParent = null)
+        {
+            return Instantiate(_unitPrefabScriptableObject._prefabs[(int)type + ((force == Force.Enemy) ? 3 : -1)], instantiateParent);
         }
     }
 }

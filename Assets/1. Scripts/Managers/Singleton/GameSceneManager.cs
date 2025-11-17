@@ -17,6 +17,8 @@ namespace GFSManagers
         PlaceManager _placeManager;
         SettlementManager _settlementManager;
         SelectManager _selectManager;
+        SpawnManager _spawnManager;
+
 
         [Header("¾À ³» ¸Å´ÏÀú")]
         [SerializeField] BGManager _bgManager;
@@ -46,6 +48,8 @@ namespace GFSManagers
 
         private void Start()
         {
+            _bgManager.InitManager();
+
             _selectManager = new SelectManager();
             _selectManager.InitManager(_bgManager);
             _selectManager.MakeBattle();
@@ -55,25 +59,11 @@ namespace GFSManagers
         {
             _effectManager = new EffectManager();
             _effectManager.InitManager();
+            _spawnManager = new SpawnManager();
+            _spawnManager.InitManager(_unitFolder);
             _placeManager = new PlaceManager();
-            _bgManager.InitManager();
-
-            for (int i = 0; i < _unitFolder.childCount; i++)
-            {
-                BaseUnit unit = _unitFolder.GetChild(i).GetComponent<BaseUnit>();
-                if (i == 0)
-                {
-                    unit.InitUnit(StarCount.Expert);
-                }
-                else if (i == 1)
-                {
-                    unit.InitUnit(StarCount.Advanced);
-                }
-                else
-                    unit.InitUnit(StarCount.Beginner);
-            }
-
-
+            _spawnManager.SpawnUnit(_selectManager._AllyUnits, Force.Ally);
+            _spawnManager.SpawnUnit(_selectManager._EnemyUnits, Force.Enemy);
         }
         void InitBattle()
         {
@@ -236,12 +226,14 @@ namespace GFSManagers
             _settlementManager.CalculateSettlement();
             _settlementManager.ShowWindow();
         }
-
-        public void EndSettlement()
-        {
-            _settlementManager.HideWindow();
-        }
         #endregion SettlementManager Transfer
+        #region Selectmanager Transfer
+        public void EndSelect()
+        {
+            InitReady();
+
+        }
+        #endregion Selectmanager Transfer
     }
 }
 
