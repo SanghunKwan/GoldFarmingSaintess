@@ -8,11 +8,12 @@ namespace GFSUtilities.UI
     #region enum
     public enum UIType
     {
-        Settle,
+        Settle = 0,
+        Select
     }
     public enum SettlementVariableType
     {
-        AidGold,
+        AidGold = 0,
         BattleRewards,
         BattleDistributeRate,
         LeftHealCount,
@@ -21,7 +22,7 @@ namespace GFSUtilities.UI
     }
     public enum SettlementCalculatedType
     {
-        DefaultGold,
+        DefaultGold = 0,
         AidGold,
         VictoryGold,
         HarassGold,
@@ -29,7 +30,7 @@ namespace GFSUtilities.UI
     }
     public enum SettlementGraphicGroupType
     {
-        Title,
+        Title = 0,
         VariableNames,
         VariableValues,
         CalculatedNames,
@@ -37,6 +38,14 @@ namespace GFSUtilities.UI
         Line,
         ResultName,
         ResultValue
+    }
+
+    public enum UIResourceType
+    {
+        SelectSlot = 0,
+        SelectStar,
+
+
     }
     #endregion enum
 }

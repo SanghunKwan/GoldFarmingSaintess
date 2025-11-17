@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8559641439674303342}
     m_Modifications:
+    - target: {fileID: 3889292157431753084, guid: ca32052da591292429d1375304e1cc62, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5614846857635658823, guid: ca32052da591292429d1375304e1cc62, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7757726413535840976, guid: ca32052da591292429d1375304e1cc62, type: 3}
       propertyPath: m_Name
       value: Set Costume_03 SD Misaki

@@ -3,15 +3,20 @@ using GFSUtilities;
 using System.Collections.Generic;
 using GFSUtilities.Unit;
 using System;
+using GFSUtilities.UI;
 using Random = UnityEngine.Random;
 
 namespace GFSManagers
 {
     public class SelectManager
     {
-        List<List<KeyValuePair<StarCount, UnitTypes>>> _allyBattleLists;
-        List<List<KeyValuePair<StarCount, UnitTypes>>> _enemyBattleLists;
+        BGManager _bgManager;
+
+        List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> _allyBattleLists;
+        List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> _enemyBattleLists;
         List<BattleCondition> _conditions;
+
+
         int _maxCost;
         int _minCost;
 
@@ -24,16 +29,18 @@ namespace GFSManagers
 
         SelectWindow _window;
 
-        public void InitManager()
+        public void InitManager(BGManager bgManager)
         {
+            _bgManager = bgManager;
+
             SelectDataScriptableObject data = GameManager.Instance._SelectDataScriptableObject;
 
             _minCost = data._minCost;
             _maxCost = data._maxCost;
             _battleCount = data._battleCount;
 
-            _allyBattleLists = new List<List<KeyValuePair<StarCount, UnitTypes>>>(_battleCount);
-            _enemyBattleLists = new List<List<KeyValuePair<StarCount, UnitTypes>>>(_battleCount);
+            _allyBattleLists = new List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>>(_battleCount);
+            _enemyBattleLists = new List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>>(_battleCount);
             _conditions = new List<BattleCondition>(_battleCount);
 
             _costArray = new int[(int)StarCount.Count];
@@ -51,24 +58,32 @@ namespace GFSManagers
                 DivideCost(cost, _enemyBattleLists);
             }
             CalculateCondition();
-            _window = new SelectWindow();
-            _window.SetValue(_allyBattleLists, _enemyBattleLists);
+
+            _window = GameManager.Instance.InstantiatePrefab(UIType.Select, _bgManager.transform).GetComponent<SelectWindow>();
+            _window.SetValue(_allyBattleLists, _enemyBattleLists, _conditions);
         }
-        void DivideCost(int cost, List<List<KeyValuePair<StarCount, UnitTypes>>> lists)
+        void DivideCost(int cost, List<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> lists)
         {
-            List<KeyValuePair<StarCount, UnitTypes>> list = new List<KeyValuePair<StarCount, UnitTypes>>();
+            Dictionary<KeyValuePair<StarCount, UnitTypes>, int> dic = new Dictionary<KeyValuePair<StarCount, UnitTypes>, int>();
             while (cost > 0)
             {
                 int usableCostIndex = Array.BinarySearch<int>(_costArray, cost);
                 usableCostIndex = (usableCostIndex < 0) ? ~usableCostIndex : usableCostIndex + 1;
 
                 int type = Random.Range(0, (int)UnitTypes.Count) + 1;
-                list.Add(new KeyValuePair<StarCount, UnitTypes>((StarCount)usableCostIndex, (UnitTypes)type));
+                int usingCostIndex = Random.Range(1, usableCostIndex);
+                var tempKey = new KeyValuePair<StarCount, UnitTypes>((StarCount)usingCostIndex, (UnitTypes)type);
+                if (dic.ContainsKey(tempKey))
+                    dic[tempKey]++;
+                else
+                    dic.Add(tempKey, 1);
 
-                int usableCost = _costArray[Random.Range(0, usableCostIndex)];
+                int usableCost = _costArray[usingCostIndex - 1];
+
                 cost -= usableCost;
+
             }
-            lists.Add(list);
+            lists.Add(dic);
         }
 
         void CalculateCondition()

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b598596eb1bc9244f9e8dd8fc405c6c1, type: 3}
-  m_Name: UIPrefabScriptableObject
+  m_Name: UIResourcePrefabScriptableObject 1
   m_EditorClassIdentifier: 
   _prefabs:
-  - {fileID: 6111700337814043715, guid: 1f6716de180654348895cc4c1b465844, type: 3}
-  - {fileID: 2147322718687430242, guid: e6c1338809ffe814bb540c86567af01d, type: 3}
+  - {fileID: 3281655186682529206, guid: 8e41c18f558a89343be80c4f76aeecf6, type: 3}
+  - {fileID: 4218253661453159362, guid: 802bad74bd8518f4ea51461642d315df, type: 3}

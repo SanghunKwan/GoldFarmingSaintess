@@ -15,12 +15,16 @@ namespace GFSManagers
         [SerializeField] SelectDataScriptableObject _selectDataScriptableObject;
 
         [SerializeField] PrefabScriptableObject _uIPrefabScriptableObject;
+        [SerializeField] PrefabScriptableObject _uIResourcePrefabScriptableObject;
+
+        [SerializeField] SpriteScriptableObject _spriteScriptableObject;
 
 
         public UpgradeScriptableObjects _UpgradeObjects => _upgradeObjects;
         public EffectScriptableObject _EffectScriptableObject => _effectScriptableObject;
         public SettlementScriptableObject _SettlementScriptableObject => _settlementScriptableObject;
         public SelectDataScriptableObject _SelectDataScriptableObject => _selectDataScriptableObject;
+        public SpriteScriptableObject _UISpriteScriptableObject => _spriteScriptableObject;
 
         public int[] _healUpgrade { get; private set; }
 
@@ -37,11 +41,18 @@ namespace GFSManagers
             _selectDataScriptableObject = (SelectDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.SelectData];
 
             _uIPrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIPrefab];
+            _uIResourcePrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIResourcePrefab];
+
+            _spriteScriptableObject = (SpriteScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UISprite];
         }
 
         public GameObject InstantiatePrefab(UIType type, Transform instantiateParent = null)
         {
             return Instantiate(_uIPrefabScriptableObject._prefabs[(int)type], instantiateParent);
+        }
+        public GameObject InstantiateResourcePrefab(UIResourceType type, Transform instantiateParent = null)
+        {
+            return Instantiate(_uIResourcePrefabScriptableObject._prefabs[(int)type], instantiateParent);
         }
     }
 }

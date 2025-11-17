@@ -47,7 +47,7 @@ namespace GFSManagers
         private void Start()
         {
             _selectManager = new SelectManager();
-            _selectManager.InitManager();
+            _selectManager.InitManager(_bgManager);
             _selectManager.MakeBattle();
             //InitReady();
         }

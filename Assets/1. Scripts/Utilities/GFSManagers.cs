@@ -9,7 +9,11 @@ namespace GFSManagers
         Settle,
         SelectData,
 
+
         UIPrefab,
+        UIResourcePrefab,
+
+        UISprite,
 
         Max
     }
