@@ -3,6 +3,7 @@ using GFSUtilities;
 using GFSUtilities.UI;
 using GFSUtilities.Unit;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -19,27 +20,55 @@ public class SelectWindow : BaseBGWindow<SelectWindow, SelectManager>
     [SerializeField] TextMeshProUGUI _aidGold;
     [SerializeField] TextMeshProUGUI _resourceRate;
 
+    [SerializeField] GameObject _button;
+
     int _currentIndex;
 
     Queue<UnitSelectSlot> _usingSlots;
     Queue<UnitSelectSlot> _unusingSlots;
+
+    IEnumerator _ienum;
+
 
     public override void InitWindow(SelectManager manager)
     {
         base.InitWindow(manager);
         _usingSlots = new Queue<UnitSelectSlot>();
         _unusingSlots = new Queue<UnitSelectSlot>();
+        _controller.HideAllColor(0);
+        _button.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     public override void FadeIn()
     {
-        throw new System.NotImplementedException();
+        gameObject.SetActive(true);
+        _ienum = FadeInCoroutine();
+        StartCoroutine(_ienum);
     }
+    IEnumerator FadeInCoroutine()
+    {
+        _controller.FadeGraphicAtOnce((int)SelectGraphicGroupType.Main, 1, 0.2f);
+        foreach (var slot in _usingSlots)
+            slot.FadeIn();
+        yield return new WaitForSeconds(0.3f);
 
+        _controller.FadeGraphicInOrder((int)SelectGraphicGroupType.Aid, 1, 0.2f, 0.1f);
+        yield return new WaitForSeconds(0.1f);
+        _controller.FadeGraphicInOrder((int)SelectGraphicGroupType.Rate, 1, 0.2f, 0.1f);
+        yield return new WaitForSeconds(1f);
+
+        _controller.FadeGraphicAtOnce((int)SelectGraphicGroupType.PageButtons, 1, 0.2f);
+        yield return new WaitForSeconds(0.5f);
+
+        _button.SetActive(true);
+    }
     public override void FadeOut()
     {
-        gameObject.SetActive(false);
+        _anim.SetTrigger(UIHashID.t_FadeOut);
         _manager.EndSelect();
+
+        StartCoroutine(GFSManager.WaitForSecond(0.5f, () => gameObject.SetActive(false)));
     }
 
     public void SetValue(IReadOnlyList<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> allyLists,
@@ -65,7 +94,7 @@ public class SelectWindow : BaseBGWindow<SelectWindow, SelectManager>
 
         CreateNSetSlots(dic, _enemyContentTr, true);
 
-        _resourceRate.text = _conditionList[index]._huntingRate.ToString("N");
+        _resourceRate.text = (_conditionList[index]._huntingRate * 100).ToString("N");
         _aidGold.text = _conditionList[index]._participationAidGold.ToString("N0");
     }
     void CreateNSetSlots(IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int> dic, Transform contentTr, bool isEnemyList)
@@ -106,7 +135,7 @@ public class SelectWindow : BaseBGWindow<SelectWindow, SelectManager>
     }
     void TurnPage(int changedPages)
     {
-        _currentIndex = (_currentIndex + changedPages) % _conditionList.Count;
+        _currentIndex = (_currentIndex + changedPages + _conditionList.Count) % _conditionList.Count;
         ChagePage(_currentIndex);
     }
     void ChooseData()

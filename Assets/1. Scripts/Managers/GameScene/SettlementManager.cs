@@ -10,9 +10,6 @@ namespace GFSManagers
 {
     public class SettlementManager : BaseBGWindowManager<SettlementWindow, SettlementManager>
     {
-        BGManager _bgManager;
-
-
         LinkedList<BaseUnit> _deadAlly;
         LinkedList<BaseUnit> _deadEnemy;
 
@@ -27,12 +24,12 @@ namespace GFSManagers
         float _deadReductionRate;
         float _specialConditionRate;
 
-        public void InitManager(BGManager bgManager)
+        public override void InitManager(BGManager bgManager)
         {
+            base.InitManager(bgManager);
+
             _deadAlly = new LinkedList<BaseUnit>();
             _deadEnemy = new LinkedList<BaseUnit>();
-
-            _bgManager = bgManager;
 
             SettlementScriptableObject dataObject = GameManager.Instance._SettlementScriptableObject;
 

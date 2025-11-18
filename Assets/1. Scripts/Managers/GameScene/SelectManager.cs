@@ -10,8 +10,6 @@ namespace GFSManagers
 {
     public class SelectManager : BaseBGWindowManager<SelectWindow, SelectManager>
     {
-        BGManager _bgManager;
-
         IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[] _allyBattleArrays;
         IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[] _enemyBattleArrays;
         BattleCondition[] _conditions;
@@ -31,9 +29,9 @@ namespace GFSManagers
         public ref readonly IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int> _EnemyUnits
            => ref _enemyBattleArrays[_selectedIndex];
 
-        public void InitManager(BGManager bgManager)
+        public override void InitManager(BGManager bgManager)
         {
-            _bgManager = bgManager;
+            base.InitManager(bgManager);
 
             SelectDataScriptableObject data = GameManager.Instance._SelectDataScriptableObject;
 
@@ -63,6 +61,7 @@ namespace GFSManagers
 
             _window = GameManager.Instance.InstantiatePrefab(UIType.Select, _bgManager.transform).GetComponent<SelectWindow>();
             _window.InitWindow(this);
+            _bgManager.CallUI(1, _window);
             _window.SetValue(_allyBattleArrays, _enemyBattleArrays, _conditions);
         }
 
@@ -118,6 +117,7 @@ namespace GFSManagers
         }
         public void EndSelect()
         {
+            _bgManager.ReleaseUI();
             GameSceneManager.Instance.EndSelect();
         }
     }

@@ -7,10 +7,12 @@ public abstract class BaseBGWindow<TWindow, TManager> : MonoBehaviour where TWin
 {
     protected GraphicColorController _controller;
     protected TManager _manager;
+    protected Animator _anim;
 
 
     public virtual void InitWindow(TManager manager)
     {
+        _anim = GetComponent<Animator>();
         _controller = GetComponent<GraphicColorController>();
         _controller.HideAllColor(0);
 

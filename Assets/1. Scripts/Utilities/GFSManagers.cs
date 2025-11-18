@@ -4,10 +4,10 @@ namespace GFSManagers
 {
     public enum GameManagerDataType
     {
-        Upgrade = 0,
-        Effect,
+        Effect = 0,
         Settle,
         SelectData,
+        TrainingData,
 
 
         UIPrefab,

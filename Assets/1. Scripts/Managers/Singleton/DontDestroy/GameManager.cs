@@ -10,10 +10,10 @@ namespace GFSManagers
 
     {
         [Header("게임 내 데이터")]
-        [SerializeField] UpgradeScriptableObjects _upgradeObjects;
         [SerializeField] EffectScriptableObject _effectScriptableObject;
         [SerializeField] SettlementScriptableObject _settlementScriptableObject;
         [SerializeField] SelectDataScriptableObject _selectDataScriptableObject;
+        [SerializeField] TrainingManagerDataScriptableObject _trainingDataScriptableObject;
 
         [SerializeField] PrefabScriptableObject _uIPrefabScriptableObject;
         [SerializeField] PrefabScriptableObject _uIResourcePrefabScriptableObject;
@@ -22,25 +22,22 @@ namespace GFSManagers
         [SerializeField] SpriteScriptableObject _spriteScriptableObject;
 
 
-        public UpgradeScriptableObjects _UpgradeObjects => _upgradeObjects;
         public EffectScriptableObject _EffectScriptableObject => _effectScriptableObject;
         public SettlementScriptableObject _SettlementScriptableObject => _settlementScriptableObject;
         public SelectDataScriptableObject _SelectDataScriptableObject => _selectDataScriptableObject;
+        public TrainingManagerDataScriptableObject _TrainingDataScriptableObject => _trainingDataScriptableObject;
         public SpriteScriptableObject _UISpriteScriptableObject => _spriteScriptableObject;
 
-        public int[] _healUpgrade { get; private set; }
 
 
         public override void InitManager()
         {
-            _healUpgrade = new int[(int)UpgradeType.Max];
-
             GameManagerDataScriptableObject data = Resources.Load<GameManagerDataScriptableObject>("GameManagerDataScriptableObject");
 
-            _upgradeObjects = (UpgradeScriptableObjects)data._scriptableDatas[(int)GameManagerDataType.Upgrade];
             _effectScriptableObject = (EffectScriptableObject)data._scriptableDatas[(int)GameManagerDataType.Effect];
             _settlementScriptableObject = (SettlementScriptableObject)data._scriptableDatas[(int)GameManagerDataType.Settle];
             _selectDataScriptableObject = (SelectDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.SelectData];
+            _trainingDataScriptableObject = (TrainingManagerDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.TrainingData];
 
             _uIPrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIPrefab];
             _uIResourcePrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIResourcePrefab];

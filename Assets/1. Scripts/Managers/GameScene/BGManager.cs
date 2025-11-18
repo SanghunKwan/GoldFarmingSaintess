@@ -1,5 +1,6 @@
 using GFSUtilities;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,10 @@ namespace GFSManagers
         Image _bgImage;
 
         int _currentBGUICount;
+
+        IEnumerator _ienum;
+
+
         public int _CurrentBGUICount
         {
             get => _currentBGUICount;
@@ -57,15 +62,26 @@ namespace GFSManagers
 
         void SetBGActive()
         {
+            if (_ienum != null)
+            {
+                StopCoroutine(_ienum);
+                _ienum = null;
+            }
+
             _bgImage.enabled = true;
             _anim.SetBool(UIHashID.b_IsBlack, true);
         }
 
         void SetBGDisactive()
         {
-            _anim.SetBool(UIHashID.b_IsBlack, true);
+            _anim.SetBool(UIHashID.b_IsBlack, false);
 
-            StartCoroutine(GFSManager.WaitForSecond(0.5f, () => _bgImage.enabled = false));
+            _ienum = GFSManager.WaitForSecond(2f, () =>
+            {
+                _bgImage.enabled = false;
+                _ienum = null;
+            });
+            StartCoroutine(_ienum);
         }
     }
 }

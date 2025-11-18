@@ -7,8 +7,6 @@ using GFSManagers;
 
 public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager>
 {
-    Animator _anim;
-
     IEnumerator _ienum;
     float _paceControl;
 
@@ -21,7 +19,6 @@ public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager
     public override void InitWindow(SettlementManager manager)
     {
         base.InitWindow(manager);
-        _anim = GetComponent<Animator>();
         gameObject.SetActive(false);
         _button.SetActive(false);
     }

@@ -47,5 +47,14 @@ namespace GFSUtilities.UI
 
 
     }
+
+    public enum SelectGraphicGroupType
+    {
+        Main,
+        Aid,
+        Rate,
+        PageButtons
+
+    }
     #endregion enum
 }

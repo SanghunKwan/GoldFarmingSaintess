@@ -3,7 +3,7 @@ using UnityEngine;
 namespace GFSUtilities.Upgrade
 {
     #region Enum
-    public enum UpgradeType : byte
+    public enum UpgradeType
     {
         HealAmount,
         HealCount,

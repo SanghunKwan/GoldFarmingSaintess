@@ -2,7 +2,6 @@ using GFSManagers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using GFSUtilities.UI;
 using GFSUtilities.Unit;
 
 public class UnitSelectSlot : MonoBehaviour
@@ -10,7 +9,7 @@ public class UnitSelectSlot : MonoBehaviour
     [SerializeField] Image _portrait;
     [SerializeField] TextMeshProUGUI _unitCount;
     [SerializeField] Transform _starParentTr;
-
+    [SerializeField] GraphicColorController _controller;
 
     public void SetImage(in Sprite image)
     {
@@ -29,5 +28,11 @@ public class UnitSelectSlot : MonoBehaviour
     public void SetActive(bool isOn)
     {
         gameObject.SetActive(isOn);
+    }
+
+    public void FadeIn()
+    {
+        _controller.HideAllColor(0);
+        _controller.FadeGraphicInOrder(0, 1, 0.2f, 0);
     }
 }

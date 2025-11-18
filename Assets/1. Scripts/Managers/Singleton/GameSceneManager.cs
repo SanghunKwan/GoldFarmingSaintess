@@ -18,6 +18,7 @@ namespace GFSManagers
         SettlementManager _settlementManager;
         SelectManager _selectManager;
         SpawnManager _spawnManager;
+        TrainingManager _trainingManager;
 
 
         [Header("¾À ³» ¸Å´ÏÀú")]
@@ -55,7 +56,13 @@ namespace GFSManagers
             _selectManager.MakeBattle();
             //InitReady();
         }
-        void InitReady()
+        void PrepareNextStage()
+        {
+            _trainingManager = new TrainingManager();
+            _trainingManager.InitManager(_bgManager);
+
+        }
+        void StageInitReady()
         {
             _effectManager = new EffectManager();
             _effectManager.InitManager();
@@ -74,9 +81,7 @@ namespace GFSManagers
             _placeManager.EndPlacePhase();
             _placeManager = null;
 
-            int[] upgrades = GameManager.Instance._healUpgrade;
-            _battleManager.InitManger(GetUpgradeCalculated(upgrades, UpgradeType.HealAmount)
-                                    , GetUpgradeCalculated(upgrades, UpgradeType.HealCount));
+            _battleManager.InitManger(_trainingManager._HealCount, _trainingManager._HealAmount);
         }
 
         public LinkedListNode<BaseUnit> EnrollUnit(BaseUnit unit)
@@ -143,17 +148,6 @@ namespace GFSManagers
             }));
 
             StartCoroutine(GFSManager.WaitForSecond(3, StartSettlement));
-        }
-        int GetUpgradeCalculated(in int[] upgrades, UpgradeType type)
-        {
-            int typeIndex = (int)type;
-
-            UpgradeScriptableObjects upgradeObject = GameManager.Instance._UpgradeObjects;
-
-            int defaultValue = upgradeObject.defaultArray[typeIndex];
-            int addByUpgrades = Mathf.CeilToInt(upgradeObject.addArray[typeIndex] * upgrades[typeIndex]);
-
-            return defaultValue + addByUpgrades;
         }
 
         #region BattleManager Transfer
@@ -227,13 +221,18 @@ namespace GFSManagers
             _settlementManager.ShowWindow();
         }
         #endregion SettlementManager Transfer
-        #region Selectmanager Transfer
+        #region SelectManager Transfer
         public void EndSelect()
         {
-            InitReady();
-
+            PrepareNextStage();
         }
-        #endregion Selectmanager Transfer
+        #endregion SelectManager Transfer
+        #region TrainingManager Transfer
+        public void EndTraining()
+        {
+            StageInitReady();
+        }
+        #endregion TraningManager Transfer
     }
 }
 
