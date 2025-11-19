@@ -10,7 +10,8 @@ namespace GFSUtilities.UI
     {
         Settle = 0,
         Select,
-        Training
+        Training,
+        Turn,
     }
     public enum SettlementVariableType
     {
@@ -56,6 +57,15 @@ namespace GFSUtilities.UI
         Rate,
         PageButtons
 
+    }
+
+    public enum TurnGraphicGroupType
+    {
+        BG,
+        TurnText,
+        NoneChangeSubText,
+        CurrentTurnText,
+        ShiningEffect
     }
     #endregion enum
 }

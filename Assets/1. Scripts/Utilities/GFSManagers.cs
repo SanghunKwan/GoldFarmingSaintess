@@ -8,7 +8,7 @@ namespace GFSManagers
         Settle,
         SelectData,
         TrainingData,
-
+        Turn,
 
         UIPrefab,
         UIResourcePrefab,

@@ -1,9 +1,8 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
 using System;
-using System.Collections;
 using GFSUtilities;
+
 
 public class GraphicColorController : MonoBehaviour
 {

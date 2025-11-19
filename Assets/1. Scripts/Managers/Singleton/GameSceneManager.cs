@@ -19,6 +19,7 @@ namespace GFSManagers
         SelectManager _selectManager;
         SpawnManager _spawnManager;
         TrainingManager _trainingManager;
+        TurnManager _turnManager;
 
 
         [Header("¾À ³» ¸Å´ÏÀú")]
@@ -46,9 +47,12 @@ namespace GFSManagers
 
         private void Start()
         {
+            _turnManager = new TurnManager();
+            _turnManager.InitManager(_bgManager);
+
             _bgManager.InitManager();
             _noneBGManager.InitManager();
-
+            _turnManager.CallTurnUI();
         }
         void SelectInit()
         {
@@ -234,6 +238,12 @@ namespace GFSManagers
             StageInitReady();
         }
         #endregion TraningManager Transfer
+        #region TurnManager Transfer
+        public void EndTurn()
+        {
+            SelectInit();
+        }
+        #endregion TurnManager Transfer
     }
 }
 

@@ -1,6 +1,7 @@
 using GFSUtilities.Item;
 using GFSUtilities.Upgrade;
 using UnityEngine;
+using GFSUtilities.UI;
 
 
 namespace GFSManagers
@@ -41,7 +42,7 @@ namespace GFSManagers
         }
         public void ReadyToTraining()
         {
-            GameObject go = GameManager.Instance.InstantiatePrefab(GFSUtilities.UI.UIType.Training, _bgManager.transform);
+            GameObject go = GameManager.Instance.InstantiatePrefab(UIType.Training, _bgManager.transform);
             _window = go.GetComponent<TrainingWindow>();
             _window.InitWindow(this);
             _window.FadeIn();
