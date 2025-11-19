@@ -9,7 +9,8 @@ namespace GFSUtilities.UI
     public enum UIType
     {
         Settle = 0,
-        Select
+        Select,
+        Training
     }
     public enum SettlementVariableType
     {
@@ -44,7 +45,7 @@ namespace GFSUtilities.UI
     {
         SelectSlot = 0,
         SelectStar,
-
+        TrainingSlot,
 
     }
 

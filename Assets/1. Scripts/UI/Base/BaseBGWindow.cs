@@ -2,8 +2,9 @@ using UnityEngine;
 
 
 [RequireComponent(typeof(GraphicColorController))]
-public abstract class BaseBGWindow<TWindow, TManager> : MonoBehaviour where TWindow : BaseBGWindow<TWindow, TManager>
-                                                                      where TManager : BaseBGWindowManager<TWindow, TManager>
+public abstract class BaseBGWindow<TWindow, TManager, TBGManager> : MonoBehaviour where TWindow : BaseBGWindow<TWindow, TManager, TBGManager>
+                                                                      where TManager : BaseBGWindowManager<TWindow, TManager, TBGManager>
+                                                                        where TBGManager : MonoBehaviour
 {
     protected GraphicColorController _controller;
     protected TManager _manager;

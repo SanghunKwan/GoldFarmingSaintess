@@ -1,14 +1,15 @@
 using GFSBattle;
 using GFSUtilities.UI;
 using GFSUtilities.Unit;
-using GFSUtilities.Upgrade;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GFSManagers
 {
     public class GameManager : BaseDontDestoryManager<GameManager>
-
     {
+
         [Header("게임 내 데이터")]
         [SerializeField] EffectScriptableObject _effectScriptableObject;
         [SerializeField] SettlementScriptableObject _settlementScriptableObject;
@@ -34,6 +35,8 @@ namespace GFSManagers
         {
             GameManagerDataScriptableObject data = Resources.Load<GameManagerDataScriptableObject>("GameManagerDataScriptableObject");
 
+
+
             _effectScriptableObject = (EffectScriptableObject)data._scriptableDatas[(int)GameManagerDataType.Effect];
             _settlementScriptableObject = (SettlementScriptableObject)data._scriptableDatas[(int)GameManagerDataType.Settle];
             _selectDataScriptableObject = (SelectDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.SelectData];
@@ -44,6 +47,8 @@ namespace GFSManagers
             _unitPrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UnitPrefab];
 
             _spriteScriptableObject = (SpriteScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UISprite];
+
+
         }
 
         public GameObject InstantiatePrefab(UIType type, Transform instantiateParent = null)

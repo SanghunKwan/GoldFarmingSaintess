@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: TrainingManagerDataScriptableObject
   m_EditorClassIdentifier: 
   defaultArray: 0a0000000a000000
+  defaultPrices: 0a0000000a000000
   addArray:
   - 0.2
   - 0.1
+  exponent: 1.2
   _inventorySize: 2

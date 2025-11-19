@@ -5,7 +5,7 @@ using GFSUtilities.UI;
 using System.Collections;
 using GFSManagers;
 
-public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager>
+public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager, BGManager>
 {
     IEnumerator _ienum;
     float _paceControl;
@@ -81,6 +81,7 @@ public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager
     void EndSettlement()
     {
         _manager.HideWindow();
+        _button.SetActive(false);
     }
     void MakePaceFast()
     {

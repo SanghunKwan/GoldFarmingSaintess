@@ -23,6 +23,7 @@ namespace GFSManagers
 
         [Header("¾À ³» ¸Å´ÏÀú")]
         [SerializeField] BGManager _bgManager;
+        [SerializeField] NoneBGManager _noneBGManager;
 
         [Header("¾À ³» µ¥ÀÌÅÍ")]
         [SerializeField] Transform _unitFolder;
@@ -33,10 +34,6 @@ namespace GFSManagers
 
         float GetsqrDistance(in Vector3 vec1, in Vector3 vec2)
             => (vec1 - vec2).sqrMagnitude;
-
-
-
-
 
         private void Awake()
         {
@@ -50,17 +47,19 @@ namespace GFSManagers
         private void Start()
         {
             _bgManager.InitManager();
+            _noneBGManager.InitManager();
 
+        }
+        void SelectInit()
+        {
             _selectManager = new SelectManager();
             _selectManager.InitManager(_bgManager);
             _selectManager.MakeBattle();
-            //InitReady();
         }
         void PrepareNextStage()
         {
             _trainingManager = new TrainingManager();
-            _trainingManager.InitManager(_bgManager);
-
+            _trainingManager.InitManager(_noneBGManager);
         }
         void StageInitReady()
         {
@@ -81,7 +80,8 @@ namespace GFSManagers
             _placeManager.EndPlacePhase();
             _placeManager = null;
 
-            _battleManager.InitManger(_trainingManager._HealCount, _trainingManager._HealAmount);
+            _battleManager.InitManger(_trainingManager._CurrentValue(UpgradeType.HealCount),
+                                      _trainingManager._CurrentValue(UpgradeType.HealAmount));
         }
 
         public LinkedListNode<BaseUnit> EnrollUnit(BaseUnit unit)
@@ -230,6 +230,7 @@ namespace GFSManagers
         #region TrainingManager Transfer
         public void EndTraining()
         {
+            _trainingManager.TrainingTimeOut();
             StageInitReady();
         }
         #endregion TraningManager Transfer

@@ -8,7 +8,7 @@ using GFSUtilities;
 
 namespace GFSManagers
 {
-    public class SettlementManager : BaseBGWindowManager<SettlementWindow, SettlementManager>
+    public class SettlementManager : BaseBGWindowManager<SettlementWindow, SettlementManager, BGManager>
     {
         LinkedList<BaseUnit> _deadAlly;
         LinkedList<BaseUnit> _deadEnemy;

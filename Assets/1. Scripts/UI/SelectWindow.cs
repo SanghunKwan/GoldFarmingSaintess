@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class SelectWindow : BaseBGWindow<SelectWindow, SelectManager>
+public class SelectWindow : BaseBGWindow<SelectWindow, SelectManager, BGManager>
 {
     IReadOnlyList<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> _allyLists;
     IReadOnlyList<IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>> _enemyLists;

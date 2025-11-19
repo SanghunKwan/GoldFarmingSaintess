@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 namespace GFSManagers
 {
-    public class SelectManager : BaseBGWindowManager<SelectWindow, SelectManager>
+    public class SelectManager : BaseBGWindowManager<SelectWindow, SelectManager, BGManager>
     {
         IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[] _allyBattleArrays;
         IReadOnlyDictionary<KeyValuePair<StarCount, UnitTypes>, int>[] _enemyBattleArrays;

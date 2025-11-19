@@ -44,9 +44,10 @@ namespace GFSManagers
             _bgImage.enabled = false;
         }
 
-        public void CallUI<TWindow, TManager>(float second, BaseBGWindow<TWindow, TManager> window)
-                                                                where TWindow : BaseBGWindow<TWindow, TManager>
-                                                                where TManager : BaseBGWindowManager<TWindow, TManager>
+        public void CallUI<TWindow, TManager, TBGManager>(float second, BaseBGWindow<TWindow, TManager, TBGManager> window)
+                                                                where TWindow : BaseBGWindow<TWindow, TManager, TBGManager>
+                                                                where TManager : BaseBGWindowManager<TWindow, TManager, TBGManager>
+                                                                where TBGManager : MonoBehaviour
         {
             _CurrentBGUICount++;
 
