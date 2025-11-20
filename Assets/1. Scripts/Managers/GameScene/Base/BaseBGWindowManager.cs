@@ -12,4 +12,5 @@ public abstract class BaseBGWindowManager<TWindow, TManager, TBGManager> where T
     {
         _bgManager = bgManager;
     }
+
 }

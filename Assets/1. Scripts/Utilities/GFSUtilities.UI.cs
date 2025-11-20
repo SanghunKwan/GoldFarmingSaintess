@@ -12,6 +12,9 @@ namespace GFSUtilities.UI
         Select,
         Training,
         Turn,
+
+        Logo,
+        Login
     }
     public enum SettlementVariableType
     {
@@ -66,6 +69,11 @@ namespace GFSUtilities.UI
         NoneChangeSubText,
         CurrentTurnText,
         ShiningEffect
+    }
+
+    public enum LogoGraphicGroupType
+    {
+        UnityChan,
     }
     #endregion enum
 }
