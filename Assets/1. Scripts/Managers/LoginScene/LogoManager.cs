@@ -31,6 +31,7 @@ namespace GFSManagers
         {
             _window.FadeOut();
             _bgManager.ReleaseUI();
+            LoginSceneManager.Instance.LoginReady();
         }
     }
 }

@@ -1,17 +1,19 @@
 using GFSManagers;
 using UnityEngine;
 
-public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, BGManager>
+public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGManager>
 {
 
     public override void InitWindow(LoginManager manager)
     {
         base.InitWindow(manager);
 
+        gameObject.SetActive(false);
     }
     public override void FadeIn()
     {
-        throw new System.NotImplementedException();
+        gameObject.SetActive(true);
+
     }
 
     public override void FadeOut()
@@ -22,7 +24,7 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, BGManager>
     #region Event
     public void OnClickLoginButton()
     {
-        LoginSceneManager.Instance.Link();
+        _manager.LinkServer();
     }
     #endregion Event
 }

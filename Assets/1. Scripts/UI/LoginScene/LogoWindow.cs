@@ -21,6 +21,7 @@ public class LogoWindow : BaseBGWindow<LogoWindow, LogoManager, BGManager>
     }
     IEnumerator PlayLogo()
     {
+        yield return new WaitForSeconds(0.5f);
         _controller.FadeGraphicAtOnce((int)LogoGraphicGroupType.UnityChan, 1, 1f);
         yield return new WaitForSeconds(2f);
 

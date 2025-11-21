@@ -9,7 +9,7 @@ public class LoginSceneManager : MonoBehaviour
 
     [Header("¾À ³» ¸Å´ÏÀú")]
     [SerializeField] BGManager _bgManager;
-    //[SerializeField] NoneBGManager _noneBGManager;
+    [SerializeField] LoginNoneBGManager _noneBGManager;
 
     LogoManager _logoManager;
     LoginManager _loginManager;
@@ -18,6 +18,7 @@ public class LoginSceneManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        Application.runInBackground = true;
     }
 
     private void Start()
@@ -36,11 +37,9 @@ public class LoginSceneManager : MonoBehaviour
     public void LoginReady()
     {
         _loginManager = new LoginManager();
-        _loginManager.InitManager(_bgManager);
+        _loginManager.InitManager(_noneBGManager);
+        _loginManager.MakeWindow();
+        _loginManager.CallWindow();
     }
 
-    public void Link()
-    {
-        
-    }
 }

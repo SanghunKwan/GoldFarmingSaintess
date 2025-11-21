@@ -9,6 +9,7 @@ namespace GFSManagers
         SelectData,
         TrainingData,
         Turn,
+        Server,
 
         UIPrefab,
         UIResourcePrefab,

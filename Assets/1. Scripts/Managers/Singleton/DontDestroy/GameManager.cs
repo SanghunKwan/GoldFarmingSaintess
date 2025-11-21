@@ -16,6 +16,7 @@ namespace GFSManagers
         [SerializeField] SelectDataScriptableObject _selectDataScriptableObject;
         [SerializeField] TrainingManagerDataScriptableObject _trainingDataScriptableObject;
         [SerializeField] TurnScriptableObject _turnScriptableObject;
+        [SerializeField] ServerDataScriptableObject _serverScriptableObject;
 
         [SerializeField] PrefabScriptableObject _uIPrefabScriptableObject;
         [SerializeField] PrefabScriptableObject _uIResourcePrefabScriptableObject;
@@ -23,12 +24,12 @@ namespace GFSManagers
 
         [SerializeField] SpriteScriptableObject _spriteScriptableObject;
 
-
         public EffectScriptableObject _EffectScriptableObject => _effectScriptableObject;
         public SettlementScriptableObject _SettlementScriptableObject => _settlementScriptableObject;
         public SelectDataScriptableObject _SelectDataScriptableObject => _selectDataScriptableObject;
         public TrainingManagerDataScriptableObject _TrainingDataScriptableObject => _trainingDataScriptableObject;
         public TurnScriptableObject _TurnScriptableObject => _turnScriptableObject;
+        public ServerDataScriptableObject _ServerScriptableObject => _serverScriptableObject;
 
         public SpriteScriptableObject _UISpriteScriptableObject => _spriteScriptableObject;
 
@@ -43,6 +44,7 @@ namespace GFSManagers
             _selectDataScriptableObject = (SelectDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.SelectData];
             _trainingDataScriptableObject = (TrainingManagerDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.TrainingData];
             _turnScriptableObject = (TurnScriptableObject)data._scriptableDatas[(int)GameManagerDataType.Turn];
+            _serverScriptableObject = (ServerDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.Server];
 
             _uIPrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIPrefab];
             _uIResourcePrefabScriptableObject = (PrefabScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIResourcePrefab];
