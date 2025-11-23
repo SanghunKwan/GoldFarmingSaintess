@@ -1,4 +1,5 @@
 using GFSManagers;
+using GFSUtilities.Protocol;
 using UnityEngine;
 
 
@@ -13,6 +14,7 @@ public class LoginSceneManager : MonoBehaviour
 
     LogoManager _logoManager;
     LoginManager _loginManager;
+
 
 
     private void Awake()
@@ -42,4 +44,19 @@ public class LoginSceneManager : MonoBehaviour
         _loginManager.CallWindow();
     }
 
+
+    #region ManagerTransfer
+    public void ServerLinkSuccss(in PageProtocol pageProtocol)
+    {
+        _loginManager.ServerLinkSuccss(pageProtocol);
+    }
+    public void NickNameDetermined(in UserSettingProtocol settingProtocol)
+    {
+        _loginManager.NickNameDetermined(settingProtocol);
+    }
+    public void UpdateMatchingStatus(in MatchingStatusProtocol matchingStatusProtocol)
+    {
+        _loginManager.UpdateMatchingStatus(matchingStatusProtocol);
+    }
+    #endregion ManagerTransfer
 }

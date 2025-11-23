@@ -1,3 +1,5 @@
+using GFSUtilities;
+using GFSUtilities.Protocol;
 using GFSUtilities.UI;
 using Unity.Entities;
 using Unity.NetCode;
@@ -8,16 +10,39 @@ namespace GFSManagers
 {
     public class LoginManager : BaseBGWindowManager<LoginWindow, LoginManager, LoginNoneBGManager>
     {
-
         string _ip;
         ushort _port;
 
+        int _currentPage;
+
+        public string _nickName { get; private set; }
+        public int _id { get; private set; }
+
+        MessageBox _messageBox;
+        SettingWindow _settingWindow;
+
+
+        public PageType _CurrentPage
+        {
+            get => (PageType)_currentPage;
+            set
+            {
+                _window.SetPage(_currentPage, false);
+                _currentPage = (int)value;
+                _window.SetPage(_currentPage, true);
+            }
+        }
 
         public override void InitManager(LoginNoneBGManager bgManager)
         {
             base.InitManager(bgManager);
 
             ServerDataScriptableObject data = GameManager.Instance._ServerScriptableObject;
+
+            _ip = data._ipv4;
+            _port = data._port;
+
+            _currentPage = 0;
 
 
         }
@@ -27,6 +52,11 @@ namespace GFSManagers
             GameObject go = GameManager.Instance.InstantiatePrefab(UIType.Login, _bgManager.transform);
             _window = go.GetComponent<LoginWindow>();
             _window.InitWindow(this);
+
+            go = GameManager.Instance.InstantiatePrefab(UIType.MessageBox, _window.transform);
+            _messageBox = go.GetComponent<MessageBox>();
+            _messageBox.InitBox();
+
         }
 
         public void CallWindow()
@@ -36,40 +66,127 @@ namespace GFSManagers
 
         public void LinkServer()
         {
-            //var server = ClientServerBootstrap.CreateServerWorld("ServerWorld");
+            World clientWorld = World.DefaultGameObjectInjectionWorld = ClientServerBootstrap.ClientWorld;
 
-            //if (World.DefaultGameObjectInjectionWorld == null)
-            //    World.DefaultGameObjectInjectionWorld = server;
-
-            //foreach (var world in World.All)
-            //{
-            //    if (world.Flags == WorldFlags.Game)
-            //    {
-            //        world.Dispose();
-            //        break;
-            //    }
-            //}
-            ServerDataScriptableObject data = GameManager.Instance._ServerScriptableObject;
-            var endPoint = NetworkEndpoint.Parse(data._ipv4, _port);
-
-            var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-            em.AddComponentData(em.CreateEntity(), new NetworkStreamRequestConnect
+            foreach (var world in World.All)
             {
-                Endpoint = endPoint
-            });
+                if (world.Flags == WorldFlags.Game)
+                {
+                    world.Dispose();
+                    break;
+                }
+            }
 
-            Debug.Log("클라 접속");
+            using var query = clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+            query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(clientWorld.EntityManager, NetworkEndpoint.Parse(_ip, _port));
+
+            Debug.Log("클라 연결");
         }
 
-        void ServerLink()
+        public void ServerLinkSuccss(in PageProtocol pageProtocol)
         {
-            var endPoint = NetworkEndpoint.AnyIpv4.WithPort(_port);
+            _CurrentPage = pageProtocol._pageType;
+            _id = pageProtocol._id;
+        }
+        public void SubmitNickName(in string nickName)
+        {
+            if (!CheckValid(nickName)) return;
 
+
+            _nickName = nickName;
+            _messageBox.SetBox(MessageBoxType.Check);
+            _messageBox.SetText(string.Format("'{0}'으로 진행하시겠습니까?", _nickName));
+
+
+            _messageBox.OnButtonClickDispose += (buttonIndex) =>
+            {
+                if (buttonIndex != 0) return;
+
+                SendProtocol(new UserSettingProtocol { _nickName = _nickName });
+            };
+        }
+        void SendProtocol<T>(in T protocol) where T : unmanaged, IComponentData
+        {
+            var query = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
+            World.DefaultGameObjectInjectionWorld.EntityManager.AddComponentData(query, protocol);
+        }
+        bool CheckValid(in string nickName)
+        {
+            if (string.IsNullOrEmpty(nickName))
+            {
+                _messageBox.SetBox(MessageBoxType.Alert);
+                _nickName = null;
+                return false;
+            }
+
+            if (!GFSManager.CheckKorean(nickName))
+            {
+                _messageBox.SetBox(MessageBoxType.Alert);
+                _messageBox.SetText(3);
+                _nickName = null;
+                return false;
+            }
+
+            return true;
+        }
+
+        void MakeSettingWindow()
+        {
+            GameObject go = GameManager.Instance.InstantiatePrefab(UIType.Setting, _bgManager.transform);
+            _settingWindow = go.GetComponent<SettingWindow>();
+            _settingWindow.InitWindow(this);
 
         }
-        void ClientLink()
+        public void CallSettingWindow()
         {
-            var endPoint = NetworkEndpoint.Parse(_ip, _port);
+            if (_settingWindow == null)
+                MakeSettingWindow();
+
+            _settingWindow.ToggleWindow();
+        }
+
+        public void NickNameDetermined(in UserSettingProtocol settingProtocol)
+        {
+            _nickName = settingProtocol._nickName.ToString();
+            _CurrentPage = PageType.Match;
+        }
+
+        public void SettingCancel()
+        {
+            _messageBox.transform.SetParent(_settingWindow.transform);
+            _messageBox.SetBox(MessageBoxType.Check);
+            _messageBox.SetText(4);
+
+            _messageBox.OnButtonClickDispose += (buttonIndex) =>
+            {
+                if (buttonIndex != 0) return;
+                _settingWindow.DisactiveWindow();
+            };
+        }
+        public void SubmitSetting(in string newNickName)
+        {
+            _messageBox.transform.SetParent(_settingWindow.transform);
+            if (!CheckValid(newNickName)) return;
+
+            _messageBox.SetBox(MessageBoxType.Check);
+            _messageBox.SetText(5);
+            _nickName = newNickName;
+
+            _messageBox.OnButtonClickDispose += (buttonIndex) =>
+            {
+                if (buttonIndex != 0) return;
+
+                SendProtocol(new UserSettingProtocol { _nickName = _nickName });
+                _settingWindow.DisactiveWindow();
+            };
+        }
+        public void SetMatching(bool isOn)
+        {
+            SendProtocol(new MatchingProtocol { _isMatching = isOn });
+        }
+        public void UpdateMatchingStatus(in MatchingStatusProtocol matchingStatusProtocol)
+        {
+            _window.UpdateMatchingData(matchingStatusProtocol._currentMatchingCount);
         }
     }
 }

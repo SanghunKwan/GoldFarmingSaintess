@@ -10,12 +10,12 @@ public class ServerManager : MonoBehaviour
     {
         var _endPoint = NetworkEndpoint.AnyIpv4.WithPort(GameManager.Instance._ServerScriptableObject._port);
 
-        var em = World.DefaultGameObjectInjectionWorld.EntityManager;
-        em.AddComponentData(em.CreateEntity(), new NetworkStreamRequestListen
-        {
-            Endpoint = _endPoint
-        });
-        Debug.Log("서버 대기중");
+        World serverWorld = ClientServerBootstrap.ServerWorld;
+
+        using var query = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+        query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(_endPoint);
+
+
     }
 
 }

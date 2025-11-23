@@ -9,6 +9,7 @@ namespace GFSManagers
         SelectData,
         TrainingData,
         Turn,
+
         Server,
 
         UIPrefab,
@@ -16,6 +17,7 @@ namespace GFSManagers
         UnitPrefab,
 
         UISprite,
+        UIText,
 
         Max
     }

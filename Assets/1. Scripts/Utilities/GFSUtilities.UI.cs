@@ -14,7 +14,10 @@ namespace GFSUtilities.UI
         Turn,
 
         Logo,
-        Login
+        Login,
+        Setting,
+
+        MessageBox,
     }
     public enum SettlementVariableType
     {
@@ -51,6 +54,8 @@ namespace GFSUtilities.UI
         SelectStar,
         TrainingSlot,
 
+        MessageBox,
+
     }
 
     public enum SelectGraphicGroupType
@@ -74,6 +79,12 @@ namespace GFSUtilities.UI
     public enum LogoGraphicGroupType
     {
         UnityChan,
+    }
+    public enum MessageBoxType
+    {
+        Proceed = 0,
+        Alert,
+        Check,
     }
     #endregion enum
 }

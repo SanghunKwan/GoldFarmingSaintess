@@ -1,7 +1,8 @@
-using GFSUtilities.Unit;
-using GFSUtilities.Upgrade;
+using GFSUtilities.Protocol;
 using System;
 using System.Collections;
+using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 namespace GFSUtilities
@@ -59,7 +60,43 @@ namespace GFSUtilities
                 yield return new WaitForSeconds(waitSecond);
             }
         }
+
+        public static bool IsValidNickName(in string nickName)
+        {
+            if (string.IsNullOrEmpty(nickName)) return false;
+
+            if (!CheckKorean(nickName)) return false;
+
+            return true;
+        }
+        public static bool CheckKorean(in string nickName)
+        {
+            for (int i = 0; i < nickName.Length; i++)
+            {
+                if ((nickName[i] >= '\u1100' && nickName[i] <= '\u11FF') ||   // Hangul Jamo
+                (nickName[i] >= '\u3130' && nickName[i] <= '\u318F') ||   // Jamo compatibility
+                (nickName[i] >= '\uA960' && nickName[i] <= '\uA97F') ||   // Extended A
+                (nickName[i] >= '\uD7B0' && nickName[i] <= '\uD7FF'))
+                    return false;
+            }
+            return true;
+        }
+        public static void Broadcast<T>(this EntityManager manager, in T protocol, in Entity target = default)
+        where T : unmanaged, IComponentData
+        {
+            var entity = manager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
+            manager.SetComponentData(entity, protocol);
+            if (target == default) return;
+
+            manager.SetComponentData(entity, new SendRpcCommandRequest { TargetConnection = target });
+        }
+        public static void BroadcastMessage(this EntityManager manager, in string text)
+        {
+            MessageRpcCommand protocol = new MessageRpcCommand { _text = text };
+            manager.Broadcast(protocol);
+        }
     }
+
     #endregion Static
 
     #region hash
@@ -69,6 +106,8 @@ namespace GFSUtilities
 
         public static readonly int t_FadeIn = Animator.StringToHash("FadeIn");
         public static readonly int t_FadeOut = Animator.StringToHash("FadeOut");
+
+        public static readonly int b_IsMatching = Animator.StringToHash("IsMatching");
     }
 
     #endregion hash
