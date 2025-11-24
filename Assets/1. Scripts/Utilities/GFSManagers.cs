@@ -19,6 +19,8 @@ namespace GFSManagers
         UISprite,
         UIText,
 
+        PlayerColor,
+
         Max
     }
 

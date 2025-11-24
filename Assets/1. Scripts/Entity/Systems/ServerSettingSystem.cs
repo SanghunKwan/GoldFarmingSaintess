@@ -1,5 +1,6 @@
 using GFSUtilities;
 using GFSUtilities.Protocol;
+using GFSUtilities.ResourcesData;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -26,7 +27,10 @@ public partial struct ServerSettingSystem : ISystem
         foreach (var (request, settingData, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UserSettingProtocol>>().WithEntityAccess())
         {
             if (GFSManager.IsValidNickName(settingData.ValueRO._nickName.ToString()))
+            {
                 state.EntityManager.Broadcast(settingData.ValueRO, request.ValueRO.SourceConnection);
+                commandBuffer.AddComponent(request.ValueRO.SourceConnection, new UserSettingData { _user = request.ValueRO.SourceConnection, _nickName = settingData.ValueRO._nickName });
+            }
             else
                 state.EntityManager.Broadcast(new ErrorProtocol { _errorType = ErrorType.NickNameInvalid }, request.ValueRO.SourceConnection);
 

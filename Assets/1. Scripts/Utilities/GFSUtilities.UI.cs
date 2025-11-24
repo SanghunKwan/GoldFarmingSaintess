@@ -18,6 +18,7 @@ namespace GFSUtilities.UI
         Setting,
 
         MessageBox,
+        PlayersUI,
     }
     public enum SettlementVariableType
     {
@@ -54,7 +55,7 @@ namespace GFSUtilities.UI
         SelectStar,
         TrainingSlot,
 
-        MessageBox,
+        PlayersUI_Slot,
 
     }
 

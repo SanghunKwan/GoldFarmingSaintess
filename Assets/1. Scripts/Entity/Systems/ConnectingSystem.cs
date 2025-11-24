@@ -18,14 +18,11 @@ public partial struct ConnectingSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SendMeessageRpc("¾È³çÇÏ¼¼¿ä ¼±»ý´Ô", state.EntityManager);
         }
-        commandBuffer.Playback(state.EntityManager);
 
     }
     void SendMeessageRpc(in string text, in EntityManager manager)

@@ -73,11 +73,14 @@ namespace GFSUtilities
         {
             for (int i = 0; i < nickName.Length; i++)
             {
-                if ((nickName[i] >= '\u1100' && nickName[i] <= '\u11FF') ||   // Hangul Jamo
-                (nickName[i] >= '\u3130' && nickName[i] <= '\u318F') ||   // Jamo compatibility
-                (nickName[i] >= '\uA960' && nickName[i] <= '\uA97F') ||   // Extended A
-                (nickName[i] >= '\uD7B0' && nickName[i] <= '\uD7FF'))
+                char c = nickName[i];
+                if ((c >= '\u1100' && c <= '\u11FF') ||   // Hangul Jamo
+                (c >= '\u3130' && c <= '\u318F') ||   // Jamo compatibility
+                (c >= '\uA960' && c <= '\uA97F') ||   // Extended A
+                (c >= '\uD7B0' && c <= '\uD7FF'))
                     return false;
+
+                if (c == ' ') return false;
             }
             return true;
         }

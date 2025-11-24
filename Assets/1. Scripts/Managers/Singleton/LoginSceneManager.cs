@@ -1,6 +1,8 @@
 using GFSManagers;
+using GFSUtilities;
 using GFSUtilities.Protocol;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public class LoginSceneManager : MonoBehaviour
@@ -45,6 +47,7 @@ public class LoginSceneManager : MonoBehaviour
     }
 
 
+
     #region ManagerTransfer
     public void ServerLinkSuccss(in PageProtocol pageProtocol)
     {
@@ -57,6 +60,12 @@ public class LoginSceneManager : MonoBehaviour
     public void UpdateMatchingStatus(in MatchingStatusProtocol matchingStatusProtocol)
     {
         _loginManager.UpdateMatchingStatus(matchingStatusProtocol);
+    }
+    public void GameStart(in GameStartProtocol pageProtocol)
+    {
+        GameManager.Instance.InstantiatePrefab(GFSUtilities.UI.UIType.PlayersUI, _noneBGManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames);
+
+        StartCoroutine(GFSManager.WaitForSecond(3, () => SceneManager.LoadScene(0, LoadSceneMode.Single)));
     }
     #endregion ManagerTransfer
 }

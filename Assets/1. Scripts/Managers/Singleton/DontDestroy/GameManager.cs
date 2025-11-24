@@ -25,6 +25,7 @@ namespace GFSManagers
 
         [SerializeField] SpriteScriptableObject _spriteScriptableObject;
         [SerializeField] TextScriptableObject _textScriptableObject;
+        [SerializeField] ColorScriptableObject _playerColorScriptableObject;
 
         public EffectScriptableObject _EffectScriptableObject => _effectScriptableObject;
         public SettlementScriptableObject _SettlementScriptableObject => _settlementScriptableObject;
@@ -36,7 +37,7 @@ namespace GFSManagers
 
         public SpriteScriptableObject _UISpriteScriptableObject => _spriteScriptableObject;
         public TextScriptableObject _UITextScriptableObject => _textScriptableObject;
-
+        public ColorScriptableObject _PlayerColorScriptableObject => _playerColorScriptableObject;
 
         public override void InitManager()
         {
@@ -56,6 +57,8 @@ namespace GFSManagers
 
             _spriteScriptableObject = (SpriteScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UISprite];
             _textScriptableObject = (TextScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIText];
+
+            _playerColorScriptableObject = (ColorScriptableObject)data._scriptableDatas[(int)GameManagerDataType.PlayerColor];
 
         }
 

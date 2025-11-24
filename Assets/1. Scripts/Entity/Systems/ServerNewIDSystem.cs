@@ -4,13 +4,11 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using GFSUtilities.ResourcesData;
 
 
 
-public struct InitializedClient : IComponentData
-{
 
-}
 
 
 [BurstCompile]
