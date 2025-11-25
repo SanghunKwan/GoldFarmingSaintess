@@ -42,8 +42,6 @@ namespace GFSManagers
             _port = data._port;
 
             _currentPage = 0;
-
-
         }
 
         public void MakeWindow()

@@ -21,6 +21,7 @@ namespace GFSManagers
         TrainingManager _trainingManager;
         TurnManager _turnManager;
 
+        PlayersUI _playersUI;
 
         [Header("씬 내 매니저")]
         [SerializeField] BGManager _bgManager;
@@ -28,6 +29,7 @@ namespace GFSManagers
 
         [Header("씬 내 데이터")]
         [SerializeField] Transform _unitFolder;
+
 
 
         LinkedList<BaseUnit> _ally;
@@ -53,6 +55,11 @@ namespace GFSManagers
             _bgManager.InitManager();
             _noneBGManager.InitManager();
             _turnManager.CallTurnUI();
+
+            //호스트 하나에 나머지는 다 클라이언트임. 이미 정해져있음.
+            //
+
+
         }
         void SelectInit()
         {

@@ -1,5 +1,6 @@
 using GFSManagers;
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,6 +47,12 @@ namespace GFSUtilities.UI
                     break;
                 case MessageBoxType.Time:
                     SetButtons(0);
+                    TextMeshProUGUI addedText = Instantiate(_text, transform);
+                    _text.alignment = TextAlignmentOptions.Top;
+                    addedText.alignment = TextAlignmentOptions.Center;
+                    addedText.fontSize = 50;
+                    addedText.rectTransform.anchoredPosition -= new Vector2(0, 30);
+                    StartCoroutine(CheckTimer(3, addedText));
                     break;
                 default:
                     break;
@@ -70,6 +77,17 @@ namespace GFSUtilities.UI
         {
             _mean.sprite = _spriteData._sprites[(int)type + (int)Unit.UnitTypes.Count * 2];
         }
+        IEnumerator CheckTimer(int num, TextMeshProUGUI text)
+        {
+            int time = num;
+            while (time > 0)
+            {
+                text.text = time.ToString();
+                yield return new WaitForSeconds(1);
+                --time;
+            }
+        }
+
         #region Event
         public void OnClickButton(int buttonIndex)
         {
