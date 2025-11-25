@@ -21,6 +21,8 @@ namespace GFSManagers
 
         PlayerColor,
 
+        SceneChangeData,
+
         Max
     }
 

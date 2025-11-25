@@ -38,6 +38,7 @@ namespace GFSUtilities.Protocol
     public enum ErrorType
     {
         NickNameInvalid = 0,
+        IdInvalid
     }
     [BurstCompile]
     public struct MatchingProtocol : IRpcCommand
@@ -54,5 +55,16 @@ namespace GFSUtilities.Protocol
     public struct GameStartProtocol : IRpcCommand
     {
         public FixedString512Bytes _nickNames;
+        public int _index;
+    }
+    [BurstCompile]
+    public struct HostLinkSuccess : IRpcCommand
+    {
+        public int _linkedIndex;
+    }
+    [BurstCompile]
+    public struct HostClientIdentify : IRpcCommand
+    {
+        public int _index;
     }
 }

@@ -6,6 +6,9 @@ using Unity.Entities;
 using Unity.NetCode;
 using GFSUtilities.ResourcesData;
 
+#if !UNITY_SERVER
+using UnityEngine.SceneManagement;
+#endif
 
 
 
@@ -31,8 +34,20 @@ public partial struct ServerNewIDSystem : ISystem
             commandBuffer.AddComponent<InitializedClient>(entity);
             state.EntityManager.BroadcastMessage("Client connect with id = " + id.ValueRO.Value);
 
+#if UNITY_SERVER
             var successProtocol = new PageProtocol { _pageType = PageType.Login, _id = id.ValueRO.Value };
             state.EntityManager.Broadcast(successProtocol, entity);
+#else
+            if (SceneManager.GetActiveScene().buildIndex == 0)
+            {
+                var successProtocol = new PageProtocol { _pageType = PageType.Login, _id = id.ValueRO.Value };
+                state.EntityManager.Broadcast(successProtocol, entity);
+            }
+            else
+            {
+                state.EntityManager.Broadcast(new HostLinkSuccess { }, entity);
+            }
+#endif
         }
 
         commandBuffer.Playback(state.EntityManager);

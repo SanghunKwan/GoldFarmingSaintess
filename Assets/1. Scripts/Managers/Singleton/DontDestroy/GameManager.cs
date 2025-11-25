@@ -11,21 +11,23 @@ namespace GFSManagers
     {
 
         [Header("게임 내 데이터")]
-        [SerializeField] EffectScriptableObject _effectScriptableObject;
-        [SerializeField] SettlementScriptableObject _settlementScriptableObject;
-        [SerializeField] SelectDataScriptableObject _selectDataScriptableObject;
-        [SerializeField] TrainingManagerDataScriptableObject _trainingDataScriptableObject;
-        [SerializeField] TurnScriptableObject _turnScriptableObject;
+        EffectScriptableObject _effectScriptableObject;
+        SettlementScriptableObject _settlementScriptableObject;
+        SelectDataScriptableObject _selectDataScriptableObject;
+        TrainingManagerDataScriptableObject _trainingDataScriptableObject;
+        TurnScriptableObject _turnScriptableObject;
 
-        [SerializeField] ServerDataScriptableObject _serverScriptableObject;
+        ServerDataScriptableObject _serverScriptableObject;
 
-        [SerializeField] PrefabScriptableObject _uIPrefabScriptableObject;
-        [SerializeField] PrefabScriptableObject _uIResourcePrefabScriptableObject;
-        [SerializeField] PrefabScriptableObject _unitPrefabScriptableObject;
+        PrefabScriptableObject _uIPrefabScriptableObject;
+        PrefabScriptableObject _uIResourcePrefabScriptableObject;
+        PrefabScriptableObject _unitPrefabScriptableObject;
 
-        [SerializeField] SpriteScriptableObject _spriteScriptableObject;
-        [SerializeField] TextScriptableObject _textScriptableObject;
-        [SerializeField] ColorScriptableObject _playerColorScriptableObject;
+        SpriteScriptableObject _spriteScriptableObject;
+        TextScriptableObject _textScriptableObject;
+        ColorScriptableObject _playerColorScriptableObject;
+
+        SceneChangeDataScriptableObject _sceneChangeDataScriptableObject;
 
         public EffectScriptableObject _EffectScriptableObject => _effectScriptableObject;
         public SettlementScriptableObject _SettlementScriptableObject => _settlementScriptableObject;
@@ -38,6 +40,8 @@ namespace GFSManagers
         public SpriteScriptableObject _UISpriteScriptableObject => _spriteScriptableObject;
         public TextScriptableObject _UITextScriptableObject => _textScriptableObject;
         public ColorScriptableObject _PlayerColorScriptableObject => _playerColorScriptableObject;
+
+        public SceneChangeDataScriptableObject _SceneChangeDataScriptableObject => _sceneChangeDataScriptableObject;
 
         public override void InitManager()
         {
@@ -60,6 +64,7 @@ namespace GFSManagers
 
             _playerColorScriptableObject = (ColorScriptableObject)data._scriptableDatas[(int)GameManagerDataType.PlayerColor];
 
+            _sceneChangeDataScriptableObject = (SceneChangeDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.SceneChangeData];
         }
 
         public GameObject InstantiatePrefab(UIType type, Transform instantiateParent = null)

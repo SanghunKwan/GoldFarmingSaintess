@@ -188,9 +188,15 @@ namespace GFSManagers
         }
         public void MatchingComplete(in GameStartProtocol pageProtocol)
         {
-            GameManager.Instance.InstantiatePrefab(UIType.PlayersUI, _bgManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames, false);
+            GameManager.Instance.InstantiatePrefab(UIType.PlayersUI, _bgManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames, out var nicks, false);
             _messageBox.SetBox(MessageBoxType.Time);
             _window.FadeOut();
+            _window.StartCoroutine(GFSManager.WaitForSecond(0.1f, () => ClientServerBootstrap.ClientWorld.Dispose()));
+
+            var data = GameManager.Instance._SceneChangeDataScriptableObject;
+            data._names = pageProtocol._nickNames.ToString();
+            data._nameIndex = pageProtocol._index;
+            data._size = nicks.Length;
         }
     }
 }

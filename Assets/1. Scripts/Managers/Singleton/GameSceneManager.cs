@@ -58,7 +58,14 @@ namespace GFSManagers
 
             //호스트 하나에 나머지는 다 클라이언트임. 이미 정해져있음.
             //
+            var data = GameManager.Instance._SceneChangeDataScriptableObject;
+            GameObject go = GameManager.Instance.InstantiatePrefab(GFSUtilities.UI.UIType.PlayersUI, _bgManager.transform);
+            _playersUI = go.GetComponent<PlayersUI>();
+            _playersUI.InitUI(data._names, out string[] names);
 
+            //_playersUI는 호스트 월드가 관리함.
+            
+            //Debug.Log(names[data._nameIndex] + " 플레이어 이름");
 
         }
         void SelectInit()

@@ -9,11 +9,11 @@ public class PlayersUI : MonoBehaviour
 
     public PlayersUISlot[] _slots { get; private set; }
 
-    public void InitUI(in FixedString512Bytes nicknames, bool isDataShow = true)
+    public void InitUI(in FixedString512Bytes nicknames, out string[] nicks, bool isDataShow = true)
     {
         GameManager manager = GameManager.Instance;
         ColorScriptableObject colorData = manager._PlayerColorScriptableObject;
-        var nicks = nicknames.ToString().Split(' ');
+        nicks = nicknames.ToString().Split(' ');
 
         int length = nicks.Length;
         _slots = new PlayersUISlot[length];

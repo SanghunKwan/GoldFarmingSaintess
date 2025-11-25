@@ -22,7 +22,6 @@ public class LoginSceneManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        Application.runInBackground = true;
     }
 
     private void Start()
@@ -65,7 +64,7 @@ public class LoginSceneManager : MonoBehaviour
     {
         _loginManager.MatchingComplete(pageProtocol);
 
-        StartCoroutine(GFSManager.WaitForSecond(3, () => SceneManager.LoadScene(0, LoadSceneMode.Single)));
+        StartCoroutine(GFSManager.WaitForSecond(3, () => SceneManager.LoadScene(1, LoadSceneMode.Single)));
     }
     #endregion ManagerTransfer
 }

@@ -14,8 +14,12 @@ public class ServerManager : MonoBehaviour
 
         using var query = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
         query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(_endPoint);
-
-
     }
 
+
+    public void FDSA()
+    {
+        ClientServerBootstrap.ServerWorld.Dispose();
+
+    }
 }
