@@ -63,7 +63,7 @@ public class LoginSceneManager : MonoBehaviour
     }
     public void GameStart(in GameStartProtocol pageProtocol)
     {
-        GameManager.Instance.InstantiatePrefab(GFSUtilities.UI.UIType.PlayersUI, _noneBGManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames);
+        _loginManager.MatchingComplete(pageProtocol);
 
         StartCoroutine(GFSManager.WaitForSecond(3, () => SceneManager.LoadScene(0, LoadSceneMode.Single)));
     }

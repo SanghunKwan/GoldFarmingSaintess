@@ -48,6 +48,7 @@ namespace GFSUtilities.Protocol
     public struct MatchingStatusProtocol : IRpcCommand
     {
         public int _currentMatchingCount;
+        public float _time;
     }
     [BurstCompile]
     public struct GameStartProtocol : IRpcCommand

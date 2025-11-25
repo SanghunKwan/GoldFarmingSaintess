@@ -111,6 +111,7 @@ namespace GFSUtilities
         public static readonly int t_FadeOut = Animator.StringToHash("FadeOut");
 
         public static readonly int b_IsMatching = Animator.StringToHash("IsMatching");
+        public static readonly int t_Matched = Animator.StringToHash("Matched");
     }
 
     #endregion hash

@@ -44,6 +44,9 @@ namespace GFSUtilities.UI
                 case MessageBoxType.Check:
                     SetButtons(2);
                     break;
+                case MessageBoxType.Time:
+                    SetButtons(0);
+                    break;
                 default:
                     break;
             }
@@ -54,7 +57,7 @@ namespace GFSUtilities.UI
         }
         public void SetText(int index)
         {
-            _text.text = _textData.text[index];
+            SetText(_textData.text[(int)MessageBoxType.Max + index]);
         }
         void SetButtons(int buttonCount)
         {

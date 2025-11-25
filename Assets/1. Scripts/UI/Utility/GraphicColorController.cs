@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using GFSUtilities;
+using System.Collections;
 
 
 public class GraphicColorController : MonoBehaviour
@@ -24,13 +25,17 @@ public class GraphicColorController : MonoBehaviour
         }
     }
 
-    public void FadeGraphicInOrder(int arrayIndex, float colora, float duration, float waitTime)
+    public IEnumerator FadeGraphicInOrder(int arrayIndex, float colora, float duration, float waitTime)
     {
         int length = _arrays[arrayIndex]._graphics.Length;
 
-        StartCoroutine(GFSManager.ActionInOrder(length, (i) =>
+        IEnumerator ienum = GFSManager.ActionInOrder(length, (i) =>
             _arrays[arrayIndex]._graphics[i].CrossFadeAlpha(colora, duration, false),
-            duration + waitTime));
+            duration + waitTime);
+
+        StartCoroutine(ienum);
+
+        return ienum;
     }
 
 

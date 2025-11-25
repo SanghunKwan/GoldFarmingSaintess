@@ -7,6 +7,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 
 
@@ -83,7 +84,7 @@ public partial struct ServerMatchingSystem : ISystem
 
         foreach (var target in _matchingList)
         {
-            state.EntityManager.Broadcast(new MatchingStatusProtocol { _currentMatchingCount = _matchingList.Length }, target);
+            state.EntityManager.Broadcast(new MatchingStatusProtocol { _currentMatchingCount = _matchingList.Length, _time = Time.time }, target);
         }
 
         commandBuffer.Playback(state.EntityManager);

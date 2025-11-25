@@ -1,5 +1,7 @@
 using GFSManagers;
 using GFSUtilities;
+using GFSUtilities.UI;
+using System.Collections;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +15,19 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
     [SerializeField] TextMeshProUGUI _matchingCountText;
     [SerializeField] TextMeshProUGUI _matchingTimeText;
 
+    IEnumerator _fadeInOrderHandle;
+
+    float _timeCorrectionValue;
+
+    private void Update()
+    {
+        int second = Mathf.CeilToInt(Time.time - _timeCorrectionValue);
+
+        _matchingTimeText.text = (second / 60).ToString("D2") + ":" + (second % 60).ToString("D2");
+    }
+
+
+
     public override void InitWindow(LoginManager manager)
     {
         base.InitWindow(manager);
@@ -20,10 +35,10 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
         gameObject.SetActive(false);
         _pages[0].SetActive(true);
         for (int i = 1; i < _pages.Length; i++)
-        {
             _pages[i].SetActive(false);
-        }
 
+        _controller.HideAllColor(0);
+        enabled = false;
     }
     public override void FadeIn()
     {
@@ -32,25 +47,56 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
 
     public override void FadeOut()
     {
-        throw new System.NotImplementedException();
+        _anim.SetTrigger(UIHashID.t_Matched);
     }
 
+
     public void SetPage(int index, bool isOn)
-        => _pages[index].SetActive(isOn);
+    {
+        _pages[index].SetActive(isOn);
+    }
 
     void SubmitNickname()
     {
         _manager.SubmitNickName(_nickNameInputField.text);
     }
+    public void FadeInOrder(LogingraphicGroupType type)
+    {
+        _controller.FadeGraphicInOrder((int)type, 1, 0.4f, -0.2f);
+    }
     void SetMatching(bool isOn)
     {
+        int index = (int)LogingraphicGroupType.MatchingTexts;
+
         _anim.SetBool(UIHashID.b_IsMatching, isOn);
         _manager.SetMatching(isOn);
+
+        if (isOn)
+        {
+            _controller.FadeGraphicAtOnce(index, 0, 0f);
+            StartCoroutine(GFSManager.WaitForSecond(0.25f, () =>
+            {
+                _fadeInOrderHandle = _controller.FadeGraphicInOrder(index, 1, 0.3f, -0.15f);
+            }));
+        }
+        else
+        {
+            if (_fadeInOrderHandle != null)
+                StopCoroutine(_fadeInOrderHandle);
+
+            _controller.FadeGraphicAtOnce(index, 0, 0.1f);
+            enabled = false;
+        }
     }
     public void UpdateMatchingData(int num)
     {
         _matchingCountText.text = num.ToString();
+
+        if (enabled) return;
+        _timeCorrectionValue = Time.time;
+        enabled = true;
     }
+
     #region Event
     public void OnClickLoginButton()
     {

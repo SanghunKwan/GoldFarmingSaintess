@@ -86,6 +86,14 @@ namespace GFSUtilities.UI
         Proceed = 0,
         Alert,
         Check,
+        Time,
+
+        Max
+    }
+    public enum LogingraphicGroupType
+    {
+        MatchWindowButtons,
+        MatchingTexts
     }
     #endregion enum
 }

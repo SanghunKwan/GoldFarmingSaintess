@@ -21,7 +21,6 @@ namespace GFSManagers
         MessageBox _messageBox;
         SettingWindow _settingWindow;
 
-
         public PageType _CurrentPage
         {
             get => (PageType)_currentPage;
@@ -122,7 +121,7 @@ namespace GFSManagers
             if (!GFSManager.CheckKorean(nickName))
             {
                 _messageBox.SetBox(MessageBoxType.Alert);
-                _messageBox.SetText(3);
+                _messageBox.SetText(0);
                 _nickName = null;
                 return false;
             }
@@ -149,13 +148,14 @@ namespace GFSManagers
         {
             _nickName = settingProtocol._nickName.ToString();
             _CurrentPage = PageType.Match;
+            _window.FadeInOrder(LogingraphicGroupType.MatchWindowButtons);
         }
 
         public void SettingCancel()
         {
             _messageBox.transform.SetParent(_settingWindow.transform);
             _messageBox.SetBox(MessageBoxType.Check);
-            _messageBox.SetText(4);
+            _messageBox.SetText(1);
 
             _messageBox.OnButtonClickDispose += (buttonIndex) =>
             {
@@ -169,7 +169,7 @@ namespace GFSManagers
             if (!CheckValid(newNickName)) return;
 
             _messageBox.SetBox(MessageBoxType.Check);
-            _messageBox.SetText(5);
+            _messageBox.SetText(2);
             _nickName = newNickName;
 
             _messageBox.OnButtonClickDispose += (buttonIndex) =>
@@ -187,6 +187,12 @@ namespace GFSManagers
         public void UpdateMatchingStatus(in MatchingStatusProtocol matchingStatusProtocol)
         {
             _window.UpdateMatchingData(matchingStatusProtocol._currentMatchingCount);
+        }
+        public void MatchingComplete(in GameStartProtocol pageProtocol)
+        {
+            GameManager.Instance.InstantiatePrefab(UIType.PlayersUI, _bgManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames, false);
+            _messageBox.SetBox(MessageBoxType.Time);
+            _window.FadeOut();
         }
     }
 }
