@@ -7,6 +7,7 @@ using Unity.NetCode;
 
 namespace GFSUtilities.Protocol
 {
+    #region RpcCommand
     [BurstCompile]
     public struct MessageRpcCommand : IRpcCommand
     {
@@ -68,4 +69,16 @@ namespace GFSUtilities.Protocol
     {
         public int _index;
     }
+    #endregion RpcCommand
+
+    #region CommandData
+    [BurstCompile]
+    public struct PlayersUIDataSpawnCommand : ICommandData
+    {
+
+
+
+        public NetworkTick Tick { get; set; }
+    }
+    #endregion CommandData
 }
