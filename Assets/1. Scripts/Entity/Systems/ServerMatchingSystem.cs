@@ -91,7 +91,7 @@ public partial struct ServerMatchingSystem : ISystem
     }
 
 
-    public void OnDestory(ref SystemState state)
+    public void OnDestroy(ref SystemState state)
     {
         _matchingList.Clear();
         _matchingList.Dispose();

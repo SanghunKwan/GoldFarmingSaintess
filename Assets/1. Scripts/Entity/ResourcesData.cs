@@ -27,4 +27,9 @@ namespace GFSUtilities.ResourcesData
     {
         //public FixedString64Bytes _nickName;
     }
+    [BurstCompile]
+    public struct RoomFull: IComponentData
+    {
+        //public bool _isRoomFull;
+    }
 }

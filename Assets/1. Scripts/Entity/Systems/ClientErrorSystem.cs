@@ -15,7 +15,7 @@ public partial struct ClientErrorSystem : ISystem
 
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<MessageRpcCommand>();
+        state.RequireForUpdate<ErrorProtocol>();
     }
 
 

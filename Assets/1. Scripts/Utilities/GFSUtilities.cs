@@ -89,9 +89,9 @@ namespace GFSUtilities
         {
             var entity = manager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
             manager.SetComponentData(entity, protocol);
-            if (target == default) return;
-
-            manager.SetComponentData(entity, new SendRpcCommandRequest { TargetConnection = target });
+            
+            if (target != Entity.Null)
+                manager.SetComponentData(entity, new SendRpcCommandRequest { TargetConnection = target });
         }
         public static void BroadcastMessage(this EntityManager manager, in string text)
         {

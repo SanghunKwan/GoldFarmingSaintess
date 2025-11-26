@@ -1,6 +1,7 @@
 using GFSManagers;
 using GFSUtilities;
 using GFSUtilities.Protocol;
+using GFSUtilities.ResourcesData;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -14,13 +15,15 @@ using Unity.NetCode;
 public partial struct HostLinkSystem : ISystem
 {
     NativeArray<Entity> _linkedPlayers;
+    EntityQuery _networkQuery;
     int _linkedCount;
 
 
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<HostClientIdentify>();
-        _linkedPlayers = new NativeArray<Entity>(GameManager.Instance._SceneChangeDataScriptableObject._size, Allocator.TempJob);
+        _linkedPlayers = new NativeArray<Entity>(GameManager.Instance._SceneChangeDataScriptableObject._size, Allocator.Persistent);
+        _networkQuery = state.GetEntityQuery(typeof(NetworkStreamDriver));
         _linkedCount = 0;
     }
 
@@ -31,16 +34,19 @@ public partial struct HostLinkSystem : ISystem
 
         foreach (var (request, identify, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<HostClientIdentify>>().WithEntityAccess())
         {
-            if (identify.ValueRO._index < _linkedPlayers.Length)
-            {
-                _linkedPlayers[identify.ValueRO._index] = request.ValueRO.SourceConnection;
+            int index = identify.ValueRO._index - 1;
 
-                if (++_linkedCount == _linkedPlayers.Length)
+            if (index < _linkedPlayers.Length && _linkedPlayers[index] == default)
+            {
+                _linkedPlayers[index] = request.ValueRO.SourceConnection;
+                if ((++_linkedCount) == _linkedPlayers.Length)
                 {
                     //모든 플레이어 연결됨.
-                    //GameSceneManager.Instance.
-                    using var query = state.GetEntityQuery(typeof(NetworkStreamDriver));
-                    state.EntityManager.RemoveComponent(query.GetSingletonEntity(), typeof(NetworkStreamDriver));
+                    var networkDriver = _networkQuery.GetSingletonEntity();
+                    commandBuffer.AddComponent(networkDriver, typeof(RoomFull));
+                    commandBuffer.SetComponent(networkDriver, new RoomFull {});
+
+                    GameSceneManager.Instance.ReadyToStart();
                 }
             }
             else
@@ -50,23 +56,10 @@ public partial struct HostLinkSystem : ISystem
             commandBuffer.DestroyEntity(entity);
         }
 
-        foreach (var (request, identify, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<HostClientIdentify>>().WithEntityAccess())
-        {
-            if (identify.ValueRO._index < _linkedPlayers.Length)
-            {
-                _linkedPlayers[identify.ValueRO._index] = request.ValueRO.SourceConnection;
-
-            }
-            else
-            {
-                state.EntityManager.Broadcast(new ErrorProtocol { _errorType = ErrorType.IdInvalid });
-            }
-            commandBuffer.DestroyEntity(entity);
-        }
         commandBuffer.Playback(state.EntityManager);
     }
 
-    public void OnDestory(ref SystemState state)
+    public void OnDestroy(ref SystemState state)
     {
         _linkedPlayers.Dispose();
     }

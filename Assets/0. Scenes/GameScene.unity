@@ -397,6 +397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bgManager: {fileID: 1586309098}
   _noneBGManager: {fileID: 583982971}
+  _hostManager: {fileID: 587562250}
   _unitFolder: {fileID: 603594607}
 --- !u!4 &152551693
 Transform:

@@ -7,4 +7,11 @@ public class SceneChangeDataScriptableObject : ScriptableObject
     public string _names;
     public int _nameIndex;
     public int _size;
+
+    public void CopyValue(SceneChangeDataScriptableObject copyObj)
+    {
+        _names = new string(copyObj._names);
+        _nameIndex = copyObj._nameIndex;
+        _size = copyObj._size;
+    }
 }

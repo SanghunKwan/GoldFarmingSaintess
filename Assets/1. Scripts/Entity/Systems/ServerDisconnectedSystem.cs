@@ -48,7 +48,7 @@ public partial struct ServerDisconnectedSystem : ISystem
         _beforeConnections = _currentConnections;
         _currentConnections = tempSet;
     }
-    public void OnDestory(ref SystemState state)
+    public void OnDestroy(ref SystemState state)
     {
         _beforeConnections.Clear();
         _beforeConnections.Dispose();

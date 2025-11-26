@@ -32,6 +32,8 @@ public class LoginSceneManager : MonoBehaviour
 
     void ShowUnitychanLogo()
     {
+        GameManager.Instance.ResetOverrideObject();
+
         _logoManager = new LogoManager();
         _logoManager.InitManager(_bgManager);
         _logoManager.CallWindow();

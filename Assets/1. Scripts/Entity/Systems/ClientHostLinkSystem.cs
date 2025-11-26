@@ -22,6 +22,7 @@ public partial struct ClientHostLinkSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        UnityEngine.Debug.Log("»Æ¿Œ");
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
         var data = GameManager.Instance._SceneChangeDataScriptableObject;
@@ -30,7 +31,7 @@ public partial struct ClientHostLinkSystem : ISystem
             if (data._nameIndex == -1)
                 data._nameIndex = link.ValueRO._linkedIndex;
 
-            state.EntityManager.Broadcast(new HostClientIdentify { _index = data._nameIndex }, entity);
+            state.EntityManager.Broadcast(new HostClientIdentify { _index = data._nameIndex }, request.ValueRO.SourceConnection);
 
             commandBuffer.DestroyEntity(entity);
         }

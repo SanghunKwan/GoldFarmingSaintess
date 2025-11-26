@@ -38,7 +38,8 @@ namespace GFSUtilities.Protocol
     public enum ErrorType
     {
         NickNameInvalid = 0,
-        IdInvalid
+        IdInvalid,
+        RoomFull
     }
     [BurstCompile]
     public struct MatchingProtocol : IRpcCommand

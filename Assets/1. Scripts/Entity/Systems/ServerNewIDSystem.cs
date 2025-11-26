@@ -11,17 +11,16 @@ using UnityEngine.SceneManagement;
 #endif
 
 
-
-
-
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ServerNewIDSystem : ISystem
 {
+    EntityQuery _networkQuery;
 
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkId>();
+        _networkQuery = state.GetEntityQuery(typeof(RoomFull));
     }
 
 
@@ -42,10 +41,18 @@ public partial struct ServerNewIDSystem : ISystem
             {
                 var successProtocol = new PageProtocol { _pageType = PageType.Login, _id = id.ValueRO.Value };
                 state.EntityManager.Broadcast(successProtocol, entity);
+
             }
             else
             {
-                state.EntityManager.Broadcast(new HostLinkSuccess { }, entity);
+                if (_networkQuery.IsEmpty)
+                    state.EntityManager.Broadcast(new HostLinkSuccess { _linkedIndex = id.ValueRO.Value }, entity);
+                else
+                {
+                    state.EntityManager.Broadcast(new ErrorProtocol { _errorType = ErrorType.RoomFull }, entity);
+                    commandBuffer.AddComponent<NetworkStreamRequestDisconnect>(entity);
+                    UnityEngine.Debug.Log("꽉 찬 방에 추가로 인원 들어옴");
+                }
             }
 #endif
         }
