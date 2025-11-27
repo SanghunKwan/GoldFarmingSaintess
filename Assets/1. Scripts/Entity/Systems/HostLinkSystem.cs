@@ -39,14 +39,26 @@ public partial struct HostLinkSystem : ISystem
             if (index < _linkedPlayers.Length && _linkedPlayers[index] == default)
             {
                 _linkedPlayers[index] = request.ValueRO.SourceConnection;
+
+                if (SystemAPI.TryGetSingleton<PlayerProtocolSpawn>(out var prefab))
+                {
+                    Entity protocolEntity = commandBuffer.Instantiate(prefab.prefab);
+                    commandBuffer.SetComponent(protocolEntity, new PlayerProtocol { _type = ProtocolType.None });
+                    //commandBuffer.SetComponentEnabled(protocolEntity, typeof(PlayerProtocol), false);
+
+                    commandBuffer.SetComponent(protocolEntity, new GhostOwner { NetworkId = state.EntityManager.GetComponentData<NetworkId>(request.ValueRO.SourceConnection).Value });
+                    commandBuffer.AppendToBuffer(request.ValueRO.SourceConnection, new LinkedEntityGroup { Value = protocolEntity });
+                }
+
                 if ((++_linkedCount) == _linkedPlayers.Length)
                 {
                     //모든 플레이어 연결됨.
                     var networkDriver = _networkQuery.GetSingletonEntity();
                     commandBuffer.AddComponent(networkDriver, typeof(RoomFull));
-                    commandBuffer.SetComponent(networkDriver, new RoomFull {});
+                    commandBuffer.SetComponent(networkDriver, new RoomFull { });
 
                     GameSceneManager.Instance.ReadyToStart();
+                    _linkedPlayers.Dispose();
                 }
             }
             else
@@ -61,6 +73,7 @@ public partial struct HostLinkSystem : ISystem
 
     public void OnDestroy(ref SystemState state)
     {
-        _linkedPlayers.Dispose();
+        if (_linkedPlayers.IsCreated)
+            _linkedPlayers.Dispose();
     }
 }

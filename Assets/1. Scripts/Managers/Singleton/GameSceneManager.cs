@@ -3,6 +3,9 @@ using GFSUtilities;
 using GFSUtilities.Unit;
 using GFSUtilities.Upgrade;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 namespace GFSManagers
@@ -250,6 +253,14 @@ namespace GFSManagers
             SelectInit();
         }
         #endregion TurnManager Transfer
+
+        public static Unity.Entities.Entity _entity;
+        public void ClickButton()
+        {
+            using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+            commandBuffer.SetComponentEnabled<PlayerProtocol>(_entity, true);
+            commandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
+        }
     }
 }
 
