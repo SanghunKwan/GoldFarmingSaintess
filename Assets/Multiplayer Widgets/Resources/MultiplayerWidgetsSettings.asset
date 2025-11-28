@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 519edd59c92c9c8499357cf39787e56f, type: 3}
-  m_Name: SceneChangeDataScriptableObject
+  m_Script: {fileID: 11500000, guid: 8dedd8068bb3463f97d10eaff64ed5f3, type: 3}
+  m_Name: MultiplayerWidgetsSettings
   m_EditorClassIdentifier: 
-  _names: "1P\uBE68\uAC15 2P\uD30C\uB791 3P\uCD08\uB85D 4P\uC8FC\uD669 5P\uB178\uB791"
-  _nameIndex: -1
-  _size: 3
+  m_UseCustomServiceInitialization: 0

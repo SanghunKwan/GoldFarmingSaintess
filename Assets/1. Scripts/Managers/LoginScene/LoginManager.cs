@@ -191,12 +191,31 @@ namespace GFSManagers
             GameManager.Instance.InstantiatePrefab(UIType.PlayersUI, _bgManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames, out var nicks, false);
             _messageBox.SetBox(MessageBoxType.Time);
             _window.FadeOut();
-            _window.StartCoroutine(GFSManager.WaitForSecond(0.1f, () => ClientServerBootstrap.ClientWorld.Dispose()));
+            _window.StartCoroutine(GFSManager.WaitForSecond(0.1f, ClearWorld));
 
             var data = GameManager.Instance._SceneChangeDataScriptableObject;
             data._names = pageProtocol._nickNames.ToString();
             data._nameIndex = pageProtocol._index;
             data._size = nicks.Length;
+
+            var connectData = GameManager.Instance._ServerScriptableObject;
+            connectData._port = 2;
+        }
+        void ClearWorld()
+        {
+            string str = ClientServerBootstrap.ClientWorld.Name;
+            ClientServerBootstrap.ClientWorld.Dispose();
+            ClientServerBootstrap.CreateClientWorld(str);
+
+#if UNITY_EDITOR
+            if (ClientServerBootstrap.ServerWorld != null)
+            {
+                str = ClientServerBootstrap.ServerWorld.Name;
+                ClientServerBootstrap.ServerWorld.Dispose();
+                ClientServerBootstrap.CreateServerWorld(str);
+            }
+
+#endif
         }
     }
 }

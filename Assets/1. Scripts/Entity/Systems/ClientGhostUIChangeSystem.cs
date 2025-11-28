@@ -12,7 +12,7 @@ public partial struct ClientGhostUIChangeSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         using var builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<PlayerProtocol, GoldInputData>();
+        builder.WithAll<GoldInputData, GhostOwnerIsLocal>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
     }
     public void OnUpdate(ref SystemState state)
@@ -32,7 +32,7 @@ public partial struct ClientGhostUIChangeSystem : ISystem
 public partial struct ClientGhostUIChangeJob : IJobEntity
 {
     public float detlaTime;
-    public void Execute(PlayerProtocol player, GoldInputData input)
+    public void Execute(ref PlayerProtocol player, GoldInputData input)
     {
         player._gold = input.gold;
     }

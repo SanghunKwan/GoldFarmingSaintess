@@ -5,6 +5,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 
 
@@ -29,9 +30,13 @@ public partial struct ClientHostLinkSystem : ISystem
         foreach (var (request, link, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<HostLinkSuccess>>().WithEntityAccess())
         {
             if (data._nameIndex == -1)
+            {
                 data._nameIndex = link.ValueRO._linkedIndex;
+                Debug.Log("새로운 인덱스 부여" + data._nameIndex);
+            }
 
-            state.EntityManager.Broadcast(new HostClientIdentify { _index = data._nameIndex }, request.ValueRO.SourceConnection);
+
+            state.EntityManager.Broadcast(new HostClientIdentify { _beforeIndex = data._nameIndex, _currentIndex = link.ValueRO._linkedIndex }, request.ValueRO.SourceConnection);
 
             commandBuffer.DestroyEntity(entity);
         }

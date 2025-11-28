@@ -67,7 +67,8 @@ namespace GFSUtilities.Protocol
     [BurstCompile]
     public struct HostClientIdentify : IRpcCommand
     {
-        public int _index;
+        public int _beforeIndex;
+        public int _currentIndex;
     }
     [BurstCompile]
     public struct HostSendGoIn : IRpcCommand

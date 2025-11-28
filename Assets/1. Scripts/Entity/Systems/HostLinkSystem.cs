@@ -23,6 +23,7 @@ public partial struct HostLinkSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<HostClientIdentify>();
+        state.RequireForUpdate<PlayerProtocolSpawn>();
         _linkedPlayers = new NativeArray<Entity>(GameManager.Instance._SceneChangeDataScriptableObject._size, Allocator.Persistent);
         _networkQuery = state.GetEntityQuery(typeof(NetworkStreamDriver));
         _linkedCount = 0;
@@ -35,14 +36,13 @@ public partial struct HostLinkSystem : ISystem
 
         foreach (var (request, identify, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<HostClientIdentify>>().WithEntityAccess())
         {
-            int index = identify.ValueRO._index - 1;
+            int index = identify.ValueRO._beforeIndex - 1;
 
             if (index < _linkedPlayers.Length && _linkedPlayers[index] == default)
             {
                 _linkedPlayers[index] = request.ValueRO.SourceConnection;
 
                 //buffer.AddCommandData(new PlayersUIDataSpawnCommand { Tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick });
-
                 if (SystemAPI.TryGetSingleton<PlayerProtocolSpawn>(out var prefab))
                 {
                     Entity protocolEntity = commandBuffer.Instantiate(prefab.prefab);
@@ -50,7 +50,7 @@ public partial struct HostLinkSystem : ISystem
                     commandBuffer.SetComponent(protocolEntity, new LocalTransform { Position = new Unity.Mathematics.float3(100, 100, 100), Rotation = Unity.Mathematics.quaternion.identity, Scale = 1 });
                     //commandBuffer.SetComponentEnabled(protocolEntity, typeof(PlayerProtocol), false);
 
-                    commandBuffer.SetComponent(protocolEntity, new GhostOwner { NetworkId = identify.ValueRO._index });
+                    commandBuffer.SetComponent(protocolEntity, new GhostOwner { NetworkId = identify.ValueRO._currentIndex });
                     commandBuffer.AppendToBuffer(request.ValueRO.SourceConnection, new LinkedEntityGroup { Value = protocolEntity });
 
                     commandBuffer.AddComponent<NetworkStreamInGame>(request.ValueRO.SourceConnection);

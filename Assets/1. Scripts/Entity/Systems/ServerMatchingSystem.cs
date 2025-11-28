@@ -62,7 +62,7 @@ public partial struct ServerMatchingSystem : ISystem
                     strbuilder.Append(' ');
                 }
                 strbuilder.Remove(strbuilder.Length - 1, 1);
-                state.EntityManager.Broadcast(new GameStartProtocol { _nickNames = strbuilder.ToString(), _index = i }, _matchingList[i]);
+                state.EntityManager.Broadcast(new GameStartProtocol { _nickNames = strbuilder.ToString(), _index = i + 1 }, _matchingList[i]);
             }
 
             state.EntityManager.BroadcastMessage("게임시작");

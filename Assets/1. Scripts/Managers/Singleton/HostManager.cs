@@ -22,6 +22,8 @@ public class HostManager : MonoBehaviour
 
         Debug.Log("Start");
 
+
+
         World tempWorld;
         if (ClientServerBootstrap.ServerWorld != null)
         {
@@ -52,7 +54,7 @@ public class HostManager : MonoBehaviour
         _playersUI.InitUI(data._names, out string[] names);
         _playersUI.DisableCountOver(playerCount);
 
-        _nickname = names[data._nameIndex];
+        _nickname = names[data._nameIndex - 1];
     }
     public void SetMoney(int gold, int playerIndex)
     {

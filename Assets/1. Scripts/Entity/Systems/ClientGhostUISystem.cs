@@ -22,11 +22,11 @@ public partial struct ClientGhostUISystem : ISystem
         foreach (var (data, local, entity) in SystemAPI.Query<RefRW<GoldInputData>, RefRO<GhostOwnerIsLocal>>().WithEntityAccess())
         {
             data.ValueRW.gold = GameSceneManager.Instance.GetMoney;
-            Debug.Log("¤·¤·¤©¤·");
         }
 
         foreach (var (data, ghost, entity) in SystemAPI.Query<RefRO<PlayerProtocol>, RefRO<GhostOwner>>().WithEntityAccess())
         {
+            
             GameSceneManager.Instance.SetMoney(data.ValueRO._gold, ghost.ValueRO.NetworkId);
         }
     }

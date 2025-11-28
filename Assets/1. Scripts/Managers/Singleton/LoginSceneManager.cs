@@ -1,6 +1,9 @@
 using GFSManagers;
 using GFSUtilities;
 using GFSUtilities.Protocol;
+using Unity.Entities;
+using Unity.Entities.Serialization;
+using Unity.Scenes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +16,7 @@ public class LoginSceneManager : MonoBehaviour
     [Header("¾À ³» ¸Å´ÏÀú")]
     [SerializeField] BGManager _bgManager;
     [SerializeField] LoginNoneBGManager _noneBGManager;
+    [SerializeField]
 
     LogoManager _logoManager;
     LoginManager _loginManager;

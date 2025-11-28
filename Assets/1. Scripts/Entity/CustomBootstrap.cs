@@ -20,7 +20,7 @@ public class CustomBootstrap : ClientServerBootstrap
         //ServerDataScriptableObject data = GameManager.Instance._ServerScriptableObject;
 
 
-        
+
         //if (ServerWorld != null)
         //{
         //    var endPoint = NetworkEndpoint.AnyIpv4.WithPort(data._port);
@@ -36,5 +36,4 @@ public class CustomBootstrap : ClientServerBootstrap
         //    query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(ClientWorld.EntityManager, endPoint);
         //}
     }
-
 }

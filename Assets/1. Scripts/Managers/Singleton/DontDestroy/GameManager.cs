@@ -65,8 +65,9 @@ namespace GFSManagers
             _textScriptableObject = (TextScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UIText];
 
             _playerColorScriptableObject = (ColorScriptableObject)data._scriptableDatas[(int)GameManagerDataType.PlayerColor];
-
-            //_sceneChangeDataScriptableObject = (SceneChangeDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.SceneChangeData];
+#if !UNITY_EDITOR
+            _sceneChangeDataScriptableObject = (SceneChangeDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.SceneChangeData];
+#endif
             ResetOverrideObject(data);
         }
 
