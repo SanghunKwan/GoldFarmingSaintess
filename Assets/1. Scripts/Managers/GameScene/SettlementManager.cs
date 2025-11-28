@@ -24,6 +24,8 @@ namespace GFSManagers
         float _deadReductionRate;
         float _specialConditionRate;
 
+        public NoneBGManager _noneBGManager { get; set; }
+
         public override void InitManager(BGManager bgManager)
         {
             base.InitManager(bgManager);
@@ -55,6 +57,7 @@ namespace GFSManagers
         }
 
 
+
         #region SetValue
         public void SetData(in BattleCondition battleData)
         {
@@ -81,6 +84,7 @@ namespace GFSManagers
             SetWindowVariables();
             SetWindowCalculated();
             //leftHealGold + aidGold + huntingGold              ÃÑ°è º¸»ó
+            
         }
         void SetWindowVariables()
         {
@@ -114,6 +118,8 @@ namespace GFSManagers
                                SettlementCalculatedType.HarassGold);
             _window.SetValues(result.ToString("N"),
                                SettlementCalculatedType.ResultGold);
+
+            _noneBGManager._CurrentGold += leftHealGold + aidGold + huntingGold;
         }
         #endregion SetValue
     }

@@ -9,6 +9,7 @@ public class PlayersUI : MonoBehaviour
 
     public PlayersUISlot[] _slots { get; private set; }
 
+
     public void InitUI(in FixedString512Bytes nicknames, out string[] nicks, bool isDataShow = true)
     {
         GameManager manager = GameManager.Instance;
@@ -23,6 +24,14 @@ public class PlayersUI : MonoBehaviour
             _slots[i] = go.GetComponent<PlayersUISlot>();
             _slots[i].InitSlot(nicks[i], colorData._color[i]);
             _slots[i].SetShowData(isDataShow);
+        }
+    }
+
+    public void DisableCountOver(int playerCount)
+    {
+        for (int i = playerCount; i < _slots.Length; i++)
+        {
+            _slots[i].gameObject.SetActive(false);
         }
     }
 

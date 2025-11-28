@@ -15,8 +15,7 @@ public class HostManager : MonoBehaviour
     public string _nickname { get; private set; }
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void InitManager()
     {
         var sceneChangeData = GameManager.Instance._SceneChangeDataScriptableObject;
         var serverData = GameManager.Instance._ServerScriptableObject;
@@ -45,14 +44,19 @@ public class HostManager : MonoBehaviour
         }
     }
 
-    public void CreatePlayersUI(Transform bgTr)
+    public void CreatePlayersUI(Transform bgTr, int playerCount)
     {
         var data = GameManager.Instance._SceneChangeDataScriptableObject;
         GameObject go = GameManager.Instance.InstantiatePrefab(UIType.PlayersUI, bgTr);
         _playersUI = go.GetComponent<PlayersUI>();
         _playersUI.InitUI(data._names, out string[] names);
+        _playersUI.DisableCountOver(playerCount);
 
         _nickname = names[data._nameIndex];
     }
-
+    public void SetMoney(int gold, int playerIndex)
+    {
+        if (_playersUI == null) return;
+        _playersUI._slots[playerIndex - 1].ShowMoney(gold);
+    }
 }

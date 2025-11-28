@@ -69,6 +69,19 @@ namespace GFSUtilities.Protocol
     {
         public int _index;
     }
+    [BurstCompile]
+    public struct HostSendGoIn : IRpcCommand
+    {
+
+    }
+    [BurstCompile]
+    public struct AllClientReady : IRpcCommand
+    {
+        public int playerCount;
+        public int maxRound;
+        public int defaultGold;
+    }
+
     #endregion RpcCommand
 
     #region CommandData

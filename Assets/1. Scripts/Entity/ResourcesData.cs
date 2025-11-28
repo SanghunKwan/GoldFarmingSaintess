@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 
@@ -28,8 +29,15 @@ namespace GFSUtilities.ResourcesData
         //public FixedString64Bytes _nickName;
     }
     [BurstCompile]
-    public struct RoomFull: IComponentData
+    public struct RoomFull : IComponentData
     {
         //public bool _isRoomFull;
+    }
+
+
+    [GhostComponent()]
+    public struct GoldInputData : IInputComponentData
+    {
+        public int gold;
     }
 }

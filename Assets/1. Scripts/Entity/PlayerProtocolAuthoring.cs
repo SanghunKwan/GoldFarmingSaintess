@@ -1,10 +1,13 @@
+using GFSUtilities.ResourcesData;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 
-public struct PlayerProtocol : IComponentData, IEnableableComponent
+public struct PlayerProtocol : IComponentData
 {
-    public ProtocolType _type;
+    [GhostField] public int _type;
+    [GhostField] public int _gold;
 }
 
 public enum ProtocolType
@@ -22,11 +25,11 @@ public class PlayerProtocolAuthoring : MonoBehaviour
     {
         public override void Bake(PlayerProtocolAuthoring authoring)
         {
-            var data = new PlayerProtocol { _type = authoring._type };
+            var entity = GetEntity(TransformUsageFlags.Renderable);
+            var data = new PlayerProtocol { _type = (int)authoring._type, _gold = 100 };
 
-
-            AddComponent(GetEntity(TransformUsageFlags.None), data);
-
+            AddComponent(entity, data);
+            AddComponent<GoldInputData>(entity);
         }
     }
 

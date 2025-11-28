@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 namespace GFSManagers
@@ -15,13 +14,13 @@ namespace GFSManagers
         public int _CurrentGold
         {
             get => _currentMoney;
-            private set => ChangeMoney(value, value > _currentMoney);
+            set => ChangeMoney(value, value > _currentMoney);
         }
         [SerializeField] TextMeshProUGUI _moneyText;
 
-        public void InitManager()
+        public void InitManager(int defaultMoney)
         {
-            SetMoney(100);
+            SetMoney(defaultMoney);
         }
         public void SetMoney(int money)
         {
@@ -39,6 +38,7 @@ namespace GFSManagers
             {
 
             }
+
             SetMoney(money);
         }
         public void ErrorMoney()

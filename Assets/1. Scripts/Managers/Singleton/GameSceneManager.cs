@@ -1,5 +1,6 @@
 using GFSBattle;
 using GFSUtilities;
+using GFSUtilities.Protocol;
 using GFSUtilities.Unit;
 using GFSUtilities.Upgrade;
 using System.Collections.Generic;
@@ -48,19 +49,24 @@ namespace GFSManagers
             _enemy = new LinkedList<BaseUnit>();
 
         }
+        private void Start()
+        {
+            _hostManager.InitManager();
+        }
 
-        public void ReadyToStart()
+        public void ReadyToStart(in AllClientReady readyData)
         {
             _turnManager = new TurnManager();
             _turnManager.InitManager(_bgManager);
+            _turnManager._maxTurn = readyData.maxRound;
 
             _bgManager.InitManager();
-            _noneBGManager.InitManager();
+            _noneBGManager.InitManager(readyData.defaultGold);
             _turnManager.CallTurnUI();
 
             //호스트 하나에 나머지는 다 클라이언트임. 이미 정해져있음.
 
-            _hostManager.CreatePlayersUI(_bgManager.transform);
+            _hostManager.CreatePlayersUI(_bgManager.transform, readyData.playerCount);
         }
 
         void SelectInit()
@@ -90,6 +96,7 @@ namespace GFSManagers
             _settlementManager = new SettlementManager();
             _settlementManager.InitManager(_bgManager);
             _settlementManager.SetData(_selectManager._Battle);
+            _settlementManager._noneBGManager = _noneBGManager;
             _placeManager.EndPlacePhase();
             _placeManager = null;
 
@@ -254,12 +261,14 @@ namespace GFSManagers
         }
         #endregion TurnManager Transfer
 
-        public static Unity.Entities.Entity _entity;
+        public int GetMoney => _noneBGManager._CurrentGold;
+        public void SetMoney(int gold, int playerIndex)
+        {
+            if (_hostManager == null) return;
+            _hostManager.SetMoney(gold, playerIndex);
+        }
         public void ClickButton()
         {
-            using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-            commandBuffer.SetComponentEnabled<PlayerProtocol>(_entity, true);
-            commandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
         }
     }
 }

@@ -17,10 +17,9 @@ public class PlayerProtocolSpawnAuthoring : MonoBehaviour
     {
         public override void Bake(PlayerProtocolSpawnAuthoring authoring)
         {
-            var data = new PlayerProtocolSpawn { prefab = GetEntity(authoring._prefab, TransformUsageFlags.None) };
+            var data = new PlayerProtocolSpawn { prefab = GetEntity(authoring._prefab, TransformUsageFlags.WorldSpace) };
 
-            AddComponent(GetEntity(TransformUsageFlags.None), data);
-
+            AddComponent(GetEntity(TransformUsageFlags.WorldSpace), data);
         }
     }
 }

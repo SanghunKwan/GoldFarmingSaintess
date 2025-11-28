@@ -1,5 +1,6 @@
-using UnityEngine;
+using GFSUtilities.Protocol;
 using GFSUtilities.UI;
+using UnityEngine;
 
 
 namespace GFSManagers
@@ -7,16 +8,12 @@ namespace GFSManagers
     public class TurnManager : BaseBGWindowManager<TurnWindow, TurnManager, BGManager>
     {
         public int _currentTurn { get; private set; }
-        int _maxTurn;
+        public int _maxTurn { get; set; }
 
 
         public override void InitManager(BGManager bgManager)
         {
             base.InitManager(bgManager);
-
-            TurnScriptableObject data = GameManager.Instance._TurnScriptableObject;
-
-            _maxTurn = data._maxTurn;
 
             _currentTurn = 1;
         }
