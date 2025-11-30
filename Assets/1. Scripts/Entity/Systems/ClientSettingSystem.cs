@@ -12,12 +12,15 @@ using Unity.NetCode;
 public partial struct ClientSettingSystem : ISystem
 {
 
+
+    
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<UserSettingProtocol>();
     }
 
 
+    
     public void OnUpdate(ref SystemState state)
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);

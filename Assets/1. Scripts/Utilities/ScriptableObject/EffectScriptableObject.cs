@@ -18,6 +18,10 @@ namespace GFSBattle
         [Header("force, type 관련 이펙트")]
         public ListCover[] weaponEffects;
 
+        [Header("plane 관련 이펙트")]
+        public GameObject[] planeEffects;
+
+
         [Serializable]
         public class ListCover
         {

@@ -13,12 +13,13 @@ using UnityEngine;
 public partial struct ClientErrorSystem : ISystem
 {
 
+    [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<ErrorProtocol>();
     }
 
-
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);

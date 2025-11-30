@@ -1,20 +1,20 @@
-using GFSManagers;
 using GFSUtilities.ResourcesData;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEngine;
 
 [BurstCompile]
 public partial struct ClientGhostUIChangeSystem : ISystem
 {
+
     public void OnCreate(ref SystemState state)
     {
-        using var builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<GoldInputData, GhostOwnerIsLocal>();
-        state.RequireForUpdate(state.GetEntityQuery(builder));
+        state.RequireForUpdate(state.GetEntityQuery(typeof(GoldInputData), typeof(GhostOwnerIsLocal)));
     }
+
+
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         foreach (var (data, local, entity) in SystemAPI.Query<RefRW<GoldInputData>, RefRO<GhostOwnerIsLocal>>().WithEntityAccess())
@@ -32,6 +32,8 @@ public partial struct ClientGhostUIChangeSystem : ISystem
 public partial struct ClientGhostUIChangeJob : IJobEntity
 {
     public float detlaTime;
+
+    [BurstCompile]
     public void Execute(ref PlayerProtocol player, GoldInputData input)
     {
         player._gold = input.gold;

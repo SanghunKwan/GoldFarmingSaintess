@@ -16,13 +16,17 @@ using UnityEngine.SceneManagement;
 public partial struct ServerNewIDSystem : ISystem
 {
     EntityQuery _networkQuery;
-
+    EntityQuery _newNetworkIdQuery;
+    
+    
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NetworkId>();
+        using var builder = new EntityQueryBuilder(Allocator.Temp);
+        _newNetworkIdQuery = state.GetEntityQuery(builder.WithAll<NetworkId>().WithNone<InitializedClient>());
+        state.RequireForUpdate(_newNetworkIdQuery);
+        
         _networkQuery = state.GetEntityQuery(typeof(RoomFull));
     }
-
 
     public void OnUpdate(ref SystemState state)
     {

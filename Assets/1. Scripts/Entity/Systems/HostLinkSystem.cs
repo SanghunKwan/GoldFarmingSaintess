@@ -6,7 +6,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Transforms;
 
 
 
@@ -15,20 +14,29 @@ using Unity.Transforms;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct HostLinkSystem : ISystem
 {
-    NativeArray<Entity> _linkedPlayers;
-    EntityQuery _networkQuery;
-    int _linkedCount;
+    BufferLookup<ClientsIdentifyingData> _lookup;
+    Entity _bufferEntity;
+    int _length;
+    int _currentCount;
+
+    EntityQuery _netDriverQuery;
 
 
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<HostClientIdentify>();
-        state.RequireForUpdate<PlayerProtocolSpawn>();
-        _linkedPlayers = new NativeArray<Entity>(GameManager.Instance._SceneChangeDataScriptableObject._size, Allocator.Persistent);
-        _networkQuery = state.GetEntityQuery(typeof(NetworkStreamDriver));
-        _linkedCount = 0;
-    }
+        state.RequireForUpdate(state.GetEntityQuery(typeof(HostClientIdentify), typeof(ReceiveRpcCommandRequest)));
 
+        //state.EntityManager.CreateEntity(typeof(DynamicBuffer<ClientsIdentifyingData>));와 동일
+        _bufferEntity = state.EntityManager.CreateEntity(typeof(ClientsIdentifyingData));
+        _lookup = state.GetBufferLookup<ClientsIdentifyingData>();
+
+        _currentCount = 0;
+        _length = GameManager.Instance._SceneChangeDataScriptableObject._size;
+        using var tempArray = new NativeArray<ClientsIdentifyingData>(_length, Allocator.Temp);
+        _lookup[_bufferEntity].AddRange(tempArray);
+
+        _netDriverQuery = state.GetEntityQuery(typeof(NetworkStreamDriver));
+    }
 
     public void OnUpdate(ref SystemState state)
     {
@@ -36,54 +44,47 @@ public partial struct HostLinkSystem : ISystem
 
         foreach (var (request, identify, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<HostClientIdentify>>().WithEntityAccess())
         {
-            int index = identify.ValueRO._beforeIndex - 1;
+            _lookup.Update(ref state);
 
-            if (index < _linkedPlayers.Length && _linkedPlayers[index] == default)
+            ref var element = ref _lookup[_bufferEntity].ElementAt(identify.ValueRO._currentIndex - 1);
+
+            if (element._beforeIndex != 0)
             {
-                _linkedPlayers[index] = request.ValueRO.SourceConnection;
-
-                //buffer.AddCommandData(new PlayersUIDataSpawnCommand { Tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick });
-                if (SystemAPI.TryGetSingleton<PlayerProtocolSpawn>(out var prefab))
-                {
-                    Entity protocolEntity = commandBuffer.Instantiate(prefab.prefab);
-                    commandBuffer.SetComponent(protocolEntity, new PlayerProtocol { _type = (int)ProtocolType.None, _gold = 100 });
-                    commandBuffer.SetComponent(protocolEntity, new LocalTransform { Position = new Unity.Mathematics.float3(100, 100, 100), Rotation = Unity.Mathematics.quaternion.identity, Scale = 1 });
-                    //commandBuffer.SetComponentEnabled(protocolEntity, typeof(PlayerProtocol), false);
-
-                    commandBuffer.SetComponent(protocolEntity, new GhostOwner { NetworkId = identify.ValueRO._currentIndex });
-                    commandBuffer.AppendToBuffer(request.ValueRO.SourceConnection, new LinkedEntityGroup { Value = protocolEntity });
-
-                    commandBuffer.AddComponent<NetworkStreamInGame>(request.ValueRO.SourceConnection);
-
-                    var send = commandBuffer.CreateEntity();
-                    commandBuffer.AddComponent<HostSendGoIn>(send);
-                    commandBuffer.AddComponent<SendRpcCommandRequest>(send);
-                }
-
-                if ((++_linkedCount) == _linkedPlayers.Length)
-                {
-                    //모든 플레이어 연결됨.
-                    var networkDriver = _networkQuery.GetSingletonEntity();
-                    commandBuffer.AddComponent(networkDriver, typeof(RoomFull));
-                    commandBuffer.SetComponent(networkDriver, new RoomFull { });
-
-                    state.EntityManager.Broadcast(new AllClientReady { defaultGold = 100, maxRound = GameManager.Instance._TurnScriptableObject._maxTurn, playerCount = _linkedCount });
-                    _linkedPlayers.Dispose();
-                }
+                //이미 수정됨. 버그.
+                state.EntityManager.Broadcast(new ErrorProtocol { _errorType = ErrorType.IdInvalid });
             }
             else
             {
-                state.EntityManager.Broadcast(new ErrorProtocol { _errorType = ErrorType.IdInvalid });
+                element._beforeIndex = identify.ValueRO._beforeIndex;
+                var queueNodeEntity = commandBuffer.CreateEntity();
+                commandBuffer.AddComponent(queueNodeEntity, new HostPlayerProtocolSpawnQueue
+                {
+                    _beforeIndex = element._beforeIndex,
+                    _currentIndex = identify.ValueRO._currentIndex,
+                    _requestTarget = request.ValueRO.SourceConnection
+                });
+
+                if ((++_currentCount) == _length)
+                {
+                    //모든 플레이어 연결됨.
+
+                    var networkDriver = _netDriverQuery.GetSingletonEntity();
+                    commandBuffer.AddComponent(networkDriver, typeof(RoomFull));
+                    commandBuffer.SetComponent(networkDriver, new RoomFull { });
+
+                    AllClientReady data = new AllClientReady
+                    {
+                        defaultGold = 100,
+                        maxRound = GameManager.Instance._TurnScriptableObject._maxTurn,
+                        playerCount = _length
+                    };
+                    data.CopyDynamicBuffer(_lookup[_bufferEntity]);
+
+                    state.EntityManager.Broadcast(data);
+                }
             }
             commandBuffer.DestroyEntity(entity);
         }
-
         commandBuffer.Playback(state.EntityManager);
-    }
-
-    public void OnDestroy(ref SystemState state)
-    {
-        if (_linkedPlayers.IsCreated)
-            _linkedPlayers.Dispose();
     }
 }

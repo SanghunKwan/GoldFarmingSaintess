@@ -12,10 +12,14 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct ClientMatchingSystem : ISystem
 {
+
+    
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<MatchingStatusProtocol>();
     }
+
+
     public void OnUpdate(ref SystemState state)
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);

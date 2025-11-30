@@ -1,6 +1,7 @@
 using GFSUtilities.Protocol;
 using System;
 using System.Collections;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
@@ -89,7 +90,7 @@ namespace GFSUtilities
         {
             var entity = manager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
             manager.SetComponentData(entity, protocol);
-            
+
             if (target != Entity.Null)
                 manager.SetComponentData(entity, new SendRpcCommandRequest { TargetConnection = target });
         }

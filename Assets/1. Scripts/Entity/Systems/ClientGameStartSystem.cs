@@ -12,10 +12,16 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct ClientGameStartSystem : ISystem
 {
+
+
+    
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<GameStartProtocol>();
     }
+
+
+    
     public void OnUpdate(ref SystemState state)
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);

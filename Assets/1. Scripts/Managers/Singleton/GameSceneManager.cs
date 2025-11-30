@@ -4,9 +4,6 @@ using GFSUtilities.Protocol;
 using GFSUtilities.Unit;
 using GFSUtilities.Upgrade;
 using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Entities;
-using Unity.NetCode;
 using UnityEngine;
 
 namespace GFSManagers
@@ -29,6 +26,7 @@ namespace GFSManagers
         [SerializeField] BGManager _bgManager;
         [SerializeField] NoneBGManager _noneBGManager;
         [SerializeField] HostManager _hostManager;
+        [SerializeField] PlaneManager _planeManager;
 
         [Header("æ¿ ≥ª µ•¿Ã≈Õ")]
         [SerializeField] Transform _unitFolder;
@@ -84,9 +82,14 @@ namespace GFSManagers
         {
             _effectManager = new EffectManager();
             _effectManager.InitManager();
+
             _spawnManager = new SpawnManager();
             _spawnManager.InitManager(_unitFolder);
+
             _placeManager = new PlaceManager();
+            _placeManager.InitManager(_placeManager);
+            _planeManager.InitManager();
+
             _spawnManager.SpawnUnit(_selectManager._AllyUnits, Force.Ally);
             _spawnManager.SpawnUnit(_selectManager._EnemyUnits, Force.Enemy);
         }

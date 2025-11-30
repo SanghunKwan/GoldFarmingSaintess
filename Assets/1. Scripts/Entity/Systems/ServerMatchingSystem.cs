@@ -18,7 +18,7 @@ public partial struct ServerMatchingSystem : ISystem
 {
     NativeList<Entity> _matchingList;
     int _matchCount;
-
+    
     public void OnCreate(ref SystemState state)
     {
         state.RequireAnyForUpdate(state.EntityManager.CreateEntityQuery(typeof(MatchingProtocol)), state.EntityManager.CreateEntityQuery(typeof(DisconnectedPlayer)));
@@ -26,7 +26,6 @@ public partial struct ServerMatchingSystem : ISystem
         _matchingList = new NativeList<Entity>(Allocator.Persistent);
         _matchCount = GameManager.Instance._ServerScriptableObject._matchingCount;
     }
-
 
     public void OnUpdate(ref SystemState state)
     {

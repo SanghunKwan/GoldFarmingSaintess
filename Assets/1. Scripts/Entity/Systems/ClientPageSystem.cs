@@ -11,13 +11,15 @@ using Unity.NetCode;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct ClientPageSystem : ISystem
 {
-
+    
+    
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<PageProtocol>();
     }
 
 
+    
     public void OnUpdate(ref SystemState state)
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);

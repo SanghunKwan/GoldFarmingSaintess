@@ -5,7 +5,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEngine;
 
 
 
@@ -15,28 +14,29 @@ using UnityEngine;
 public partial struct ClientHostLinkSystem : ISystem
 {
 
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<HostLinkSuccess>();
     }
 
 
+
     public void OnUpdate(ref SystemState state)
     {
-        UnityEngine.Debug.Log("확인");
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        var data = GameManager.Instance._SceneChangeDataScriptableObject;
+        ref int nameIndex = ref GameManager.Instance._SceneChangeDataScriptableObject._nameIndex;
         foreach (var (request, link, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<HostLinkSuccess>>().WithEntityAccess())
         {
-            if (data._nameIndex == -1)
+            if (nameIndex == -1)
             {
-                data._nameIndex = link.ValueRO._linkedIndex;
-                Debug.Log("새로운 인덱스 부여" + data._nameIndex);
+                nameIndex = link.ValueRO._linkedIndex;
+                //Debug.Log("새로운 인덱스 부여" + data._nameIndex);
             }
 
 
-            state.EntityManager.Broadcast(new HostClientIdentify { _beforeIndex = data._nameIndex, _currentIndex = link.ValueRO._linkedIndex }, request.ValueRO.SourceConnection);
+            state.EntityManager.Broadcast(new HostClientIdentify { _beforeIndex = nameIndex, _currentIndex = link.ValueRO._linkedIndex }, request.ValueRO.SourceConnection);
 
             commandBuffer.DestroyEntity(entity);
         }

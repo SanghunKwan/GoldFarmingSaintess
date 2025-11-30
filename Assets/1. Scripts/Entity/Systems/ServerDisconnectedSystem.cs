@@ -17,14 +17,15 @@ public partial struct ServerDisconnectedSystem : ISystem
 
     NativeHashSet<Entity> _beforeConnections;
     NativeHashSet<Entity> _currentConnections;
-
+    
+    
+    
     public void OnCreate(ref SystemState state)
     {
         _connections = state.GetEntityQuery(typeof(NetworkId), typeof(InitializedClient));
         _beforeConnections = new NativeHashSet<Entity>(0, Allocator.Persistent);
         _currentConnections = new NativeHashSet<Entity>(0, Allocator.Persistent);
     }
-
 
     public void OnUpdate(ref SystemState state)
     {
@@ -48,6 +49,8 @@ public partial struct ServerDisconnectedSystem : ISystem
         _beforeConnections = _currentConnections;
         _currentConnections = tempSet;
     }
+
+    [BurstCompile]
     public void OnDestroy(ref SystemState state)
     {
         _beforeConnections.Clear();

@@ -33,8 +33,29 @@ namespace GFSUtilities.ResourcesData
     {
         //public bool _isRoomFull;
     }
+    [BurstCompile]
+    public struct ClientIdentifyData : IComponentData
+    {
+        public int _beforeIndex;
+        public int _currentIndex;
+    }
+    [BurstCompile]
+    public struct HostPlayerProtocolSpawnQueue : IComponentData
+    {
+        public int _beforeIndex;
+        public int _currentIndex;
+        public Entity _requestTarget;
+    }
 
 
+
+
+
+    [BurstCompile]
+    public struct ClientsIdentifyingData : IBufferElementData
+    {
+        public int _beforeIndex;
+    }
     [GhostComponent()]
     public struct GoldInputData : IInputComponentData
     {

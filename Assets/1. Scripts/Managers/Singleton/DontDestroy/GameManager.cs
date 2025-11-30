@@ -1,6 +1,7 @@
 using GFSBattle;
 using GFSUtilities.UI;
 using GFSUtilities.Unit;
+using GFSUtilities.Effect;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

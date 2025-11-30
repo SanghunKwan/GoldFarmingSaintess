@@ -1,6 +1,10 @@
+using GFSUtilities.ResourcesData;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 
 
@@ -81,6 +85,16 @@ namespace GFSUtilities.Protocol
         public int playerCount;
         public int maxRound;
         public int defaultGold;
+
+        public FixedList32Bytes<int> beforeIndexBuffer;
+
+        public void CopyDynamicBuffer(in DynamicBuffer<ClientsIdentifyingData> buffer)
+        {
+            beforeIndexBuffer = new FixedList32Bytes<int>();
+
+            for (int i = 0; i < buffer.Length; i++)
+                beforeIndexBuffer.AddNoResize(buffer[i]._beforeIndex);
+        }
     }
 
     #endregion RpcCommand

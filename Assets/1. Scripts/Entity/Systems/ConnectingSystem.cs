@@ -12,10 +12,14 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct ConnectingSystem : ISystem
 {
+
+    
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkId>();
     }
+
+    
     public void OnUpdate(ref SystemState state)
     {
 
