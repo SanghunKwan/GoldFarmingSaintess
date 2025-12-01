@@ -11,7 +11,7 @@ namespace GFSManagers
         IEnumerator _grabIEnum;
         Camera _cam;
 
-        PlaceManager _placeManager;
+        PlaneManager _planeManager;
 
         float _dragMaxDistance;
         float _dropMaxDistance;
@@ -20,9 +20,9 @@ namespace GFSManagers
 
         bool _isOnDrag;
 
-        public void InitManager(PlaceManager placeManager)
+        public void InitManager(PlaneManager planeManager)
         {
-            _placeManager = placeManager;
+            _planeManager = planeManager;
 
             _cam = Camera.main;
             _dragMaxDistance = 10;
@@ -46,7 +46,11 @@ namespace GFSManagers
             Vector3 lastVec = Input.mousePosition + Input.mousePositionDelta;
             Ray ray = _cam.ScreenPointToRay(lastVec);
             Vector3 tempPosition;
-            if (Physics.Raycast(ray, out RaycastHit hit, _dragMaxDistance, _dragLayerMask))
+
+            if (Physics.Raycast(ray, out RaycastHit hit, _dropMaxDistance, _dropLayerMask))
+                _planeManager.CheckSlot(hit.point);
+
+            if (Physics.Raycast(ray, out hit, _dragMaxDistance, _dragLayerMask))
                 _unit.transform.position = hit.point;
 
             bool isOutofRange = false;
@@ -63,23 +67,31 @@ namespace GFSManagers
                     if (Physics.Raycast(ray, out hit, _dragMaxDistance, _dragLayerMask))
                         _unit.transform.position = hit.point;
 
-                    if (Physics.Raycast(ray, out hit, _dropMaxDistance, _dropLayerMask))
+                    isOutofRange = !Physics.Raycast(ray, out hit, _dropMaxDistance, _dropLayerMask);
+                    if (!isOutofRange)
                     {
                         //hit point에 이펙트 추가
                         //배치 가능 영역 추가.
                         //다른 캐릭터와 같은 자리에 배치 시 위치 교체.
                         lastVec = tempPosition;
-
+                        _planeManager.CheckSlot(hit.point);
                     }
                     else
                     {
-                        isOutofRange = true;
+                        _planeManager.CheckSlot(beforePosition);
                     }
                 }
                 yield return null;
             }
 
-            _unit.transform.position = isOutofRange ? beforePosition : hit.point;
+            if (isOutofRange)
+            {
+                _unit.transform.position = beforePosition;
+                _planeManager.SetFreeSlot();
+            }
+            else
+                _planeManager.SelectSlot(_unit, beforePosition);
+
             _unit = null;
         }
 

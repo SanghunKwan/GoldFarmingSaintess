@@ -83,12 +83,13 @@ namespace GFSManagers
             _effectManager = new EffectManager();
             _effectManager.InitManager();
 
+            _planeManager.InitManager();
+
             _spawnManager = new SpawnManager();
-            _spawnManager.InitManager(_unitFolder);
+            _spawnManager.InitManager(_unitFolder, _planeManager);
 
             _placeManager = new PlaceManager();
-            _placeManager.InitManager(_placeManager);
-            _planeManager.InitManager();
+            _placeManager.InitManager(_planeManager);
 
             _spawnManager.SpawnUnit(_selectManager._AllyUnits, Force.Ally);
             _spawnManager.SpawnUnit(_selectManager._EnemyUnits, Force.Enemy);
