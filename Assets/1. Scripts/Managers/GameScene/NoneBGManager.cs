@@ -11,12 +11,12 @@ namespace GFSManagers
     {
         int _currentMoney;
 
+        [SerializeField] TextMeshProUGUI _moneyText;
         public int _CurrentGold
         {
             get => _currentMoney;
             set => ChangeMoney(value, value > _currentMoney);
         }
-        [SerializeField] TextMeshProUGUI _moneyText;
 
         public void InitManager(int defaultMoney)
         {

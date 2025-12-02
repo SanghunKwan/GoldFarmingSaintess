@@ -57,6 +57,8 @@ namespace GFSUtilities.UI
 
         PlayersUI_Slot,
 
+        CharacterHPBar,
+
     }
 
     public enum SelectGraphicGroupType

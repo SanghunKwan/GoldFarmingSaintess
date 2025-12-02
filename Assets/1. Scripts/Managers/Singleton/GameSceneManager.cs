@@ -27,6 +27,7 @@ namespace GFSManagers
         [SerializeField] NoneBGManager _noneBGManager;
         [SerializeField] HostManager _hostManager;
         [SerializeField] PlaneManager _planeManager;
+        [SerializeField] HPManager _hpManager;
 
         [Header("æ¿ ≥ª µ•¿Ã≈Õ")]
         [SerializeField] Transform _unitFolder;
@@ -101,8 +102,13 @@ namespace GFSManagers
             _settlementManager.InitManager(_bgManager);
             _settlementManager.SetData(_selectManager._Battle);
             _settlementManager._noneBGManager = _noneBGManager;
+
             _placeManager.EndPlacePhase();
-            _placeManager = null;
+            _planeManager.HideSlots();
+
+            _hpManager.InitManager();
+            _hpManager.MakeHPBar(_ally, Force.Ally);
+            _hpManager.MakeHPBar(_enemy, Force.Enemy);
 
             _battleManager.InitManger(_trainingManager._CurrentValue(UpgradeType.HealCount),
                                       _trainingManager._CurrentValue(UpgradeType.HealAmount));
@@ -163,6 +169,7 @@ namespace GFSManagers
 
         void BattleEndCall(LinkedList<BaseUnit> leftList)
         {
+            _hpManager.BattleEnd();
             StartCoroutine(GFSManager.WaitForSecond(2, () =>
             {
                 foreach (var item in leftList)
@@ -225,13 +232,13 @@ namespace GFSManagers
         #region PlaceManager Transfer
         public void DragInUnit(BaseUnit target)
         {
-            if (_placeManager == null) return;
+            if (!_placeManager._enabled) return;
 
             _placeManager.DragInUnit(target);
         }
         public void DragOutUnit(BaseUnit target)
         {
-            if (_placeManager == null) return;
+            if (!_placeManager._enabled) return;
 
             _placeManager.DragOutUnit(target);
         }

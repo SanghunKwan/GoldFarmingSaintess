@@ -19,6 +19,7 @@ namespace GFSManagers
         int _dropLayerMask;
 
         bool _isOnDrag;
+        public bool _enabled { get; private set; }
 
         public void InitManager(PlaneManager planeManager)
         {
@@ -29,6 +30,8 @@ namespace GFSManagers
             _dropMaxDistance = 20;
             _dragLayerMask = 1 << LayerMask.NameToLayer("DragRaycast");
             _dropLayerMask = 1 << LayerMask.NameToLayer("Plane");
+
+            _enabled = true;
         }
 
         public void DragInUnit(BaseUnit unit)
@@ -44,20 +47,17 @@ namespace GFSManagers
             Vector3 beforePosition = _unit.transform.position;
 
             Vector3 lastVec = Input.mousePosition + Input.mousePositionDelta;
-            Ray ray = _cam.ScreenPointToRay(lastVec);
+            Ray ray;
             Vector3 tempPosition;
-
-            if (Physics.Raycast(ray, out RaycastHit hit, _dropMaxDistance, _dropLayerMask))
-                _planeManager.CheckSlot(hit.point);
-
-            if (Physics.Raycast(ray, out hit, _dragMaxDistance, _dragLayerMask))
-                _unit.transform.position = hit.point;
 
             bool isOutofRange = false;
 
-            yield return null;
+            int beforeIndex = _planeManager.GetIndex(beforePosition);
+            int tempLastIndex = beforeIndex;
+            int tempCurrentIndex = beforeIndex;
+            RaycastHit hit;
 
-            while (_isOnDrag)
+            do
             {
                 tempPosition = Input.mousePosition;
                 if (lastVec != tempPosition)
@@ -67,30 +67,51 @@ namespace GFSManagers
                     if (Physics.Raycast(ray, out hit, _dragMaxDistance, _dragLayerMask))
                         _unit.transform.position = hit.point;
 
-                    isOutofRange = !Physics.Raycast(ray, out hit, _dropMaxDistance, _dropLayerMask);
+                    isOutofRange = (!Physics.Raycast(ray, out hit, _dropMaxDistance, _dropLayerMask)) || _planeManager.IsSlotInvalid(hit.point, out tempCurrentIndex);
+
                     if (!isOutofRange)
                     {
-                        //hit point에 이펙트 추가
-                        //배치 가능 영역 추가.
-                        //다른 캐릭터와 같은 자리에 배치 시 위치 교체.
-                        lastVec = tempPosition;
-                        _planeManager.CheckSlot(hit.point);
+                        if (tempCurrentIndex != tempLastIndex)
+                        {
+                            //hit point에 이펙트 추가
+                            //배치 가능 영역 추가.
+                            //다른 캐릭터와 같은 자리에 배치 시 위치 교체.
+                            lastVec = tempPosition;
+
+                            _planeManager.HighLightSlot(tempCurrentIndex, GFSUtilities.Effect.PlaneSlotEffectType.HighLight);
+
+                            _planeManager.SetFreeSlot(tempLastIndex);
+
+                            if (tempLastIndex == -1)
+                                _planeManager.SetFreeSlot(beforeIndex);
+
+                            tempLastIndex = tempCurrentIndex;
+                        }
                     }
                     else
                     {
-                        _planeManager.CheckSlot(beforePosition);
+                        if (tempLastIndex == -1)
+                        {
+                            yield return null;
+                            continue;
+                        }
+
+                        _planeManager.HighLightSlot(beforeIndex, GFSUtilities.Effect.PlaneSlotEffectType.HighLight);
+
+                        _planeManager.SetFreeSlot(tempLastIndex);
+                        tempLastIndex = -1;
                     }
                 }
                 yield return null;
-            }
+            } while (_isOnDrag);
 
             if (isOutofRange)
             {
                 _unit.transform.position = beforePosition;
-                _planeManager.SetFreeSlot();
+                _planeManager.SetFreeSlot(tempCurrentIndex);
             }
             else
-                _planeManager.SelectSlot(_unit, beforePosition);
+                _planeManager.SelectSlot(_unit, tempCurrentIndex, beforeIndex);
 
             _unit = null;
         }
@@ -109,6 +130,8 @@ namespace GFSManagers
         }
         public void EndPlacePhase()
         {
+            _enabled = false;
+
             if (_unit == null) return;
 
             SetGrabFalse();

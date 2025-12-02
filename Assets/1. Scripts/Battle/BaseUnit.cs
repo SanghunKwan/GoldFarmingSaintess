@@ -34,6 +34,8 @@ namespace GFSBattle
         public LinkedListNode<BaseUnit> _sceneNode { get; private set; }
 
         LinkedList<Action> _dieEventList;
+        public event Action<int> OnHpChanged;
+        public event Action<Vector3> OnMoved;
 
         public void InitUnit(StarCount starCount)
         {
@@ -97,6 +99,8 @@ namespace GFSBattle
         public void ChangeHp(int plus)
         {
             _currentStat._hp = _currentStat._hp + plus;
+            //체력바 수치 변경 이벤트.
+            OnHpChanged?.Invoke(_currentStat._hp);
         }
         public void Die()
         {
@@ -110,13 +114,14 @@ namespace GFSBattle
             {
                 action();
             }
-            _dieEventList.Clear();
+            EventClear();
 
             _unitMove.PlayDead();
         }
         public void ClearInAlive()
         {
             _unitMove.BattleEnd();
+            EventClear();
         }
         #endregion Action
 
@@ -125,7 +130,7 @@ namespace GFSBattle
         {
             _unitMove.FindTarget();
         }
-        public LinkedListNode<Action> EnrollTarget(in Action action)
+        public LinkedListNode<Action> EnrollDieEvent(in Action action)
         {
             return _dieEventList.AddLast(action);
         }
@@ -172,6 +177,13 @@ namespace GFSBattle
             if (isOn)
                 StartCoroutine(grabIEnum);
         }
+        public void OnMove() => OnMoved?.Invoke(transform.position);
+        public void EventClear()
+        {
+            OnMoved = null;
+            OnHpChanged = null;
+            _dieEventList.Clear();
+        }
         #endregion Transfer
 
         #region Mouse Interact
@@ -189,6 +201,8 @@ namespace GFSBattle
         }
         public void OnClick()
         {
+            if (_IsDead) return;
+
             GameSceneManager.Instance.ClickUnit(this);
         }
         #endregion Mouse Interact

@@ -47,5 +47,11 @@ namespace GFSUtilities.Unit
 
         Count = WeaponEffect            //¸¶Áö¸·
     }
+
+    public enum UnitHpColor
+    {
+        Enemy = 0,
+        Ally = 2
+    }
     #endregion Enum
 }

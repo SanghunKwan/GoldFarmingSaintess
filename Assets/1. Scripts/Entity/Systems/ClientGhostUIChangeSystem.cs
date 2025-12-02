@@ -17,24 +17,23 @@ public partial struct ClientGhostUIChangeSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (data, local, entity) in SystemAPI.Query<RefRW<GoldInputData>, RefRO<GhostOwnerIsLocal>>().WithEntityAccess())
-        {
-            var job = new ClientGhostUIChangeJob
-            {
-                detlaTime = SystemAPI.Time.DeltaTime
-            };
-            state.Dependency = job.ScheduleParallel(state.Dependency);
-        }
+        var job = new ClientGhostUIChangeJob { };
+        state.Dependency = job.ScheduleParallel(state.Dependency);
+
+        //foreach (var (data, local, entity) in SystemAPI.Query<RefRW<GoldInputData>, RefRO<GhostOwnerIsLocal>>().WithEntityAccess())
+        //{
+        //state.Dependency = job.ScheduleParallel(state.Dependency);
+        //}
     }
 }
 
 [BurstCompile]
 public partial struct ClientGhostUIChangeJob : IJobEntity
 {
-    public float detlaTime;
+
 
     [BurstCompile]
-    public void Execute(ref PlayerProtocol player, GoldInputData input)
+    public void Execute(ref PlayerProtocol player, in GoldInputData input, in GhostOwnerIsLocal owner)
     {
         player._gold = input.gold;
     }

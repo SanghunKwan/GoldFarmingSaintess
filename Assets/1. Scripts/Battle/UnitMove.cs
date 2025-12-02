@@ -44,10 +44,13 @@ namespace GFSBattle
                 TurnToAttack();
                 if (_IsInSight)
                     PlayAttack();
+                else
+                    _unit.OnMove();
             }
             else
             {
                 MoveToAttack();
+                _unit.OnMove();
             }
         }
 
@@ -84,7 +87,7 @@ namespace GFSBattle
 
             _targetUnit = target;
             _navAgent.stoppingDistance = _range + _targetUnit._Radius;
-            _targetDieEventNode = _targetUnit.EnrollTarget(OnTargetDie);
+            _targetDieEventNode = _targetUnit.EnrollDieEvent(OnTargetDie);
         }
         public void ReleaseTarget()
         {

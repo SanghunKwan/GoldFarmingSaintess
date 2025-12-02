@@ -14,20 +14,19 @@ namespace GFSManagers
 
 
         GameObject _prefabSlotEffect;
-
         PlaneSlot[] _slots;
+        [SerializeField] Transform _slotsParentTr;
 
         Vector3 _startPosition;
-        int _lastCheckedIndex;
-
-
         Color[] _colors;
+
+
+
         public int _row { get; private set; }
         public int _column { get; private set; }
 
 
         public int _SlotCount => _row * _column;
-
 
 
         public void InitManager()
@@ -39,7 +38,6 @@ namespace GFSManagers
             _startPosition = new Vector3(-(_row - 1f) / 2, 0, -(_column - 1f) / 2);
 
             _colors = GameManager.Instance._PlayerColorScriptableObject._color;
-            _lastCheckedIndex = -1;
 
             ResetSlots();
             SetSlotsState(SlotStateType.UpDown);
@@ -61,7 +59,7 @@ namespace GFSManagers
                 if (i < beforeCount)
                     _slots[i].transform.position = _startPosition + calculatePos;
                 else
-                    _slots[i] = Instantiate(_prefabSlotEffect, _startPosition + calculatePos, Quaternion.identity, transform).GetComponent<PlaneSlot>();
+                    _slots[i] = Instantiate(_prefabSlotEffect, _startPosition + calculatePos, Quaternion.identity, _slotsParentTr).GetComponent<PlaneSlot>();
             }
         }
         public void SetSlotsState(SlotStateType type)
@@ -84,35 +82,22 @@ namespace GFSManagers
         }
         public void HighLightSlot(int slotIndex, PlaneSlotEffectType highLight)
         {
-            if (_lastCheckedIndex == slotIndex) return;
-
-            if (_lastCheckedIndex >= 0)
-                _slots[_lastCheckedIndex].SetColor(_colors[(int)_slots[_lastCheckedIndex]._State]);
-
-            if (_slots[slotIndex]._IsPlayerUseless)
-            {
-                _lastCheckedIndex = -1;
-                return;
-            }
+            if (slotIndex >= 0)
+                _slots[slotIndex].SetColor(_colors[(int)_slots[slotIndex]._State]);
 
             _slots[slotIndex].SetColor(_colors[(int)highLight]);
-
-            _lastCheckedIndex = slotIndex;
         }
-        public void SetFreeSlot()
+        public void SetFreeSlot(int index)
         {
-            if (_lastCheckedIndex < 0) return;
+            if (index < 0) return;
 
-            _slots[_lastCheckedIndex].SetColor(_colors[(int)_slots[_lastCheckedIndex]._State]);
+            _slots[index].SetColor(_colors[(int)_slots[index]._State]);
         }
-        public void SelectSlot(BaseUnit unit, in Vector3 beforePosition)
+        public void SelectSlot(BaseUnit unit, int index, int beforeIndex)
         {
-            if (_lastCheckedIndex < 0) return;
+            if (index < 0) return;
 
-            int beforeIndex = GetIndex(beforePosition);
-
-            SwapSlot(unit, _lastCheckedIndex, beforeIndex, PlaneSlotEffectType.Occupied, PlaneSlotEffectType.Usable);
-            _lastCheckedIndex = -1;
+            SwapSlot(unit, index, beforeIndex, PlaneSlotEffectType.Occupied, PlaneSlotEffectType.Usable);
         }
         public void SelectSlot(BaseUnit unit, int index, PlaneSlotEffectType occupied)
         {
@@ -135,13 +120,25 @@ namespace GFSManagers
 
 
 
-        int GetIndex(in Vector3 rayPoint)
+        public int GetIndex(in Vector3 rayPoint)
         {
             Vector3 offset = rayPoint - _startPosition;
 
             int rowIndex = Mathf.Min(Mathf.FloorToInt(offset.x + 0.5f), _row - 1);
             int columnIndex = Mathf.Min(Mathf.FloorToInt(offset.z + 0.5f), _column - 1);
             return rowIndex + columnIndex * _row;
+        }
+        public bool IsSlotInvalid(in Vector3 vec, out int index)
+        {
+            index = GetIndex(vec);
+            PlaneSlotEffectType type = _slots[GetIndex(vec)]._State;
+
+            return type == PlaneSlotEffectType.Useless || type == PlaneSlotEffectType.EnemyOccupied;
+        }
+
+        public void HideSlots()
+        {
+            _slotsParentTr.gameObject.SetActive(false);
         }
     }
 }
