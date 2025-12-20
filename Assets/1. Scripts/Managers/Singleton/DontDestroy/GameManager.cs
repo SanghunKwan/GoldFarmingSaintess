@@ -32,6 +32,11 @@ namespace GFSManagers
 
         SceneChangeDataScriptableObject _sceneChangeDataScriptableObject;
 
+        ItemScriptableObject _itemScriptableObject;
+
+        UnitStatScriptableObject _unitStatScriptableObject;
+
+
         public EffectScriptableObject _EffectScriptableObject => _effectScriptableObject;
         public SettlementScriptableObject _SettlementScriptableObject => _settlementScriptableObject;
         public SelectDataScriptableObject _SelectDataScriptableObject => _selectDataScriptableObject;
@@ -45,6 +50,10 @@ namespace GFSManagers
         public ColorScriptableObject _PlayerColorScriptableObject => _playerColorScriptableObject;
 
         public SceneChangeDataScriptableObject _SceneChangeDataScriptableObject => _sceneChangeDataScriptableObject;
+
+        public ItemScriptableObject _ItemScriptableObject => _itemScriptableObject;
+
+        public UnitStatScriptableObject _UnitStatScriptableObject => _unitStatScriptableObject;
 
         public override void InitManager()
         {
@@ -69,6 +78,10 @@ namespace GFSManagers
 #if !UNITY_EDITOR
             _sceneChangeDataScriptableObject = (SceneChangeDataScriptableObject)data._scriptableDatas[(int)GameManagerDataType.SceneChangeData];
 #endif
+            _itemScriptableObject = (ItemScriptableObject)data._scriptableDatas[(int)GameManagerDataType.ItemData];
+
+            _unitStatScriptableObject = (UnitStatScriptableObject)data._scriptableDatas[(int)GameManagerDataType.UnitStat];
+
             ResetOverrideObject(data);
         }
 

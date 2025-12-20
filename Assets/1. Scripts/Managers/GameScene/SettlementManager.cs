@@ -4,6 +4,7 @@ using UnityEngine;
 using GFSUtilities.Unit;
 using GFSUtilities.UI;
 using GFSUtilities;
+using System;
 
 
 namespace GFSManagers
@@ -18,6 +19,7 @@ namespace GFSManagers
         int _healFee;
         int _healCount;
         bool _isWin;
+        bool _isExterminated;
         bool? _isSpecialConditionCompleted;
 
         float _huntingRewardRate;
@@ -25,6 +27,10 @@ namespace GFSManagers
         float _specialConditionRate;
 
         public NoneBGManager _noneBGManager { get; set; }
+        public HostManager _hostManager { get; set; }
+        public SelectManager _selectManager { get; set; }
+
+        bool _isActive;
 
         public override void InitManager(BGManager bgManager)
         {
@@ -46,23 +52,35 @@ namespace GFSManagers
 
             list.AddLast(node);
         }
-        public void ShowWindow()
+        public void ShowWindow(in Action action)
         {
-            _bgManager.CallUI(3f, _window);
+            _bgManager.CallUI(2f, _window);
+            _window.FadeEvent += action;
+            _isActive = true;
         }
         public void HideWindow()
         {
+            if (!_isActive) return;
+
             _bgManager.ReleaseUI();
             _window.FadeOut();
+            _isActive = false;
+        }
+        public void SendWait()
+        {
+            _hostManager.SendWaitPhaseEnd(GFSUtilities.ResourcesData.GamePhaseType.Settlement);
         }
 
-
+        public void DisposeFormerTurn()
+        {
+            GameSceneManager.Instance.DisposeFormerList(_deadAlly);
+            GameSceneManager.Instance.DisposeFormerList(_deadEnemy);
+        }
 
         #region SetValue
         public void SetData(in BattleCondition battleData)
         {
             _participationAidGold = battleData._participationAidGold;
-            _huntingGold = battleData._huntingGold;
             _huntingRewardRate = battleData._huntingRate;
         }
         public void SetData(in BattleResult battleData)
@@ -70,6 +88,7 @@ namespace GFSManagers
             _healCount = battleData._leftHealCount;
             _isSpecialConditionCompleted = battleData._isSpecialConditionCompleted;
             _isWin = battleData._isWin;
+            _isExterminated = battleData._isExterminated;
         }
 
 
@@ -80,11 +99,23 @@ namespace GFSManagers
                 _window = GameManager.Instance.InstantiatePrefab(UIType.Settle, _bgManager.transform).GetComponent<SettlementWindow>();
                 _window.InitWindow(this);
             }
-
+            CalculateRewardVariables();
             SetWindowVariables();
             SetWindowCalculated();
             //leftHealGold + aidGold + huntingGold              총계 보상
-            
+
+        }
+        void CalculateRewardVariables()
+        {
+            _huntingGold = 0;
+            foreach (var unit in _deadEnemy)
+            {
+                Debug.Log("더함");
+                _huntingGold += _selectManager.GetEnemyReward(unit._type, unit._starCount);
+            }
+
+            _huntingRewardRate = _isExterminated ? 0 :
+                Mathf.Max(0, _huntingRewardRate * (1 - (_deadReductionRate * _deadAlly.Count)));
         }
         void SetWindowVariables()
         {
@@ -92,20 +123,17 @@ namespace GFSManagers
             _window.SetValues(_huntingGold.ToString("N"), SettlementVariableType.BattleRewards);
             _window.SetValues(_huntingRewardRate.ToString("P"), SettlementVariableType.BattleDistributeRate);
             _window.SetValues(_healCount.ToString("N"), SettlementVariableType.LeftHealCount);
-            _window.SetValues(_isWin ? "승리" : "패배", SettlementVariableType.Victory);
+            _window.SetValues(_isWin ? "승리" : (_isExterminated ? "패배" : "후퇴"), SettlementVariableType.Victory);
             _window.SetValues(_isSpecialConditionCompleted.HasValue ?
                               (_isSpecialConditionCompleted.Value ? "성공" : "실패") : "없음",
                               SettlementVariableType.SpecialCondition);
         }
         void SetWindowCalculated()
         {
-            int winConst = _isWin ? 1 : 0;
-
             int leftHealGold = _healFee * _healCount;
             int aidGold
-                = Mathf.FloorToInt(_participationAidGold * (_specialConditionRate + (1 - _specialConditionRate) * winConst));
-            int huntingGold = (_deadAlly.Count == 0) ? Mathf.CeilToInt(_huntingGold * _huntingRewardRate * winConst)
-                              : Mathf.Max(Mathf.FloorToInt(_huntingGold * _huntingRewardRate * winConst * (1 - _deadReductionRate)), 0);
+                = Mathf.FloorToInt(_participationAidGold * (_specialConditionRate + (1 - _specialConditionRate)));
+            int huntingGold = Mathf.FloorToInt(_huntingGold * _huntingRewardRate);
             int result = leftHealGold + aidGold + huntingGold;
 
             _window.SetValues(leftHealGold.ToString("N"),
@@ -114,13 +142,21 @@ namespace GFSManagers
                                SettlementCalculatedType.AidGold);
             _window.SetValues(huntingGold.ToString("N"),
                                SettlementCalculatedType.VictoryGold);
-            _window.SetValues(0.ToString("N"),
-                               SettlementCalculatedType.HarassGold);
             _window.SetValues(result.ToString("N"),
                                SettlementCalculatedType.ResultGold);
 
             _noneBGManager._CurrentGold += leftHealGold + aidGold + huntingGold;
         }
         #endregion SetValue
+
+        public int GetDeadEnemy(out int[] disturbRates)
+        {
+            disturbRates = new int[(int)StarCount.Count];
+
+            foreach (var enemy in _deadEnemy)
+                disturbRates[(int)enemy._starCount - 1]++;
+
+            return _deadEnemy.Count;
+        }
     }
 }

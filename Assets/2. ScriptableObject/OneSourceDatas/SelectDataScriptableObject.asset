@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c29737d37355191458484333830b934f, type: 3}
+  m_Name: SelectDataScriptableObject
+  m_EditorClassIdentifier: 
+  _minCost: 1
+  _maxCost: 5
+  _battleCount: 5
+  _advencedCost: 3
+  _expertCost: 6
+  _allyPayment: 070000000a0000000500000002000000
+  _enemyLoot: 0c0000000a0000000f00000014000000

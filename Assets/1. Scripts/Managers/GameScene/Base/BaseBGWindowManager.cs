@@ -1,4 +1,3 @@
-using GFSManagers;
 using UnityEngine;
 
 public abstract class BaseBGWindowManager<TWindow, TManager, TBGManager> where TWindow : BaseBGWindow<TWindow, TManager, TBGManager>
@@ -7,6 +6,7 @@ public abstract class BaseBGWindowManager<TWindow, TManager, TBGManager> where T
 {
     protected TWindow _window;
     protected TBGManager _bgManager;
+
 
     public virtual void InitManager(TBGManager bgManager)
     {

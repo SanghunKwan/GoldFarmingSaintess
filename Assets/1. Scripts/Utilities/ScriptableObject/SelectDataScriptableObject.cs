@@ -8,7 +8,13 @@ public class SelectDataScriptableObject : ScriptableObject
     public int _maxCost;
 
     public int _battleCount;
+
+
     [Header("StartCountCost")]
     public int _advencedCost;
     public int _expertCost;
+
+    [Header("TypeGold")]
+    public int[] _allyPayment;
+    public int[] _enemyLoot;
 }

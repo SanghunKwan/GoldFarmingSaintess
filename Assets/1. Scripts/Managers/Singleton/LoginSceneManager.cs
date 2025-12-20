@@ -31,13 +31,25 @@ public class LoginSceneManager : MonoBehaviour
     private void Start()
     {
         _bgManager.InitManager();
-        ShowUnitychanLogo();
+
+        var data = GameManager.Instance._SceneChangeDataScriptableObject;
+
+        if (data._nameIndex <= 0)
+        {
+            ShowUnitychanLogo();
+        }
+        else
+        {
+            string nickname = data._names.Split(' ')[data._nameIndex - 1];
+
+            GameManager.Instance.ResetOverrideObject();
+            LoginReady();
+            _loginManager.AutoLogin(nickname);
+        }
     }
 
     void ShowUnitychanLogo()
     {
-        GameManager.Instance.ResetOverrideObject();
-
         _logoManager = new LogoManager();
         _logoManager.InitManager(_bgManager);
         _logoManager.CallWindow();

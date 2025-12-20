@@ -11,8 +11,6 @@ namespace GFSBattle
     public class BaseUnit : MonoBehaviour
     {
         //대문자 시작 프로퍼티는 외부 호출용.
-        [SerializeField] StatusScriptableObject _originalStat;
-        [SerializeField] ForceScriptableObject _originalForce;
         protected UnitMove _unitMove;
 
         public float _attackableTime { get; protected set; }
@@ -37,13 +35,15 @@ namespace GFSBattle
         public event Action<int> OnHpChanged;
         public event Action<Vector3> OnMoved;
 
-        public void InitUnit(StarCount starCount)
-        {
-            _force = _originalForce._force;
-            _type = _originalStat._type;
-            _starCount = starCount;
 
-            _stat = _originalStat._stat[(int)_force - 1];
+
+        public void InitUnit(in UnitData data, StarCount starCount)
+        {
+            _force = data.force;
+            _type = data.type;
+            _stat = data.stat;
+
+            _starCount = starCount;
 
             _baseEffectTr = new Transform[(int)UnitEffectType.Count];
             for (int i = 0; i < _baseEffectTr.Length; i++)
@@ -53,7 +53,7 @@ namespace GFSBattle
             EffectTransformByType(UnitEffectType.BaseEffect).localScale = _radius / 3 * Vector3.one;
             EffectTransformByType(UnitEffectType.HealEffect).localScale = _radius * 1.3f * Vector3.one;
 
-            CallStarInfluence();
+            CallStarInfluence(data.growthRate);
             _currentStat = _stat;
 
             _unitMove = GetComponent<UnitMove>();
@@ -75,33 +75,23 @@ namespace GFSBattle
         {
             if (_IsDead) return;
 
-            ChangeHp(-damage);
-
-            if (_currentStat._hp <= 0)
-                Die();
-            else
+            HpChangeAction(-damage);
+            HittByEnemyNoneDamage(attacker);
+        }
+        public void HittByEnemyNoneDamage(BaseUnit attacker)
+        {
+            ShowEffect(attacker.GetEffect(UnitEffectType.WeaponEffect), UnitEffectType.WeaponEffect, 1);
+            if (!_IsDead)
             {
                 //조건1 : attacker 현재 타겟이 아닐 경우
                 //조건2 : 대상이 공격범위 바깥에 있을 경우.
 
                 //현재 타겟이 아니고 현재 타겟이 바깥에 있을 경우.
-                if (_unitMove._NeedChangeNode(attacker))
+                if (_unitMove.NeedChangeNode(attacker))
                     _unitMove.SetTarget(attacker);
             }
         }
-        public void Healing(int healAmount)
-        {
-            ChangeHp(healAmount);
-            GameObject effect = GetEffect(UnitEffectType.HealEffect);
 
-            Destroy(effect, 2);
-        }
-        public void ChangeHp(int plus)
-        {
-            _currentStat._hp = _currentStat._hp + plus;
-            //체력바 수치 변경 이벤트.
-            OnHpChanged?.Invoke(_currentStat._hp);
-        }
         public void Die()
         {
             GameSceneManager.Instance.UnenrollUnit(_sceneNode);
@@ -118,10 +108,25 @@ namespace GFSBattle
 
             _unitMove.PlayDead();
         }
-        public void ClearInAlive()
+        public void ClearInAlive(bool isRetreat)
         {
-            _unitMove.BattleEnd();
+            _unitMove.BattleEnd(isRetreat);
             EventClear();
+        }
+        public void HpChangeAction(int change)
+        {
+            _currentStat._hp = Mathf.Min(_currentStat._hp + change, _stat._hp);
+            //체력바 수치 변경 이벤트.
+            OnHpChanged?.Invoke(_currentStat._hp);
+        }
+        public void ShowMyEffect(UnitEffectType type, float destroyTime)
+            => ShowEffect(GetEffect(type), type, destroyTime);
+
+        public void ShowEffect(GameObject effect, UnitEffectType type, float destroyTime)
+        {
+            effect.transform.SetParent(EffectTransformByType(type), false);
+
+            Destroy(effect, destroyTime);
         }
         #endregion Action
 
@@ -143,16 +148,12 @@ namespace GFSBattle
         }
         #endregion Targetting
         #region Init
-        void CallStarInfluence()
+        void CallStarInfluence(float growRate)
         {
             if (_starCount <= StarCount.Beginner) return;
 
-            ChangeStatusByStarCount();
+            _stat.Multiply((int)_starCount * growRate);
             GetEffect(UnitEffectType.BaseEffect);
-        }
-        void ChangeStatusByStarCount()
-        {
-            _stat.Multiply((int)_starCount * _originalForce._statGrowthRate);
         }
 
         GameObject GetEffect(UnitEffectType type)
@@ -162,6 +163,11 @@ namespace GFSBattle
             return Instantiate(effectPrefab, EffectTransformByType(type));
         }
         Transform EffectTransformByType(UnitEffectType type) => _baseEffectTr[(int)type - 1];
+
+        public void PlayInvasion()
+        {
+            _unitMove.Invasion();
+        }
         #endregion Init
         #region Transfer
         public void BattleStart(float second)
@@ -183,6 +189,12 @@ namespace GFSBattle
             OnMoved = null;
             OnHpChanged = null;
             _dieEventList.Clear();
+        }
+        public void StatDefendChange(int offset, float second)
+        {
+            _currentStat._defend += offset;
+
+            StartCoroutine(GFSManager.WaitForSecond(second, () => _currentStat._defend -= offset));
         }
         #endregion Transfer
 

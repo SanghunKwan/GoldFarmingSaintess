@@ -10,21 +10,36 @@ namespace GFSManagers
     {
         //force ฐüทร effect
         GameObject[] _healEffects;
+        GameObject[] _buffEffects;
+        GameObject[] _camEffects;
+
+        GameObject[] _planeEffects;
 
         Dictionary<Force, IReadOnlyDictionary<StarCount, GameObject>> _baseEffects;
         Dictionary<Force, IReadOnlyDictionary<UnitTypes, GameObject>> _weaponEffect;
 
         public IReadOnlyList<GameObject> _HealEffects => _healEffects;
+        public IReadOnlyList<GameObject> _BuffEffects => _buffEffects;
+        public IReadOnlyList<GameObject> _CamEffects => _camEffects;
+        public IReadOnlyList<GameObject> _PlaneEffects => _planeEffects;
         public IReadOnlyDictionary<Force, IReadOnlyDictionary<StarCount, GameObject>> _BaseEffects => _baseEffects;
+        public IReadOnlyDictionary<Force, IReadOnlyDictionary<UnitTypes, GameObject>> _WeaponEffects => _weaponEffect;
+
 
         public void InitManager()
         {
             EffectScriptableObject originalEffect = GameManager.Instance._EffectScriptableObject;
 
             _healEffects = originalEffect.healEffects;
+            _buffEffects = originalEffect.buffEffects;
+            _camEffects = originalEffect.camEffects;
+
+            _planeEffects = originalEffect.planeEffects;
 
             GetArrayFromListCover(originalEffect.baseEffects, ref _baseEffects);
             GetArrayFromListCover(originalEffect.weaponEffects, ref _weaponEffect);
+
+
         }
 
 

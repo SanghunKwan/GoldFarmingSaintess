@@ -1,4 +1,5 @@
 using GFSUtilities.Protocol;
+using GFSUtilities.Unit;
 using System;
 using System.Collections;
 using Unity.Collections;
@@ -28,18 +29,33 @@ namespace GFSUtilities
             _movSpeed += num;
         }
     }
-
     public struct BattleCondition
     {
         public int _participationAidGold;
         public int _huntingGold;
         public float _huntingRate;
+        public int _headCount;
     }
     public struct BattleResult
     {
         public int _leftHealCount;
         public bool _isWin;
+        public bool _isExterminated;
         public bool? _isSpecialConditionCompleted;
+    }
+    [Serializable]
+    public struct ExplainData
+    {
+        public string title;
+        public string details;
+    }
+    [Serializable]
+    public struct UnitData
+    {
+        public Status stat;
+        public UnitTypes type;
+        public Force force;
+        public float growthRate;
     }
     #endregion struct
 
@@ -113,6 +129,10 @@ namespace GFSUtilities
 
         public static readonly int b_IsMatching = Animator.StringToHash("IsMatching");
         public static readonly int t_Matched = Animator.StringToHash("Matched");
+
+        public static readonly int t_Shake = Animator.StringToHash("Shake");
+
+        public static readonly int t_Sent = Animator.StringToHash("Sent");
     }
 
     #endregion hash

@@ -164,6 +164,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 3923309102743434990, guid: c49e7a6f4052e064893c254f2304029a, type: 3}
+  _prefabTimer: {fileID: 9151046365850779220, guid: 75ec12943ef093843be65dbe474b2048, type: 3}
+  _prefabDisturbCounter: {fileID: 9151046365850779220, guid: d256e4ba3a3e07949952718782fe6871, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

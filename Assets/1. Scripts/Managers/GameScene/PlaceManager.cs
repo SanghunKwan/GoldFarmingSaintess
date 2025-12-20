@@ -30,10 +30,11 @@ namespace GFSManagers
             _dropMaxDistance = 20;
             _dragLayerMask = 1 << LayerMask.NameToLayer("DragRaycast");
             _dropLayerMask = 1 << LayerMask.NameToLayer("Plane");
-
+        }
+        public void ActivateManager()
+        {
             _enabled = true;
         }
-
         public void DragInUnit(BaseUnit unit)
         {
             _unit = unit;

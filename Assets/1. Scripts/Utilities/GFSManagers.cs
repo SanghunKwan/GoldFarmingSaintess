@@ -23,6 +23,10 @@ namespace GFSManagers
 
         SceneChangeData,
 
+        ItemData,
+
+        UnitStat,
+
         Max
     }
 

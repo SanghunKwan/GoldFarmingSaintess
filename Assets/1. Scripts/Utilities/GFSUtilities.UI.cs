@@ -1,5 +1,3 @@
-using GFSUtilities.Unit;
-using UnityEngine;
 
 namespace GFSUtilities.UI
 {
@@ -19,6 +17,13 @@ namespace GFSUtilities.UI
 
         MessageBox,
         PlayersUI,
+        TimerUI,
+
+        Disturb,
+        Bidding,
+        Inventory,
+
+        Explain,
     }
     public enum SettlementVariableType
     {
@@ -34,7 +39,6 @@ namespace GFSUtilities.UI
         DefaultGold = 0,
         AidGold,
         VictoryGold,
-        HarassGold,
         ResultGold
     }
     public enum SettlementGraphicGroupType
@@ -53,12 +57,13 @@ namespace GFSUtilities.UI
     {
         SelectSlot = 0,
         SelectStar,
-        TrainingSlot,
+        ItemSlot,
 
         PlayersUI_Slot,
 
         CharacterHPBar,
 
+        FloatingImage,
     }
 
     public enum SelectGraphicGroupType
@@ -97,5 +102,90 @@ namespace GFSUtilities.UI
         MatchWindowButtons,
         MatchingTexts
     }
+    public enum ColorType
+    {
+        Red = 0,
+        Blue,
+        Green,
+        Orange,
+        Yellow,
+    }
+    public enum DisturbOptionType
+    {
+        FirstFree,
+        AfterPriced,
+
+        Max
+    }
+
+    public enum UISpriteType
+    {
+        PortraitHeroSword = 0,
+        PortraitHeroAxe,
+        PortraitHeroBow,
+        PortraitHeroMagic,
+        PortraitMonsterSword,
+        PortraitMonsterAxe,
+        PortraitMonsterBow,
+        PortraitMonsterMagic,
+
+        MessageBoxIconProceed = 8,
+        MessageBoxIconAlert,
+        MessageBoxIconCheck,
+        MessageBoxIconTime,
+
+        ItemCane = 12,
+        ItemRing,
+        ItemPaper,
+        ItemPotion,
+        ItemShield,
+        ItemWater,
+
+        EmotionAnnoying = 18,
+        EmotionAnger,
+        EmotionBidding,
+        EmotionBidSubmit
+
+
+    }
+    public enum PlayerUISlotGroupType
+    {
+        SpeechBubble = 0,
+        Emotion,
+        CostVote,
+
+        Max
+    }
+
+    public enum ExplainType
+    {
+        Prepayment,
+        BattleReward,
+
+        UnitSlotAlly,
+        UnitSlotEnemy,
+
+        Upgrade,
+
+        DisturbSpawn,
+        DisturbEnemyBuff,
+        DisturbPlayerHurt,
+
+        BiddingMoney,
+        BiddingItem,
+
+        InventoryItem
+    }
+
+    public enum SelectWeightType
+    {
+        HuntingRewardRate = 0,
+        ParticipationAidGold,
+        SpecialConditionComplete,
+
+        Max
+    }
     #endregion enum
+
+
 }

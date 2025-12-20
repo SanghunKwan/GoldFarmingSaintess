@@ -1,39 +1,21 @@
 using GFSManagers;
 using GFSUtilities;
-using GFSUtilities.Item;
-using GFSUtilities.UI;
 using GFSUtilities.Upgrade;
-using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TrainingWindow : BaseBGWindow<TrainingWindow, TrainingManager, NoneBGManager>
 {
-    const string imageName = "ItemImage";
-    [SerializeField] Transform _inventorySlotTr;
     [SerializeField] TextMeshProUGUI[] _currentUpgradeLv;
     [SerializeField] TextMeshProUGUI[] _nextUpgradePrice;
-
-
-    Image[] itemSlots;
 
 
     public override void InitWindow(TrainingManager manager)
     {
         base.InitWindow(manager);
 
-        gameObject.SetActive(false);
-        Item[] items = _manager._items;
-
-        itemSlots = new Image[items.Length];
-        for (int i = 0; i < itemSlots.Length; i++)
-        {
-            GameObject go = GameManager.Instance.InstantiateResourcePrefab(UIResourceType.TrainingSlot, _inventorySlotTr);
-            itemSlots[i] = go.transform.Find(imageName).GetComponent<Image>();
-        }
-
         GetAllData();
+        gameObject.SetActive(false);
     }
 
 
@@ -70,7 +52,10 @@ public class TrainingWindow : BaseBGWindow<TrainingWindow, TrainingManager, None
     {
         TryUpgrade((UpgradeType)index);
     }
-
+    public void OnClickSlot(int index)
+    {
+        _manager.ShowExplain((UpgradeType)index);
+    }
     #endregion Event
 
 }

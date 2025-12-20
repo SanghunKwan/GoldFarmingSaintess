@@ -32,7 +32,7 @@ namespace GFSUtilities.UI
         public void SetBox(MessageBoxType type)
         {
             gameObject.SetActive(true);
-            SetText(_textData.text[(int)type]);
+            SetText(_textData.messageboxText[(int)type]);
             SetImage(type);
             switch (type)
             {
@@ -64,7 +64,7 @@ namespace GFSUtilities.UI
         }
         public void SetText(int index)
         {
-            SetText(_textData.text[(int)MessageBoxType.Max + index]);
+            SetText(_textData.messageboxText[(int)MessageBoxType.Max + index]);
         }
         void SetButtons(int buttonCount)
         {
@@ -75,7 +75,7 @@ namespace GFSUtilities.UI
         }
         void SetImage(MessageBoxType type)
         {
-            _mean.sprite = _spriteData._sprites[(int)type + (int)Unit.UnitTypes.Count * 2];
+            _mean.sprite = _spriteData._sprites[(int)type + (int)UISpriteType.MessageBoxIconProceed];
         }
         IEnumerator CheckTimer(int num, TextMeshProUGUI text)
         {

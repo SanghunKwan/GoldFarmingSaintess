@@ -41,17 +41,20 @@ namespace GFSManagers
         {
             _anim = GetComponent<Animator>();
             _bgImage = GetComponent<Image>();
-            _bgImage.enabled = false;
+            _bgImage.raycastTarget = false;
         }
 
-        public void CallUI<TWindow, TManager, TBGManager>(float second, BaseBGWindow<TWindow, TManager, TBGManager> window)
+        public IEnumerator CallUI<TWindow, TManager, TBGManager>(float second, BaseBGWindow<TWindow, TManager, TBGManager> window)
                                                                 where TWindow : BaseBGWindow<TWindow, TManager, TBGManager>
                                                                 where TManager : BaseBGWindowManager<TWindow, TManager, TBGManager>
                                                                 where TBGManager : MonoBehaviour
         {
             _CurrentBGUICount++;
 
-            StartCoroutine(GFSManager.WaitForSecond(second, window.FadeIn));
+            IEnumerator tempInum = GFSManager.WaitForSecond(second, window.FadeIn);
+            StartCoroutine(tempInum);
+
+            return tempInum;
         }
 
         public void ReleaseUI()
@@ -69,18 +72,18 @@ namespace GFSManagers
                 _ienum = null;
             }
 
-            _bgImage.enabled = true;
             _anim.SetBool(UIHashID.b_IsBlack, true);
+            _bgImage.raycastTarget = true;
         }
 
         void SetBGDisactive()
         {
             _anim.SetBool(UIHashID.b_IsBlack, false);
 
-            _ienum = GFSManager.WaitForSecond(2f, () =>
+            _ienum = GFSManager.WaitForSecond(0.5f, () =>
             {
-                _bgImage.enabled = false;
                 _ienum = null;
+                _bgImage.raycastTarget = false;
             });
             StartCoroutine(_ienum);
         }

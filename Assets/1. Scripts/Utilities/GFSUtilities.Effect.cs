@@ -6,6 +6,7 @@ namespace GFSUtilities.Effect
     public enum PlaneResourceType
     {
         PlaneSlot = 0,
+        Portal
     }
     public enum PlaneSlotEffectType
     {
@@ -15,6 +16,11 @@ namespace GFSUtilities.Effect
         Usable,
         EnemyOccupied,
         HighLight,
+    }
+    public enum CamEffectType
+    {
+        Explode = 0,
+        Leak,
     }
     #endregion Enums
 }

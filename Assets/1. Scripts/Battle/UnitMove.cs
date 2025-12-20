@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 
 namespace GFSBattle
@@ -27,7 +28,7 @@ namespace GFSBattle
         public BaseUnit _targetUnit { get; private set; }
         bool _IsInDistance =>
             Vector3.Distance(_targetUnit.transform.position, transform.position) <= _range + _targetUnit._Radius;
-        public bool _NeedChangeNode(BaseUnit target) => (target != _targetUnit) && (!_IsInDistance);
+        public bool NeedChangeNode(BaseUnit target) => (target != _targetUnit) && (!_IsInDistance);
 
         public bool _IsInSight => _CosEnemyAngle > BattleConstant._inSight;
         bool _IsOutRunTurning => _CosEnemyAngle > BattleConstant._inRunTurning;
@@ -44,14 +45,12 @@ namespace GFSBattle
                 TurnToAttack();
                 if (_IsInSight)
                     PlayAttack();
-                else
-                    _unit.OnMove();
             }
             else
-            {
                 MoveToAttack();
+
+            if (_navAgent.velocity.sqrMagnitude > 0.01f)
                 _unit.OnMove();
-            }
         }
 
         public void InitMove(BaseUnit unit)
@@ -181,10 +180,33 @@ namespace GFSBattle
         {
             _anim.SetBool(HashId.b_OnBattle, true);
         }
-        public void BattleEnd()
+        public void BattleEnd(bool isRetreat)
         {
+            enabled = false;
             _anim.SetBool(HashId.b_OnBattle, false);
+            _anim.SetFloat(HashId.f_IsRetreat, isRetreat ? 1 : 0);
             gameObject.AddComponent<BattleEndMove>().InitMove(_angularSpeed / 3, 3);
+        }
+
+        public void Invasion()
+        {
+            StartCoroutine(InvasionAnim());
+        }
+        IEnumerator InvasionAnim()
+        {
+            _navAgent.enabled = false;
+            _collider.enabled = false;
+
+            transform.position = Vector3.down * 2;
+
+            while (transform.position.y < 0)
+            {
+                transform.position += Vector3.up * Time.deltaTime * 2;
+                yield return null;
+            }
+            transform.position = Vector3.zero;
+            _navAgent.enabled = true;
+            _collider.enabled = true;
         }
     }
 }

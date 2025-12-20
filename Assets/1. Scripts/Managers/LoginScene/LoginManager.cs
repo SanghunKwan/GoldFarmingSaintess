@@ -1,6 +1,7 @@
 using GFSUtilities;
 using GFSUtilities.Protocol;
 using GFSUtilities.UI;
+using System;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
@@ -17,6 +18,8 @@ namespace GFSManagers
 
         public string _nickName { get; private set; }
         public int _id { get; private set; }
+
+        event Action _serverLinkEvent;
 
         MessageBox _messageBox;
         SettingWindow _settingWindow;
@@ -84,6 +87,9 @@ namespace GFSManagers
         {
             _CurrentPage = pageProtocol._pageType;
             _id = pageProtocol._id;
+
+            _serverLinkEvent?.Invoke();
+            _serverLinkEvent = null;
         }
         public void SubmitNickName(in string nickName)
         {
@@ -188,34 +194,34 @@ namespace GFSManagers
         }
         public void MatchingComplete(in GameStartProtocol pageProtocol)
         {
-            GameManager.Instance.InstantiatePrefab(UIType.PlayersUI, _bgManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames, out var nicks, false);
+            GameManager.Instance.InstantiatePrefab(UIType.PlayersUI, _bgManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames, out var nicks, GameManager.Instance._PlayerColorScriptableObject._color, false);
             _messageBox.SetBox(MessageBoxType.Time);
             _window.FadeOut();
-            _window.StartCoroutine(GFSManager.WaitForSecond(0.1f, ClearWorld));
+            int index = pageProtocol._index;
+            _window.StartCoroutine(GFSManager.WaitForSecond(0.1f, () => ClearWorld(index == 1)));
 
             var data = GameManager.Instance._SceneChangeDataScriptableObject;
             data._names = pageProtocol._nickNames.ToString();
-            data._nameIndex = pageProtocol._index;
+            data._nameIndex = index;
             data._size = nicks.Length;
 
             var connectData = GameManager.Instance._ServerScriptableObject;
             connectData._port = 2;
         }
-        void ClearWorld()
+        void ClearWorld(bool isHost)
         {
             string str = ClientServerBootstrap.ClientWorld.Name;
             ClientServerBootstrap.ClientWorld.Dispose();
             ClientServerBootstrap.CreateClientWorld(str);
 
-#if UNITY_EDITOR
-            if (ClientServerBootstrap.ServerWorld != null)
-            {
-                str = ClientServerBootstrap.ServerWorld.Name;
-                ClientServerBootstrap.ServerWorld.Dispose();
+            if (isHost)
                 ClientServerBootstrap.CreateServerWorld(str);
-            }
+        }
 
-#endif
+        public void AutoLogin(string nickName)
+        {
+            LinkServer();
+            _serverLinkEvent += () => SendProtocol(new UserSettingProtocol { _nickName = nickName });
         }
     }
 }

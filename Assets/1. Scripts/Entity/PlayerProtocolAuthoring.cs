@@ -7,27 +7,22 @@ using UnityEngine;
 [BurstCompile]
 public struct PlayerProtocol : IComponentData
 {
-    [GhostField] public int _type;
     [GhostField] public int _gold;
+    [GhostField] public EmotionType _emotionType;
+    [GhostField] public int _vote;
 }
 
-public enum ProtocolType
-{
-    None = 0,
-
-}
 
 
 public class PlayerProtocolAuthoring : MonoBehaviour
 {
-    public ProtocolType _type;
 
     class Baker : Baker<PlayerProtocolAuthoring>
     {
         public override void Bake(PlayerProtocolAuthoring authoring)
         {
-            var entity = GetEntity(TransformUsageFlags.Renderable);
-            var data = new PlayerProtocol { _type = (int)authoring._type, _gold = 100 };
+            var entity = GetEntity(TransformUsageFlags.None);
+            var data = new PlayerProtocol { _gold = 100, _emotionType = EmotionType.None, _vote = 0 };
 
             AddComponent(entity, data);
             AddComponent<GoldInputData>(entity);

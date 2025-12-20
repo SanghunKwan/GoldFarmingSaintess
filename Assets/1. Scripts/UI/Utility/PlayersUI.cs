@@ -10,10 +10,9 @@ public class PlayersUI : MonoBehaviour
     public PlayersUISlot[] _slots { get; private set; }
 
 
-    public void InitUI(in FixedString512Bytes nicknames, out string[] nicks, bool isDataShow = true)
+    public void InitUI(in FixedString512Bytes nicknames, out string[] nicks, in Color[] colors, bool isDataShow = true)
     {
         GameManager manager = GameManager.Instance;
-        ColorScriptableObject colorData = manager._PlayerColorScriptableObject;
         nicks = nicknames.ToString().Split(' ');
 
         int length = nicks.Length;
@@ -22,7 +21,7 @@ public class PlayersUI : MonoBehaviour
         {
             GameObject go = manager.InstantiateResourcePrefab(UIResourceType.PlayersUI_Slot, _slotParent);
             _slots[i] = go.GetComponent<PlayersUISlot>();
-            _slots[i].InitSlot(nicks[i], colorData._color[i]);
+            _slots[i].InitSlot(nicks[i], colors[i]);
             _slots[i].SetShowData(isDataShow);
         }
     }

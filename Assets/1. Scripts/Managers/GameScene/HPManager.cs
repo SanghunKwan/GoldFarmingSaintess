@@ -1,9 +1,9 @@
 using GFSBattle;
+using GFSUtilities;
 using GFSUtilities.Unit;
-using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Device;
 
 
 namespace GFSManagers
@@ -16,7 +16,7 @@ namespace GFSManagers
         Color[] _colors;
         GameManager _manager;
         Queue<HPBar> bars;
-
+        RectTransform _canvasTransform;
 
         public void InitManager()
         {
@@ -28,21 +28,25 @@ namespace GFSManagers
             _colors = _manager._PlayerColorScriptableObject._color;
 
             _cam = Camera.main;
-
+            _canvasTransform = (RectTransform)transform.parent;
             bars = new Queue<HPBar>();
         }
 
 
-        public void MakeHPBar(in LinkedList<BaseUnit> list, Force force)
+        public void MakeHPBar(LinkedList<BaseUnit> list, Force force)
         {
             Color hpbarColor = _colors[(int)_enumConverter[force]];
 
+            StartCoroutine(GFSManager.WaitForSecond(0.5f, () => InstantiateBarsInList(list, hpbarColor)));
+        }
+        void InstantiateBarsInList(in LinkedList<BaseUnit> list, in Color hpbarColor)
+        {
             foreach (BaseUnit unit in list)
             {
                 GameObject go = _manager.InstantiateResourcePrefab(GFSUtilities.UI.UIResourceType.CharacterHPBar, transform);
 
                 HPBar bar = go.GetComponent<HPBar>();
-                bar.InitBar(_cam, unit, hpbarColor);
+                bar.InitBar(unit, hpbarColor, this);
                 bars.Enqueue(bar);
             }
         }
@@ -54,6 +58,23 @@ namespace GFSManagers
 
             foreach (HPBar bar in bars)
                 bar.Disactivate();
+        }
+
+        public Vector2 UIFollowWorld(in Vector3 vec)
+        {
+            Vector3 screen = _cam.WorldToScreenPoint(vec);
+            return UIPosition(screen);
+        }
+        public Vector3 WorldFollowUI(in Vector3 vec)
+        {
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(_cam, vec);
+            return _cam.ScreenToWorldPoint((Vector3)screenPoint + Vector3.forward);
+        }
+        public Vector2 UIPosition(in Vector3 vec)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasTransform, vec, _cam, out Vector2 localPoint);
+
+            return localPoint;
         }
     }
 }

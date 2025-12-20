@@ -56,7 +56,13 @@ namespace GFSManagers
 
             _CurrentGold += add;
             return true;
-
+        }
+        public void CallUI<TWindow, TManager, TBGManager>(float second, BaseBGWindow<TWindow, TManager, TBGManager> window)
+                                                                where TWindow : BaseBGWindow<TWindow, TManager, TBGManager>
+                                                                where TManager : BaseBGWindowManager<TWindow, TManager, TBGManager>
+                                                                where TBGManager : MonoBehaviour
+        {
+            StartCoroutine(GFSManager.WaitForSecond(second, window.FadeIn));
         }
     }
 }

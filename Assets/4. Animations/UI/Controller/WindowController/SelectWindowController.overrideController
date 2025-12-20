@@ -9,7 +9,7 @@ AnimatorOverrideController:
   m_Name: SelectWindowController
   m_Controller: {fileID: 9100000, guid: 669b3ec2cbd8e6b47a2b0ac3c608155d, type: 2}
   m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: 357fcf1fcbf7f6b45a681ada3f06d893, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: fbb74471b640b2345aa363f71195e802, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 71b96a9e2e858314a88880e195563951, type: 2}
     m_OverrideClip: {fileID: 7400000, guid: 8675c22278e01864c8ed8ae4dc87e847, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 2688f8b876a59ee439a7ad33f6bec6f8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 2a375fd5e703bc54c9f0315dffb828f1, type: 2}

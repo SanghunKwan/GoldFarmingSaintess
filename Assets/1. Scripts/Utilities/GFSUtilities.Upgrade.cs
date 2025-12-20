@@ -5,8 +5,8 @@ namespace GFSUtilities.Upgrade
     #region Enum
     public enum UpgradeType
     {
-        HealAmount,
         HealCount,
+        HealAmount,
 
         Max
     }

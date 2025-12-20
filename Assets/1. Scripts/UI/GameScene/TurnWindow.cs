@@ -20,8 +20,6 @@ public class TurnWindow : BaseBGWindow<TurnWindow, TurnManager, BGManager>
     public void SetMaxTurn(int num)
     {
         _maxTurntext.text = num.ToString();
-        SetCurrentTurn(_manager._currentTurn);
-        _controller.HideAllColor(0);
     }
     public void SetCurrentTurn(int num)
     {
@@ -30,6 +28,7 @@ public class TurnWindow : BaseBGWindow<TurnWindow, TurnManager, BGManager>
 
     public override void FadeIn()
     {
+        _controller.HideAllColor(0);
         gameObject.SetActive(true);
         _anim.SetTrigger(UIHashID.t_FadeIn);
         StartCoroutine(ShowDetailsCoroutine());

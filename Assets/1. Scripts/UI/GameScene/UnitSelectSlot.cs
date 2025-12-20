@@ -1,15 +1,18 @@
-using GFSManagers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using GFSUtilities.Unit;
+using System;
+using UnityEngine.EventSystems;
 
-public class UnitSelectSlot : MonoBehaviour
+public class UnitSelectSlot : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] Image _portrait;
     [SerializeField] TextMeshProUGUI _unitCount;
     [SerializeField] Transform _starParentTr;
     [SerializeField] GraphicColorController _controller;
+
+    public event Action OnclickEvent;
 
     public void SetImage(in Sprite image)
     {
@@ -35,4 +38,16 @@ public class UnitSelectSlot : MonoBehaviour
         _controller.HideAllColor(0);
         _controller.FadeGraphicInOrder(0, 1, 0.2f, 0);
     }
+
+    #region Event
+    public void OnClickSlot()
+    {
+        OnclickEvent?.Invoke();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        OnClickSlot();
+    }
+    #endregion Event
 }

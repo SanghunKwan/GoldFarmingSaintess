@@ -29,9 +29,9 @@ namespace GFSManagers
         public int _SlotCount => _row * _column;
 
 
-        public void InitManager()
+        public void InitManager(EffectManager effectManager)
         {
-            _prefabSlotEffect = GameManager.Instance._EffectScriptableObject.planeEffects[(int)PlaneResourceType.PlaneSlot];
+            _prefabSlotEffect = effectManager._PlaneEffects[(int)PlaneResourceType.PlaneSlot];
 
             _row = Mathf.RoundToInt(transform.localScale.x * 10);
             _column = Mathf.RoundToInt(transform.localScale.z * 10);
@@ -40,7 +40,7 @@ namespace GFSManagers
             _colors = GameManager.Instance._PlayerColorScriptableObject._color;
 
             ResetSlots();
-            SetSlotsState(SlotStateType.UpDown);
+
         }
 
         public void ResetSlots()
@@ -136,9 +136,7 @@ namespace GFSManagers
             return type == PlaneSlotEffectType.Useless || type == PlaneSlotEffectType.EnemyOccupied;
         }
 
-        public void HideSlots()
-        {
-            _slotsParentTr.gameObject.SetActive(false);
-        }
+        public void SetActiveSlots(bool isOn)
+            => _slotsParentTr.gameObject.SetActive(isOn);
     }
 }

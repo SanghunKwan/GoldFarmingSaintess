@@ -8,6 +8,7 @@ public class ServerDataScriptableObject : ScriptableObject
 
     public int _matchingCount;
 
+
     public void CopyValue(ServerDataScriptableObject copyObject)
     {
         _ipv4 = new string(copyObject._ipv4);

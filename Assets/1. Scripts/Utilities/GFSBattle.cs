@@ -12,6 +12,8 @@ namespace GFSBattle
         public static readonly int b_OnBattle = Animator.StringToHash("OnBattle");
         public static readonly int f_Type = Animator.StringToHash("Type");
         public static readonly int b_Grabbed = Animator.StringToHash("Holding");
+
+        public static readonly int f_IsRetreat = Animator.StringToHash("isRetreat");
     }
     class BattleConstant
     {

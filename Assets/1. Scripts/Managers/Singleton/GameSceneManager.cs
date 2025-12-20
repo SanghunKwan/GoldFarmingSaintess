@@ -1,10 +1,13 @@
 using GFSBattle;
 using GFSUtilities;
 using GFSUtilities.Protocol;
+using GFSUtilities.ResourcesData;
 using GFSUtilities.Unit;
 using GFSUtilities.Upgrade;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GFSManagers
 {
@@ -19,8 +22,11 @@ namespace GFSManagers
         SettlementManager _settlementManager;
         SelectManager _selectManager;
         SpawnManager _spawnManager;
+        InventoryManager _inventoryManager;
         TrainingManager _trainingManager;
         TurnManager _turnManager;
+        DisturbManager _disturbManager;
+        BiddingManager _biddingManager;
 
         [Header("씬 내 매니저")]
         [SerializeField] BGManager _bgManager;
@@ -28,17 +34,20 @@ namespace GFSManagers
         [SerializeField] HostManager _hostManager;
         [SerializeField] PlaneManager _planeManager;
         [SerializeField] HPManager _hpManager;
+        [SerializeField] ExplainManager _explainManager;
+
 
         [Header("씬 내 데이터")]
         [SerializeField] Transform _unitFolder;
+        [SerializeField] GraphicColorController _quitButton;
 
 
 
         LinkedList<BaseUnit> _ally;
         LinkedList<BaseUnit> _enemy;
 
-        float GetsqrDistance(in Vector3 vec1, in Vector3 vec2)
-            => (vec1 - vec2).sqrMagnitude;
+
+        GamePhaseType _currentPhase;
 
         private void Awake()
         {
@@ -51,6 +60,7 @@ namespace GFSManagers
         private void Start()
         {
             _hostManager.InitManager();
+            //_hostManager.InitRelay();
         }
 
         public void ReadyToStart(in AllClientReady readyData)
@@ -61,57 +71,162 @@ namespace GFSManagers
 
             _bgManager.InitManager();
             _noneBGManager.InitManager(readyData.defaultGold);
-            _turnManager.CallTurnUI();
+            SetPhase(GamePhaseType.Turn);
 
             //호스트 하나에 나머지는 다 클라이언트임. 이미 정해져있음.
 
             _hostManager.CreatePlayersUI(_bgManager.transform, readyData.playerCount);
         }
+        public void SetPhase(GamePhaseType type)
+        {
+            _currentPhase = type;
+            _explainManager.HideWindow();
 
+            switch (type)
+            {
+                case GamePhaseType.Turn:
+                    _turnManager.CallTurnUI();
+                    break;
+                case GamePhaseType.Event:
+                    //이벤트 추가 예정.
+                    Debug.Log("이벤트 오픈");
+                    break;
+                case GamePhaseType.Select:
+                    SelectInit();
+                    Debug.Log("선택창 오픈");
+                    break;
+                case GamePhaseType.Place:
+                    SelectEnd();
+                    break;
+                case GamePhaseType.Battle:
+                    BattleStart(1);
+                    break;
+                case GamePhaseType.Settlement:
+                    StartSettlement();
+                    break;
+                case GamePhaseType.Bidding:
+                    StartBidding();
+                    break;
+                case GamePhaseType.BidCalculate:
+                    EndBidding();
+                    break;
+            }
+        }
         void SelectInit()
         {
-            _selectManager = new SelectManager();
-            _selectManager.InitManager(_bgManager);
-            _selectManager.MakeBattle();
+            if (_selectManager == null)
+            {
+                _selectManager = new SelectManager();
+                _selectManager.InitManager(_bgManager);
+                _selectManager.MakeBattle();
+                _selectManager._explainManager = _explainManager;
+
+                _hostManager.CreateTimerUI(_bgManager.transform);
+
+                _explainManager.InitManager();
+                _explainManager._hpManager = _hpManager;
+
+                _hpManager.InitManager();
+            }
+            else
+                _selectManager.MakeBattle();
+
+            _hostManager.FadeInTimerUI();
+        }
+        void SelectEnd()
+        {
+            _hostManager.ShakeTimerUI();
+            //아직 전투를 선택하지 않았을 때
+            if (_selectManager._IsSelecting)
+            {
+                _selectManager.ChooseCurrentData();
+                StageInitReady();
+
+                if (_trainingManager == null)
+                {
+                    _trainingManager = new TrainingManager();
+                    _trainingManager.InitManager(_noneBGManager);
+                    _trainingManager._explainManager = _explainManager;
+                }
+            }
+            else
+                EndTraining();
         }
         void PrepareNextStage()
         {
-            _trainingManager = new TrainingManager();
-            _trainingManager.InitManager(_noneBGManager);
+            if (_trainingManager == null)
+            {
+                _trainingManager = new TrainingManager();
+                _trainingManager.InitManager(_noneBGManager);
+                _trainingManager._explainManager = _explainManager;
+            }
+            _trainingManager.ShowWindow();
+
+            if (_inventoryManager == null)
+            {
+                _inventoryManager = new InventoryManager();
+                _inventoryManager.InitManager(_noneBGManager);
+                _inventoryManager._explainManager = _explainManager;
+                _inventoryManager._selectManager = _selectManager;
+            }
+            _inventoryManager.CallUI(0);
         }
         void StageInitReady()
         {
-            _effectManager = new EffectManager();
-            _effectManager.InitManager();
+            if (_effectManager == null)
+            {
+                _effectManager = new EffectManager();
+                _effectManager.InitManager();
+                _hostManager._effectManager = _effectManager;
 
-            _planeManager.InitManager();
+                _planeManager.InitManager(_effectManager);
 
-            _spawnManager = new SpawnManager();
-            _spawnManager.InitManager(_unitFolder, _planeManager);
+                _spawnManager = new SpawnManager();
+                _spawnManager.InitManager(_unitFolder, _planeManager);
 
-            _placeManager = new PlaceManager();
-            _placeManager.InitManager(_planeManager);
+                _placeManager = new PlaceManager();
+                _placeManager.InitManager(_planeManager);
+
+            }
+
+            _placeManager.ActivateManager();
+            _planeManager.SetActiveSlots(true);
+            _planeManager.SetSlotsState(PlaneManager.SlotStateType.UpDown);
 
             _spawnManager.SpawnUnit(_selectManager._AllyUnits, Force.Ally);
             _spawnManager.SpawnUnit(_selectManager._EnemyUnits, Force.Enemy);
+            _spawnManager.ShuffleEnemy(_enemy);
         }
         void InitBattle()
         {
-            _battleManager = new BattleManager();
-            _settlementManager = new SettlementManager();
-            _settlementManager.InitManager(_bgManager);
+            if (_settlementManager == null)
+            {
+                _settlementManager = new SettlementManager();
+                _settlementManager.InitManager(_bgManager);
+                _settlementManager._noneBGManager = _noneBGManager;
+                _settlementManager._hostManager = _hostManager;
+                _settlementManager._selectManager = _selectManager;
+
+                _hostManager._hpManager = _hpManager;
+            }
             _settlementManager.SetData(_selectManager._Battle);
-            _settlementManager._noneBGManager = _noneBGManager;
 
             _placeManager.EndPlacePhase();
-            _planeManager.HideSlots();
+            _planeManager.SetActiveSlots(false);
 
-            _hpManager.InitManager();
             _hpManager.MakeHPBar(_ally, Force.Ally);
             _hpManager.MakeHPBar(_enemy, Force.Enemy);
 
-            _battleManager.InitManger(_trainingManager._CurrentValue(UpgradeType.HealCount),
-                                      _trainingManager._CurrentValue(UpgradeType.HealAmount));
+            _battleManager = new BattleManager();
+            _battleManager.InitManager();
+            _battleManager.UpdateManager(_trainingManager._CurrentValue(UpgradeType.HealCount),
+                                        _trainingManager._CurrentValue(UpgradeType.HealAmount));
+
+            if (_inventoryManager != null)
+            {
+                _inventoryManager.BindBattleManager(_battleManager);
+                _selectManager.ClearAdditionalWeight();
+            }
         }
 
         public LinkedListNode<BaseUnit> EnrollUnit(BaseUnit unit)
@@ -136,6 +251,9 @@ namespace GFSManagers
                 item.BattleStart(second);
             foreach (var item in _enemy)
                 item.BattleStart(second);
+
+            _hostManager.AlertServerNeedGhostPrefab(PrefabGhostType.DisturbCounter);
+            _hostManager.ShakeTimerUI();
         }
 
 
@@ -164,21 +282,35 @@ namespace GFSManagers
 
             return target;
         }
-
+        float GetsqrDistance(in Vector3 vec1, in Vector3 vec2)
+            => (vec1 - vec2).sqrMagnitude;
 
 
         void BattleEndCall(LinkedList<BaseUnit> leftList)
         {
             _hpManager.BattleEnd();
-            StartCoroutine(GFSManager.WaitForSecond(2, () =>
+            _battleManager._isBattleEnd = true;
+            StartCoroutine(GFSManager.WaitForSecond(0.5f, () =>
             {
                 foreach (var item in leftList)
                 {
-                    item.ClearInAlive();
+                    item.ClearInAlive(false);
                 }
             }));
+            CallDisturbWindow();
 
-            StartCoroutine(GFSManager.WaitForSecond(3, StartSettlement));
+        }
+        void CallDisturbWindow()
+        {
+            if (_disturbManager == null)
+            {
+                _disturbManager = new DisturbManager();
+                _disturbManager.InitManager(_bgManager);
+                _disturbManager._noneBGManager = _noneBGManager;
+                _disturbManager._hostManager = _hostManager;
+                _disturbManager._explainManager = _explainManager;
+            }
+            _disturbManager.CallWindow(_settlementManager);
         }
 
         #region BattleManager Transfer
@@ -186,7 +318,7 @@ namespace GFSManagers
 
         public void Attack(BaseUnit attacker, BaseUnit defender)
         {
-            _battleManager.CalculateDamage(attacker, defender, (int)attacker._force);
+            _battleManager.CalculateDamage(attacker, defender, (int)attacker._force - 1);
         }
         public void ClickUnit(BaseUnit target)
         {
@@ -212,7 +344,7 @@ namespace GFSManagers
                     break;
 
                 case UnitEffectType.WeaponEffect:
-                    newEffect = GetHealEffect(unit._force);
+                    newEffect = GetWeaponEffect(unit._type);
                     break;
 
                 default:
@@ -226,6 +358,10 @@ namespace GFSManagers
         => _effectManager._BaseEffects[force][starCount];
         GameObject GetHealEffect(Force force)
          => _effectManager._HealEffects[(int)force];
+        GameObject GetBuffEffect(Force force)
+         => _effectManager._BuffEffects[(int)force];
+        GameObject GetWeaponEffect(UnitTypes type)
+            => _effectManager._WeaponEffects[Force.None][type];
 
         #endregion EffectManager Transfer
 
@@ -247,9 +383,25 @@ namespace GFSManagers
         #region SettlementManager Transfer
         void StartSettlement()
         {
-            _settlementManager.SetData(_battleManager.GetResult(_ally.Count != 0));
+            _settlementManager.SetData(_battleManager.GetResult(_enemy.Count == 0, _ally.Count == 0));
             _settlementManager.CalculateSettlement();
-            _settlementManager.ShowWindow();
+            _settlementManager.ShowWindow(_hostManager.FadeInTimerUI);
+
+            _hostManager.FadeOutTimerUI();
+
+            if (_battleManager._isBattleEnd)
+                _disturbManager.FadeOut();
+            else
+            {
+                _hpManager.BattleEnd();
+
+                foreach (var item in _ally)
+                    item.ClearInAlive(true);
+                foreach (var item in _enemy)
+                    item.ClearInAlive(false);
+            }
+
+            _battleManager = null;
         }
         #endregion SettlementManager Transfer
         #region SelectManager Transfer
@@ -262,25 +414,148 @@ namespace GFSManagers
         public void EndTraining()
         {
             _trainingManager.TrainingTimeOut();
+            _inventoryManager.FadeOut();
             StageInitReady();
         }
         #endregion TraningManager Transfer
         #region TurnManager Transfer
         public void EndTurn()
         {
-            SelectInit();
+            _hostManager.AlertServerPhaseEnd(GamePhaseType.Turn);
+            _hostManager.AlertServerNeedGhostPrefab(PrefabGhostType.Timer);
         }
         #endregion TurnManager Transfer
-
-        public int GetMoney => _noneBGManager._CurrentGold;
-        public void SetMoney(int gold, int playerIndex)
+        #region HostManager Transfer
+        public void SetTimer(float time)
+        {
+            _hostManager.SetTimer(time);
+        }
+        public void AlarmTimer()
+        {
+            _hostManager.AlertServerPhaseEnd(_currentPhase);
+        }
+        public void TransferPlayerProtocols(in PlayerProtocol protocol, int playerIndex)
         {
             if (_hostManager == null) return;
-            _hostManager.SetMoney(gold, playerIndex);
+
+            _hostManager.SetMoney(protocol._gold, playerIndex);
+            _hostManager.ShowEmotion(protocol._emotionType, playerIndex);
+
+            if (_biddingManager == null) return;
+
         }
-        public void ClickButton()
+        public void TransferDisturb(in ClientDisturbRPC disturb)
         {
+            if (_battleManager._isBattleEnd) return;
+
+            //_hostManager.ShowEmotion(protocol._emotionType, playerIndex);
+            //전투 매니저 상호작용.
+            SetEmotion(EmotionType.Anger);
+
+            switch (disturb._type)
+            {
+                case DisturbType.MonsterSpawn:
+
+                    _spawnManager.DisturbSpawnUnit((StarCount)disturb._intensity, _effectManager);
+                    break;
+                case DisturbType.MonsterBuff:
+                    _battleManager.ReinforceDamage(_enemy, disturb._intensity, Instantiate(GetBuffEffect(Force.Enemy)));
+                    break;
+                case DisturbType.HeroHurt:
+                    _battleManager.DamagePercent(_ally, disturb._intensity, Instantiate(GetBuffEffect(Force.Ally)));
+                    break;
+            }
         }
+
+        public void SetEmotion(EmotionType type)
+        {
+            _hostManager.SetEmotion(type);
+        }
+        public void ShowBidResult(in FixedList32Bytes<AnonymousVoteBuffer> buffer)
+        {
+            _hostManager.AlertServerPhaseEnd(GamePhaseType.Bidding);
+            _hostManager.ShowCostVote(buffer);
+        }
+
+        public void GameComplete()
+        {
+            _hostManager.AlertGameComplete();
+        }
+        public void ShowGameResult(in FixedList32Bytes<RaceResultBuffer> buffer)
+        {
+            _hostManager.ShowGameResult(buffer);
+
+            StartCoroutine(GFSManager.WaitForSecond(2, () =>
+            {
+                _hostManager.ClearWorld();
+                _quitButton.gameObject.SetActive(true);
+                _quitButton.FadeGraphicAtOnce(0, 0, 0);
+                _quitButton.FadeGraphicAtOnce(0, 1, 0.5f);
+            }));
+        }
+        #endregion HostManager Transfer
+        #region BiddingManager Transfer
+        public void StartBidding()
+        {
+            if (_inventoryManager == null)
+            {
+                _inventoryManager = new InventoryManager();
+                _inventoryManager.InitManager(_noneBGManager);
+                _inventoryManager._explainManager = _explainManager;
+                _inventoryManager._selectManager = _selectManager;
+            }
+            _inventoryManager.CallUI(1);
+
+            if (_biddingManager == null)
+            {
+                _biddingManager = new BiddingManager();
+                _biddingManager._inventoryManager = _inventoryManager;
+                _biddingManager.InitManager(_noneBGManager);
+                _biddingManager._hostManager = _hostManager;
+                _biddingManager._explainManager = _explainManager;
+            }
+            _biddingManager.CallWindow();
+
+            _hostManager.ShakeTimerUI();
+            _settlementManager.HideWindow();
+            _settlementManager.DisposeFormerTurn();
+        }
+        public void SetAgenda(int index)
+        {
+            _biddingManager._Agenda = index;
+        }
+
+        public void EndBidding()
+        {
+            _biddingManager.CheckSent();
+        }
+
+        public void BiddingCast(int secondCost)
+        {
+            _biddingManager.CompareSecond(secondCost, _effectManager, _hpManager);
+
+            DisposeFormerList(_ally);
+            DisposeFormerList(_enemy);
+
+            StartCoroutine(GFSManager.WaitForSecond(2, () => _hostManager.AlertServerPhaseEnd(GamePhaseType.BidCalculate)));
+        }
+        #endregion BiddingManager Transfer
+        public int GetMoney => _noneBGManager._CurrentGold;
+        public void DisposeFormerList(LinkedList<BaseUnit> list)
+        {
+            while (list.Count > 0)
+            {
+                var node = list.First;
+
+                list.RemoveFirst();
+                Destroy(node.Value.gameObject);
+            }
+        }
+        public void ClickQuitButton()
+        {
+            SceneManager.LoadScene(0);
+        }
+
     }
 }
 

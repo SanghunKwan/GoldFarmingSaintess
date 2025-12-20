@@ -4,11 +4,14 @@ using TMPro;
 using GFSUtilities.UI;
 using System.Collections;
 using GFSManagers;
+using System;
 
 public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager, BGManager>
 {
     IEnumerator _ienum;
     float _paceControl;
+
+    public event Action FadeEvent;
 
     [SerializeField] TextMeshProUGUI[] _variablesText;
     [SerializeField] TextMeshProUGUI[] _calculatedText;
@@ -34,6 +37,7 @@ public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager
     }
     public override void FadeOut()
     {
+        _button.SetActive(false);
         _controller.HideAllColor(0.2f);
         StartCoroutine(GFSManager.WaitForSecond(0.2f, () => _anim.SetTrigger(UIHashID.t_FadeOut)));
         StartCoroutine(GFSManager.WaitForSecond(1, () => gameObject.SetActive(false)));
@@ -57,7 +61,7 @@ public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager
         _controller.FadeGraphicInOrder((int)SettlementGraphicGroupType.CalculatedNames, 1, 0.5f * _paceControl, 0.1f * _paceControl);
         yield return new WaitForSeconds(0.5f * _paceControl);
         _controller.FadeGraphicInOrder((int)SettlementGraphicGroupType.CalculatedValues, 1, 0.2f * _paceControl, 0.4f * _paceControl);
-        yield return new WaitForSeconds(2.7f * _paceControl);
+        yield return new WaitForSeconds(2.3f * _paceControl);
 
         _controller.FadeGraphicAtOnce((int)SettlementGraphicGroupType.Line, 1, 0.2f * _paceControl);
         yield return new WaitForSeconds(0.5f * _paceControl);
@@ -69,7 +73,8 @@ public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager
         yield return new WaitForSeconds(0.3f * _paceControl);
 
         _button.SetActive(true);
-
+        FadeEvent?.Invoke();
+        FadeEvent = null;
     }
     #endregion Action
     #region ValueAllocation
@@ -81,7 +86,8 @@ public class SettlementWindow : BaseBGWindow<SettlementWindow, SettlementManager
     void EndSettlement()
     {
         _manager.HideWindow();
-        _button.SetActive(false);
+        _manager.SendWait();
+
     }
     void MakePaceFast()
     {

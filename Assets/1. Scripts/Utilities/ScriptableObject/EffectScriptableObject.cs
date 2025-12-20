@@ -11,6 +11,7 @@ namespace GFSBattle
     {
         [Header("force 관련 이펙트")]
         public GameObject[] healEffects;
+        public GameObject[] buffEffects;
 
         [Header("force, star 관련 이펙트")]
         public ListCover[] baseEffects;
@@ -21,6 +22,8 @@ namespace GFSBattle
         [Header("plane 관련 이펙트")]
         public GameObject[] planeEffects;
 
+        [Header("UICam 관련 이펙트")]
+        public GameObject[] camEffects;
 
         [Serializable]
         public class ListCover

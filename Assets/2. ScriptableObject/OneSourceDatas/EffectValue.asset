@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63c7ccf07a18e5c4a97e9219e3879866, type: 3}
+  m_Name: EffectValue
+  m_EditorClassIdentifier: 
+  healEffects:
+  - {fileID: 0}
+  - {fileID: 7053385775836331393, guid: 354b6251e950209409c75ab984acf000, type: 3}
+  - {fileID: 9017484664307500583, guid: 1245b8d2997d5b34fb1637be70a7eb05, type: 3}
+  buffEffects:
+  - {fileID: 0}
+  - {fileID: 6126188424833946103, guid: a58aa9a78f2b45b45bb0f3e2e1e3ad3c, type: 3}
+  - {fileID: 7053385775836331393, guid: 354b6251e950209409c75ab984acf000, type: 3}
+  baseEffects:
+  - _list: []
+  - _list:
+    - {fileID: 0}
+    - {fileID: 245581523800709616, guid: 9442d241d2d8ecc47b49f256b55325c6, type: 3}
+    - {fileID: 4109064841345302812, guid: 311a9b21226c1594eaada62284436bb7, type: 3}
+  - _list:
+    - {fileID: 0}
+    - {fileID: 7938384439400024403, guid: b6e54acc881a03c4a9719b161a25a3e3, type: 3}
+    - {fileID: 4109064841345302812, guid: 2a409ab125c5216449bc5f005ec045f0, type: 3}
+  weaponEffects:
+  - _list:
+    - {fileID: 1758473627833946668, guid: 9b21333b068a5084ba09535839bee3c8, type: 3}
+    - {fileID: 4924508274929071776, guid: 0edef91621bb6b34384ccc9dbb98729c, type: 3}
+    - {fileID: 2944396702758532163, guid: e190bf97c041e58448af6b043116cba0, type: 3}
+    - {fileID: 358637981425055526, guid: 8eb503696b886e04faff8fc0f480d473, type: 3}
+  planeEffects:
+  - {fileID: 6434545473978840203, guid: b4053b30a4f7fd24590609b701eb7a91, type: 3}
+  - {fileID: 5607819269926399345, guid: 45e0f06c750176947862c10346226439, type: 3}
+  camEffects:
+  - {fileID: 5435998012328932994, guid: d8703a33a4eb0b84a875202fde23e8f7, type: 3}
+  - {fileID: 4718697377525663345, guid: 0d3a2dc2176fee345b9d92ac7a089808, type: 3}

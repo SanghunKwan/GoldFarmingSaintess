@@ -3,8 +3,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 
 
@@ -96,7 +94,67 @@ namespace GFSUtilities.Protocol
                 beforeIndexBuffer.AddNoResize(buffer[i]._beforeIndex);
         }
     }
+    [BurstCompile]
+    public struct ClientGamePhase : IRpcCommand
+    {
+        public GamePhaseType _nextPhase;
+    }
+    [BurstCompile]
+    public struct ClientDisturbRPC : IRpcCommand
+    {
+        public DisturbType _type;
+        public int _intensity;
+    }
+    public enum DisturbType
+    {
+        MonsterSpawn,
+        MonsterBuff,
+        HeroHurt,
 
+        Max
+    }
+
+    [BurstCompile]
+    public struct WaitOtherEndPhase : IRpcCommand
+    {
+        public GamePhaseType _currentPhase;
+    }
+    [BurstCompile]
+    public struct ServerVoteIndex : IRpcCommand
+    {
+        public int _index;
+    }
+    [BurstCompile]
+    public struct AnonymousVote : IRpcCommand
+    {
+        public int _value;
+    }
+    [BurstCompile]
+    public struct VoteResult : IRpcCommand
+    {
+        public FixedList32Bytes<AnonymousVoteBuffer> beforeIndexBuffer;
+
+        public void CopyDynamicBuffer(in DynamicBuffer<AnonymousVoteBuffer> buffer)
+        {
+            beforeIndexBuffer = new FixedList32Bytes<AnonymousVoteBuffer>();
+
+            for (int i = 0; i < buffer.Length; i++)
+                beforeIndexBuffer.AddNoResize(buffer[i]);
+        }
+    }
+    [BurstCompile]
+    public struct GameResult : IRpcCommand
+    {
+        public FixedList32Bytes<RaceResultBuffer> beforeIndexBuffer;
+
+        public void CopyDynamicBuffer(in DynamicBuffer<RaceResultBuffer> buffer)
+        {
+            beforeIndexBuffer = new FixedList32Bytes<RaceResultBuffer>();
+
+            for (int i = 0; i < buffer.Length; i++)
+                beforeIndexBuffer.AddNoResize(buffer[i]);
+        }
+    }
     #endregion RpcCommand
 
     #region CommandData
