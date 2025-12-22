@@ -1,10 +1,8 @@
 using GFSUtilities.ResourcesData;
-using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-[BurstCompile]
 public struct PlayerProtocol : IComponentData
 {
     [GhostField] public int _gold;

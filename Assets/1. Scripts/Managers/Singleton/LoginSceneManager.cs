@@ -1,9 +1,6 @@
 using GFSManagers;
 using GFSUtilities;
 using GFSUtilities.Protocol;
-using Unity.Entities;
-using Unity.Entities.Serialization;
-using Unity.Scenes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,10 +13,10 @@ public class LoginSceneManager : MonoBehaviour
     [Header("¾À ³» ¸Å´ÏÀú")]
     [SerializeField] BGManager _bgManager;
     [SerializeField] LoginNoneBGManager _noneBGManager;
-    [SerializeField]
 
     LogoManager _logoManager;
     LoginManager _loginManager;
+    RelayManager _relayManager;
 
 
 
@@ -74,15 +71,24 @@ public class LoginSceneManager : MonoBehaviour
     {
         _loginManager.NickNameDetermined(settingProtocol);
     }
-    public void UpdateMatchingStatus(in MatchingStatusProtocol matchingStatusProtocol)
-    {
-        _loginManager.UpdateMatchingStatus(matchingStatusProtocol);
-    }
     public void GameStart(in GameStartProtocol pageProtocol)
     {
         _loginManager.MatchingComplete(pageProtocol);
+        _loginManager.UpdateMatchingStatus(Time.time + 3);
 
         StartCoroutine(GFSManager.WaitForSecond(3, () => SceneManager.LoadScene(1, LoadSceneMode.Single)));
+    }
+    public void SetHost(in SetHostProtocol protocol)
+    {
+        if (_relayManager == null)
+            _relayManager = new RelayManager();
+
+        AsyncSetHost(protocol);
+    }
+    async void AsyncSetHost(SetHostProtocol protocol)
+    {
+        _loginManager.HostingReady(await _relayManager.InitRelay(protocol._matchingSize), protocol._groupIndex);
+        _relayManager.LinkRelay();
     }
     #endregion ManagerTransfer
 }

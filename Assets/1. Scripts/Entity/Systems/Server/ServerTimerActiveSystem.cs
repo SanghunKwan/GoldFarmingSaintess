@@ -2,7 +2,6 @@ using GFSManagers;
 using GFSUtilities;
 using GFSUtilities.Protocol;
 using GFSUtilities.ResourcesData;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -10,7 +9,6 @@ using UnityEngine;
 
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ServerTimerActiveSystem : ISystem
 {

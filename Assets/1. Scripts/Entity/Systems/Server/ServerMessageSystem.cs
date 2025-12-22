@@ -1,5 +1,4 @@
 using GFSUtilities.Protocol;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -7,7 +6,6 @@ using Unity.NetCode;
 
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ServerMessageSystem : ISystem
 {
@@ -17,7 +15,6 @@ public partial struct ServerMessageSystem : ISystem
         state.RequireForUpdate<MessageRpcCommand>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);

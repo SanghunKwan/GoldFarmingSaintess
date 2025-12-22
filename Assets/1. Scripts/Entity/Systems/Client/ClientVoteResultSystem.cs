@@ -1,11 +1,9 @@
-using Unity.Burst;
 using Unity.Entities;
 using GFSManagers;
 using GFSUtilities.Protocol;
 
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct ClientVoteResultSystem : ISystem
 {

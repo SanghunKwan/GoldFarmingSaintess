@@ -64,6 +64,8 @@ namespace GFSUtilities.UI
         CharacterHPBar,
 
         FloatingImage,
+
+        ShowEmotion,
     }
 
     public enum SelectGraphicGroupType
@@ -144,8 +146,13 @@ namespace GFSUtilities.UI
         EmotionAnnoying = 18,
         EmotionAnger,
         EmotionBidding,
-        EmotionBidSubmit
-
+        EmotionBidSubmit,
+        EmotionSmile = 22,
+        EmotionLaugh,
+        EmotionExpressionless,
+        EmotionSour,
+        EmotionCry,
+        EmotionSob,
 
     }
     public enum PlayerUISlotGroupType

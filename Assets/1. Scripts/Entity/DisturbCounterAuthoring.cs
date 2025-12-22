@@ -1,10 +1,8 @@
-using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
 
-[BurstCompile]
 public struct DisturbCounter : IComponentData
 {
     [GhostField] public int _monsterSpawnCount;

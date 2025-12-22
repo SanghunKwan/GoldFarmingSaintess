@@ -4,17 +4,14 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 public partial struct ClientGhostUIChangeSystem : ISystem
 {
-
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate(state.GetEntityQuery(typeof(GoldInputData), typeof(GhostOwnerIsLocal)));
     }
-
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
@@ -32,9 +29,6 @@ public partial struct ClientGhostUIChangeSystem : ISystem
 [BurstCompile]
 public partial struct ClientGhostUIChangeJob : IJobEntity
 {
-
-
-    [BurstCompile]
     public void Execute(ref PlayerProtocol player, in GoldInputData input, in GhostOwnerIsLocal owner)
     {
         player._gold = input.gold;

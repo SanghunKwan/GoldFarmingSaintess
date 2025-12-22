@@ -1,27 +1,23 @@
+using GFSUtilities;
 using GFSUtilities.Protocol;
 using GFSUtilities.ResourcesData;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Transforms;
 
 
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct HostLinkQueueSystem : ISystem
 {
 
-    [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<PlayerProtocolSpawn>();
         state.RequireForUpdate<HostPlayerProtocolSpawnQueue>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -38,9 +34,7 @@ public partial struct HostLinkQueueSystem : ISystem
 
             commandBuffer.AddComponent<NetworkStreamInGame>(queue.ValueRO._requestTarget);
 
-            var send = commandBuffer.CreateEntity();
-            commandBuffer.AddComponent<HostSendGoIn>(send);
-            commandBuffer.AddComponent<SendRpcCommandRequest>(send);
+            state.EntityManager.BroadcastZoroSize(new HostSendGoIn());
 
             commandBuffer.DestroyEntity(entity);
         }

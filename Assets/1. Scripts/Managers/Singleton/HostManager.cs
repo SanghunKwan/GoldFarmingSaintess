@@ -5,15 +5,16 @@ using GFSUtilities.Protocol;
 using GFSUtilities.ResourcesData;
 using GFSUtilities.UI;
 using System.Collections;
-using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Networking.Transport;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
+using Unity.Networking.Transport.Relay;
 using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
+
+
+
 
 public class HostManager : MonoBehaviour
 {
@@ -45,68 +46,58 @@ public class HostManager : MonoBehaviour
     {
         _manager = GameManager.Instance;
         var serverData = _manager._ServerScriptableObject;
+        var data = _manager._SceneChangeDataScriptableObject;
 
         Debug.Log("Start");
+        _em = ClientServerBootstrap.ClientWorld.EntityManager;
+        _inputQuery = _em.CreateEntityQuery(typeof(GoldInputData), typeof(GhostOwnerIsLocal));
 
-
-
-        World tempWorld;
-        if (ClientServerBootstrap.ServerWorld != null)
+        if (data._nameIndex == 1)
         {
             _isHost = true;
-            tempWorld = ClientServerBootstrap.ServerWorld;
 
-            var endPoint = NetworkEndpoint.AnyIpv4.WithPort(serverData._port);
+            var em = ClientServerBootstrap.ServerWorld.EntityManager;
 
-            var em = tempWorld.EntityManager;
-
-            using var query = em.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(endPoint);
-
+            var query = em.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+            ref var driver = ref query.GetSingletonRW<NetworkStreamDriver>().ValueRW;
 
             _ghostQuerys = new EntityQuery[]
             {
                 em.CreateEntityQuery(typeof(PlayerTimer)),
                 em.CreateEntityQuery(typeof(DisturbCounter))
             };
+
+            query.Dispose();
         }
         else
             _isHost = false;
 
-        if (ClientServerBootstrap.ClientWorld != null)
         {
-            tempWorld = ClientServerBootstrap.ClientWorld;
-
-            var endPoint = NetworkEndpoint.Parse(serverData._ipv4, serverData._port);
-
-            _em = tempWorld.EntityManager;
-
-            using var query = _em.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(_em, endPoint);
-
-            _inputQuery = _em.CreateEntityQuery(typeof(GoldInputData), typeof(GhostOwnerIsLocal));
+            data = _manager._SceneChangeDataScriptableObject;
+            JoinRelay(data._joinCode);
         }
 
         _spriteData = _manager._UISpriteScriptableObject;
         _voteOpenDelay = _manager._TurnScriptableObject._voteOpenDelay;
         _colors = _manager._PlayerColorScriptableObject._color;
-
     }
+    public async void JoinRelay(string joinCode)
+    {
+        var allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-    //public async Task InitRelay()
-    //{
-    //    await UnityServices.InitializeAsync();
+        var em = ClientServerBootstrap.ClientWorld.EntityManager;
 
-    //    if (!AuthenticationService.Instance.IsSignedIn)
-    //        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        var relay = AllocationUtils.ToRelayServerData(allocation, "dtls");
+        var settings = DefaultDriverBuilder.GetNetworkClientSettings();
+        settings.WithRelayParameters(ref relay);
+        var netDebug = em.CreateEntityQuery(typeof(NetDebug)).GetSingleton<NetDebug>();
+        var driverStore = new NetworkDriverStore();
+        DefaultDriverBuilder.RegisterClientUdpDriver(ClientServerBootstrap.ClientWorld, ref driverStore, netDebug, settings);
+        var networkStreamDriver = em.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingleton<NetworkStreamDriver>();
+        networkStreamDriver.ResetDriverStore(ClientServerBootstrap.ClientWorld.Unmanaged, ref driverStore);
 
-    //    var allocation = await RelayService.Instance.CreateAllocationAsync(1);
-
-    //    string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-    //    Debug.Log(joinCode);
-    //    var joinData = await RelayService.Instance.JoinAllocationAsync(joinCode);
-        
-    //}
+        networkStreamDriver.Connect(em, relay.Endpoint);
+    }
     #region HostAlert
     public void AlertServerPhaseEnd(GamePhaseType type)
     {
@@ -152,7 +143,7 @@ public class HostManager : MonoBehaviour
         var data = _manager._SceneChangeDataScriptableObject;
         GameObject go = _manager.InstantiatePrefab(UIType.PlayersUI, bgTr);
         _playersUI = go.GetComponent<PlayersUI>();
-        _playersUI.InitUI(data._names, out string[] names, _colors);
+        _playersUI.InitUI(data._names, data._nameIndex, out string[] names, _colors);
         _playersUI.DisableCountOver(playerCount);
         _playersEmotion = new EmotionType[playerCount];
 

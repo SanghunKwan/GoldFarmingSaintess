@@ -1,5 +1,4 @@
 using GFSUtilities.ResourcesData;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -10,12 +9,10 @@ using Unity.NetCode;
 namespace GFSUtilities.Protocol
 {
     #region RpcCommand
-    [BurstCompile]
     public struct MessageRpcCommand : IRpcCommand
     {
         public FixedString64Bytes _text;
     }
-    [BurstCompile]
     public struct PageProtocol : IRpcCommand
     {
         public PageType _pageType;
@@ -28,12 +25,10 @@ namespace GFSUtilities.Protocol
         Login,
         Match,
     }
-    [BurstCompile]
     public struct UserSettingProtocol : IRpcCommand
     {
         public FixedString64Bytes _nickName;
     }
-    [BurstCompile]
     public struct ErrorProtocol : IRpcCommand
     {
         public ErrorType _errorType;
@@ -44,40 +39,34 @@ namespace GFSUtilities.Protocol
         IdInvalid,
         RoomFull
     }
-    [BurstCompile]
     public struct MatchingProtocol : IRpcCommand
     {
         public bool _isMatching;
     }
-    [BurstCompile]
-    public struct MatchingStatusProtocol : IRpcCommand
+    public struct SetHostProtocol : IRpcCommand
     {
-        public int _currentMatchingCount;
-        public float _time;
+        public int _matchingSize;
+        public uint _groupIndex;
     }
-    [BurstCompile]
     public struct GameStartProtocol : IRpcCommand
     {
-        public FixedString512Bytes _nickNames;
+        public FixedString64Bytes _nickNames;
+        public FixedString64Bytes _joinCode;
         public int _index;
     }
-    [BurstCompile]
     public struct HostLinkSuccess : IRpcCommand
     {
         public int _linkedIndex;
     }
-    [BurstCompile]
     public struct HostClientIdentify : IRpcCommand
     {
         public int _beforeIndex;
         public int _currentIndex;
     }
-    [BurstCompile]
     public struct HostSendGoIn : IRpcCommand
     {
 
     }
-    [BurstCompile]
     public struct AllClientReady : IRpcCommand
     {
         public int playerCount;
@@ -94,12 +83,11 @@ namespace GFSUtilities.Protocol
                 beforeIndexBuffer.AddNoResize(buffer[i]._beforeIndex);
         }
     }
-    [BurstCompile]
     public struct ClientGamePhase : IRpcCommand
     {
         public GamePhaseType _nextPhase;
     }
-    [BurstCompile]
+
     public struct ClientDisturbRPC : IRpcCommand
     {
         public DisturbType _type;
@@ -114,22 +102,22 @@ namespace GFSUtilities.Protocol
         Max
     }
 
-    [BurstCompile]
+
     public struct WaitOtherEndPhase : IRpcCommand
     {
         public GamePhaseType _currentPhase;
     }
-    [BurstCompile]
+
     public struct ServerVoteIndex : IRpcCommand
     {
         public int _index;
     }
-    [BurstCompile]
+
     public struct AnonymousVote : IRpcCommand
     {
         public int _value;
     }
-    [BurstCompile]
+
     public struct VoteResult : IRpcCommand
     {
         public FixedList32Bytes<AnonymousVoteBuffer> beforeIndexBuffer;
@@ -142,7 +130,7 @@ namespace GFSUtilities.Protocol
                 beforeIndexBuffer.AddNoResize(buffer[i]);
         }
     }
-    [BurstCompile]
+
     public struct GameResult : IRpcCommand
     {
         public FixedList32Bytes<RaceResultBuffer> beforeIndexBuffer;
@@ -155,10 +143,17 @@ namespace GFSUtilities.Protocol
                 beforeIndexBuffer.AddNoResize(buffer[i]);
         }
     }
+
+    public struct HostingReadyProtocol : IRpcCommand
+    {
+        public FixedString32Bytes _joinCode;
+        public uint _groupIndex;
+        public int _size;
+    }
     #endregion RpcCommand
 
     #region CommandData
-    [BurstCompile]
+
     public struct PlayersUIDataSpawnCommand : ICommandData
     {
 

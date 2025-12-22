@@ -1,12 +1,10 @@
 using GFSManagers;
 using GFSUtilities.Protocol;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct ClientPhaseSystem : ISystem
 {

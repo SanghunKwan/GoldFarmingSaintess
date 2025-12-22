@@ -1,62 +1,49 @@
-using GFSUtilities;
-using GFSUtilities.Protocol;
 using GFSUtilities.ResourcesData;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
 
 
-
-[BurstCompile]
+[UpdateBefore(typeof(ServerMatchingSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ServerDisconnectedSystem : ISystem
 {
-    EntityQuery _connections;
+    BufferLookup<MatchedEntityBuffer> _matchingLookup;
 
-    NativeHashSet<Entity> _beforeConnections;
-    NativeHashSet<Entity> _currentConnections;
-    
-    
-    
+    EntityQuery _matchingFirstQuery;
+
     public void OnCreate(ref SystemState state)
     {
-        _connections = state.GetEntityQuery(typeof(NetworkId), typeof(InitializedClient));
-        _beforeConnections = new NativeHashSet<Entity>(0, Allocator.Persistent);
-        _currentConnections = new NativeHashSet<Entity>(0, Allocator.Persistent);
+        var qb = SystemAPI.QueryBuilder().WithAll<InitializedClient>().WithNone<NetworkId, DisconnectCleanUp>().Build();
+
+
+        state.RequireForUpdate(qb);
+
+        _matchingLookup = SystemAPI.GetBufferLookup<MatchedEntityBuffer>();
+
+        _matchingFirstQuery = state.GetEntityQuery(typeof(MatchedEntityBuffer), typeof(MatchedGroupIndex));
+        _matchingFirstQuery.SetSharedComponentFilter(new MatchedGroupIndex { _groupIndex = 0 });
     }
 
     public void OnUpdate(ref SystemState state)
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-        using var tempList = _connections.ToEntityArray(Allocator.Temp);
-        foreach (var e in tempList)
-            _currentConnections.Add(e);
+        _matchingLookup.Update(ref state);
 
-        foreach (var connection in _beforeConnections)
+        var entity = _matchingFirstQuery.GetSingletonEntity();
+        var buffer = _matchingLookup[entity];
+
+        foreach (var (init, disconnectEntity) in SystemAPI.Query<InitializedClient>().WithNone<NetworkId, DisconnectCleanUp>().WithEntityAccess())
         {
-            if (!_currentConnections.Contains(connection))
+            for (int i = 0; i < buffer.Length; i++)
             {
-                var entity = state.EntityManager.CreateEntity(typeof(DisconnectedPlayer));
-                commandBuffer.AddComponent(entity, new DisconnectedPlayer { disconnectedSource = connection });
+                if (buffer[i]._matchedConnection != disconnectEntity) continue;
+
+                commandBuffer.SetBuffer<MatchedEntityBuffer>(entity).RemoveAt(i);
+                break;
             }
         }
-
-        _beforeConnections.Clear();
-
-        var tempSet = _beforeConnections;
-        _beforeConnections = _currentConnections;
-        _currentConnections = tempSet;
-    }
-
-    [BurstCompile]
-    public void OnDestroy(ref SystemState state)
-    {
-        _beforeConnections.Clear();
-        _beforeConnections.Dispose();
-
-        _currentConnections.Clear();
-        _currentConnections.Dispose();
+        commandBuffer.Playback(state.EntityManager);
     }
 }

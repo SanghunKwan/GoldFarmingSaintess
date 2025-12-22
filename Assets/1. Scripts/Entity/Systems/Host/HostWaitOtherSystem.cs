@@ -1,7 +1,5 @@
-using GFSUtilities;
 using GFSUtilities.Protocol;
 using GFSUtilities.ResourcesData;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -9,7 +7,6 @@ using Unity.NetCode;
 
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateBefore(typeof(ServerTimerActiveSystem))]
 public partial struct HostWaitOtherSystem : ISystem

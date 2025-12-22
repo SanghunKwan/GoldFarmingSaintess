@@ -1,9 +1,6 @@
 using GFSBattle;
 using GFSUtilities.UI;
 using GFSUtilities.Unit;
-using GFSUtilities.Effect;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace GFSManagers
@@ -54,6 +51,7 @@ namespace GFSManagers
         public ItemScriptableObject _ItemScriptableObject => _itemScriptableObject;
 
         public UnitStatScriptableObject _UnitStatScriptableObject => _unitStatScriptableObject;
+
 
         public override void InitManager()
         {

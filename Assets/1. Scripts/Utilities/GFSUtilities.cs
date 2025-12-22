@@ -101,11 +101,23 @@ namespace GFSUtilities
             }
             return true;
         }
+
         public static void Broadcast<T>(this EntityManager manager, in T protocol, in Entity target = default)
         where T : unmanaged, IComponentData
         {
             var entity = manager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
             manager.SetComponentData(entity, protocol);
+
+            if (target != Entity.Null)
+                manager.SetComponentData(entity, new SendRpcCommandRequest { TargetConnection = target });
+        }
+
+        public static void BroadcastZoroSize<T>(this EntityManager manager, in T protocol, in Entity target = default)
+        where T : unmanaged, IComponentData
+        {
+            var entity = manager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
+            //var entity = manager.CreateEntity(typeof(SendRpcCommandRequest));
+            //manager.AddComponentData(entity, protocol);
 
             if (target != Entity.Null)
                 manager.SetComponentData(entity, new SendRpcCommandRequest { TargetConnection = target });

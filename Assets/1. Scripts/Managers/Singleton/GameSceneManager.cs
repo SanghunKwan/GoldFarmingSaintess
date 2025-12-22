@@ -60,7 +60,6 @@ namespace GFSManagers
         private void Start()
         {
             _hostManager.InitManager();
-            //_hostManager.InitRelay();
         }
 
         public void ReadyToStart(in AllClientReady readyData)
@@ -440,8 +439,6 @@ namespace GFSManagers
 
             _hostManager.SetMoney(protocol._gold, playerIndex);
             _hostManager.ShowEmotion(protocol._emotionType, playerIndex);
-
-            if (_biddingManager == null) return;
 
         }
         public void TransferDisturb(in ClientDisturbRPC disturb)

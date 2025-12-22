@@ -1,10 +1,8 @@
-using Unity.Burst;
 using Unity.Entities;
 using GFSManagers;
 
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct ClientTimerSystem : ISystem
 {

@@ -1,6 +1,5 @@
 using GFSManagers;
 using GFSUtilities.UI;
-using Unity.Collections;
 using UnityEngine;
 
 public class PlayersUI : MonoBehaviour
@@ -10,10 +9,10 @@ public class PlayersUI : MonoBehaviour
     public PlayersUISlot[] _slots { get; private set; }
 
 
-    public void InitUI(in FixedString512Bytes nicknames, out string[] nicks, in Color[] colors, bool isDataShow = true)
+    public void InitUI(in string nicknames, int nameIndex, out string[] nicks, in Color[] colors, bool isDataShow = true)
     {
         GameManager manager = GameManager.Instance;
-        nicks = nicknames.ToString().Split(' ');
+        nicks = nicknames.Split(' ');
 
         int length = nicks.Length;
         _slots = new PlayersUISlot[length];
@@ -23,6 +22,9 @@ public class PlayersUI : MonoBehaviour
             _slots[i] = go.GetComponent<PlayersUISlot>();
             _slots[i].InitSlot(nicks[i], colors[i]);
             _slots[i].SetShowData(isDataShow);
+
+            if (i == nameIndex - 1)
+                _slots[i].SetInteractive(manager.InstantiateResourcePrefab(UIResourceType.ShowEmotion, _slots[i]._SelectorTransform));
         }
     }
 

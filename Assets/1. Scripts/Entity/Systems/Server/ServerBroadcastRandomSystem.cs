@@ -1,12 +1,10 @@
 using GFSUtilities;
 using GFSUtilities.Protocol;
 using GFSUtilities.ResourcesData;
-using Unity.Burst;
 using Unity.Entities;
 using UnityEngine;
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ServerBroadcastRandomSystem : ISystem
 {

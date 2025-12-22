@@ -1,6 +1,5 @@
 using GFSUtilities;
 using GFSUtilities.Protocol;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -11,7 +10,6 @@ using UnityEngine.SceneManagement;
 #endif
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ServerNewIDSystem : ISystem
 {

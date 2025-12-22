@@ -88,19 +88,29 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
             enabled = false;
         }
     }
-    public void UpdateMatchingData(int num)
+    public void UpdateMatchingData(float endTime)
     {
-        _matchingCountText.text = num.ToString();
-
-        if (enabled) return;
-        _timeCorrectionValue = Time.time;
         enabled = true;
+
+        StartCoroutine(ShowCountDown(endTime));
+    }
+    IEnumerator ShowCountDown(float endTime)
+    {
+        while (true)
+        {
+            int num = Mathf.CeilToInt(endTime - Time.time);
+            _matchingCountText.text = num.ToString();
+
+            yield return null;
+        }
+
     }
 
     #region Event
     public void OnClickLoginButton()
     {
         _manager.LinkServer();
+        _manager.Authentication();
     }
     public void OnSubmitNickName()
     {

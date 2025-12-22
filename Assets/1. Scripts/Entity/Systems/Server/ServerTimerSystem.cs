@@ -1,11 +1,9 @@
-using GFSUtilities.ResourcesData;
 using Unity.Burst;
 using Unity.Entities;
 
 
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ServerTimerSystem : ISystem
 {

@@ -2,6 +2,7 @@ using GFSUtilities.UI;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlayersUISlot : MonoBehaviour
@@ -18,14 +19,20 @@ public class PlayersUISlot : MonoBehaviour
     [SerializeField] Image _emotionImage;
     [SerializeField] TextMeshProUGUI _voteCostText;
 
+    [Header("EmotionSelector")]
+    [SerializeField] EventTrigger _clickEvent;
+    [SerializeField] Transform _selectorTransform;
+    [SerializeField] CanvasGroup _canvasGroup;
+
     IEnumerator _ienum;
 
     int beforeMoney;
     int _controllerLength;
     bool _emotionStop;
+    bool _emotionSelectActive;
 
     public Vector3 _RankingPosition => _emotionObject.transform.position;
-
+    public Transform _SelectorTransform => _selectorTransform;
 
     public void InitSlot(in string nickName, in Color color)
     {
@@ -37,6 +44,7 @@ public class PlayersUISlot : MonoBehaviour
         _graphicColorController.HideAllColor(0);
 
         _emotionStop = false;
+        _emotionSelectActive = false;
     }
     public void SetShowData(bool isOn)
     {
@@ -105,4 +113,21 @@ public class PlayersUISlot : MonoBehaviour
         _graphicColorController.FadeGraphicAtOnce((int)PlayerUISlotGroupType.SpeechBubble, 1, 0.5f);
         _emotionStop = true;
     }
+    public void SetInteractive(GameObject emotionSelector)
+    {
+        emotionSelector.transform.SetParent(_selectorTransform);
+        _clickEvent.enabled = true;
+
+        emotionSelector.GetComponent<EmotionSelector>().InitSelector(this);
+    }
+
+    #region Event
+    public void ToggleEmotionSelector()
+    {
+        _emotionSelectActive = !_emotionSelectActive;
+
+        _canvasGroup.alpha = _emotionSelectActive ? 1 : 0;
+        _canvasGroup.blocksRaycasts = _emotionSelectActive;
+    }
+    #endregion Event
 }

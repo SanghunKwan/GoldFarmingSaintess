@@ -1,11 +1,9 @@
 using GFSManagers;
 using GFSUtilities.ResourcesData;
-using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
 
 
-[BurstCompile]
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct ClientGhostUISystem : ISystem

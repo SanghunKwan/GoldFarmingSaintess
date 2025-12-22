@@ -1,5 +1,4 @@
 using System;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -8,46 +7,36 @@ using UnityEngine;
 
 namespace GFSUtilities.ResourcesData
 {
-    [BurstCompile]
-    public struct InitializedClient : IComponentData
+
+    public struct InitializedClient : ICleanupComponentData
     {
 
     }
-    [BurstCompile]
-    public struct DisconnectedPlayer : IComponentData
-    {
-        public Entity disconnectedSource;
-    }
-    [BurstCompile]
+
     public struct UserSettingData : IComponentData
     {
         public Entity _user;
         public FixedString64Bytes _nickName;
     }
-    [BurstCompile]
-    public struct MatchingConditionData : IComponentData
-    {
-        //public FixedString64Bytes _nickName;
-    }
-    [BurstCompile]
+
     public struct RoomFull : IComponentData
     {
         //public bool _isRoomFull;
     }
-    [BurstCompile]
+
     public struct ClientIdentifyData : IComponentData
     {
         public int _beforeIndex;
         public int _currentIndex;
     }
-    [BurstCompile]
+
     public struct HostPlayerProtocolSpawnQueue : IComponentData
     {
         public int _beforeIndex;
         public int _currentIndex;
         public Entity _requestTarget;
     }
-    [BurstCompile]
+
     public struct HostPhaseEnd : IComponentData
     {
         public GamePhaseType _phase;
@@ -65,7 +54,7 @@ namespace GFSUtilities.ResourcesData
 
         Max
     }
-    [BurstCompile]
+
     public struct HostNeedGhostPrefab : IComponentData
     {
         public PrefabGhostType _type;
@@ -75,27 +64,27 @@ namespace GFSUtilities.ResourcesData
         Timer = 0,
         DisturbCounter,
     }
-    [BurstCompile]
+
     public struct ClientPhaseEnd : IComponentData
     {
         public GamePhaseType _currentPhase;
     }
-    [BurstCompile]
+
     public struct ClientsIdentifyingData : IBufferElementData
     {
         public int _beforeIndex;
     }
-    [BurstCompile]
+
     public struct ClientVoteIndex : IComponentData
     {
         public int _inclusiveBottom;
         public int _exclusiveTop;
     }
-    [BurstCompile]
+
     public struct VoteWait : IComponentData
     {
     }
-    [BurstCompile]
+
     public struct GameComplete : IComponentData
     {
     }
@@ -114,9 +103,16 @@ namespace GFSUtilities.ResourcesData
         Annoying,
         Anger,
         Bidding,
-        BidSubmit
+        BidSubmit,
+        
+        Smile = 5,
+        Laugh,
+        Expressionless,
+        Sour,
+        Cry,
+        Sob,
     }
-    [BurstCompile]
+
     public struct AnonymousVoteBuffer : IBufferElementData, IComparable<AnonymousVoteBuffer>
     {
         public int _beforeIndex;
@@ -128,7 +124,7 @@ namespace GFSUtilities.ResourcesData
             return _value.CompareTo(other._value);
         }
     }
-    [BurstCompile]
+
     public struct RaceResultBuffer : IBufferElementData, IComparable<RaceResultBuffer>
     {
         public int _beforeIndex;
@@ -140,4 +136,21 @@ namespace GFSUtilities.ResourcesData
             return -_gold.CompareTo(other._gold);
         }
     }
+    public struct MatchedEntityBuffer : IBufferElementData
+    {
+        public Entity _matchedConnection;
+    }
+    public struct MatchedGroupIndex : ISharedComponentData
+    {
+        public uint _groupIndex;
+    }
+    public struct MatchedBufferData : IComponentData
+    {
+        public Entity _bufferEntity;
+    }
+    public struct DisconnectCleanUp : ICleanupComponentData
+    {
+        public uint _bufferEntityShared;
+    }
+
 }

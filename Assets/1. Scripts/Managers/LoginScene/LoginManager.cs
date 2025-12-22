@@ -5,6 +5,8 @@ using System;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
 using UnityEngine;
 
 namespace GFSManagers
@@ -188,40 +190,54 @@ namespace GFSManagers
         {
             SendProtocol(new MatchingProtocol { _isMatching = isOn });
         }
-        public void UpdateMatchingStatus(in MatchingStatusProtocol matchingStatusProtocol)
+        public void UpdateMatchingStatus(float endTime)
         {
-            _window.UpdateMatchingData(matchingStatusProtocol._currentMatchingCount);
+            _window.UpdateMatchingData(endTime);
         }
         public void MatchingComplete(in GameStartProtocol pageProtocol)
         {
-            GameManager.Instance.InstantiatePrefab(UIType.PlayersUI, _bgManager.transform).GetComponent<PlayersUI>().InitUI(pageProtocol._nickNames, out var nicks, GameManager.Instance._PlayerColorScriptableObject._color, false);
+            string nickNames = pageProtocol._nickNames.ToString();
+
+            GameManager manager = GameManager.Instance;
+
+            manager.InstantiatePrefab(UIType.PlayersUI, _bgManager.transform).GetComponent<PlayersUI>()
+                .InitUI(nickNames, pageProtocol._index, out var nicks, manager._PlayerColorScriptableObject._color, false);
             _messageBox.SetBox(MessageBoxType.Time);
             _window.FadeOut();
             int index = pageProtocol._index;
-            _window.StartCoroutine(GFSManager.WaitForSecond(0.1f, () => ClearWorld(index == 1)));
+            _window.StartCoroutine(GFSManager.WaitForSecond(0.1f, ClearWorld));
 
-            var data = GameManager.Instance._SceneChangeDataScriptableObject;
-            data._names = pageProtocol._nickNames.ToString();
+            var data = manager._SceneChangeDataScriptableObject;
+            data._names = nickNames;
             data._nameIndex = index;
             data._size = nicks.Length;
+            data._joinCode = pageProtocol._joinCode.ToString();
 
-            var connectData = GameManager.Instance._ServerScriptableObject;
+
+            var connectData = manager._ServerScriptableObject;
             connectData._port = 2;
         }
-        void ClearWorld(bool isHost)
+        void ClearWorld()
         {
             string str = ClientServerBootstrap.ClientWorld.Name;
             ClientServerBootstrap.ClientWorld.Dispose();
             ClientServerBootstrap.CreateClientWorld(str);
 
-            if (isHost)
-                ClientServerBootstrap.CreateServerWorld(str);
         }
 
         public void AutoLogin(string nickName)
         {
             LinkServer();
             _serverLinkEvent += () => SendProtocol(new UserSettingProtocol { _nickName = nickName });
+        }
+        public async void Authentication()
+        {
+            await UnityServices.InitializeAsync();
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        }
+        public void HostingReady(in string joinCode, uint groupIndex)
+        {
+            SendProtocol(new HostingReadyProtocol { _joinCode = joinCode, _groupIndex = groupIndex });
         }
     }
 }
