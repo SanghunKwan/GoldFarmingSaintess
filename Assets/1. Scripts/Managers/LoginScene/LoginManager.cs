@@ -2,24 +2,28 @@ using GFSUtilities;
 using GFSUtilities.Protocol;
 using GFSUtilities.UI;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using Unity.Services.Matchmaker;
+using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 
 namespace GFSManagers
 {
     public class LoginManager : BaseBGWindowManager<LoginWindow, LoginManager, LoginNoneBGManager>
     {
-        string _ip;
-        ushort _port;
-
         int _currentPage;
 
         public string _nickName { get; private set; }
         public int _id { get; private set; }
+
+        public string _ticketId { get; private set; }
+        public string _playerId { get; private set; }
 
         event Action _serverLinkEvent;
 
@@ -41,11 +45,6 @@ namespace GFSManagers
         {
             base.InitManager(bgManager);
 
-            ServerDataScriptableObject data = GameManager.Instance._ServerScriptableObject;
-
-            _ip = data._ipv4;
-            _port = data._port;
-
             _currentPage = 0;
         }
 
@@ -66,7 +65,7 @@ namespace GFSManagers
             _window.FadeIn();
         }
 
-        public void LinkServer()
+        public void LinkServer(in MultiplayAssignment assignment)
         {
             World clientWorld = World.DefaultGameObjectInjectionWorld = ClientServerBootstrap.ClientWorld;
 
@@ -80,9 +79,11 @@ namespace GFSManagers
             }
 
             using var query = clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(clientWorld.EntityManager, NetworkEndpoint.Parse(_ip, _port));
+            query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(clientWorld.EntityManager, NetworkEndpoint.Parse(assignment.Ip, (ushort)assignment.Port));
+            //query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(clientWorld.EntityManager, NetworkEndpoint.Parse(_ip, _port));
 
             Debug.Log("클라 연결");
+            _window.SendPacketServer(clientWorld);
         }
 
         public void ServerLinkSuccss(in PageProtocol pageProtocol)
@@ -149,7 +150,10 @@ namespace GFSManagers
 
             _settingWindow.ToggleWindow();
         }
-
+        public void TransferMatchingStatus(in MatchingStatusProtocol protocol)
+        {
+            _window.ShowCurrentMatchingPlayer(protocol._matchingCount);
+        }
         public void NickNameDetermined(in UserSettingProtocol settingProtocol)
         {
             _nickName = settingProtocol._nickName.ToString();
@@ -212,32 +216,94 @@ namespace GFSManagers
             data._nameIndex = index;
             data._size = nicks.Length;
             data._joinCode = pageProtocol._joinCode.ToString();
-
-
-            var connectData = manager._ServerScriptableObject;
-            connectData._port = 2;
         }
         void ClearWorld()
         {
             string str = ClientServerBootstrap.ClientWorld.Name;
             ClientServerBootstrap.ClientWorld.Dispose();
             ClientServerBootstrap.CreateClientWorld(str);
-
         }
 
         public void AutoLogin(string nickName)
         {
-            LinkServer();
+            Authentication();
             _serverLinkEvent += () => SendProtocol(new UserSettingProtocol { _nickName = nickName });
         }
         public async void Authentication()
         {
+            _window.ButtonInteractableFalse();
+
             await UnityServices.InitializeAsync();
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            _playerId = AuthenticationService.Instance.PlayerId;
+
+            var ticket = await MatchmakerService.Instance.CreateTicketAsync(new List<Player>
+            {
+                new Player(_playerId)
+            }, new CreateTicketOptions("DefaultQueue"));
+
+            _ticketId = ticket.Id;
+
+            Debug.Log(_ticketId);
+
+            PullMatchMaking();
         }
+
+        async void PullMatchMaking()
+        {
+            MultiplayAssignment assignment = null;
+            bool gotAssignment = false;
+            do
+            {
+                //Rate limit delay
+                await Task.Delay(TimeSpan.FromSeconds(1f));
+
+                // Poll ticket
+                var ticketStatus = await MatchmakerService.Instance.GetTicketAsync(_ticketId);
+                if (ticketStatus == null)
+                {
+                    continue;
+                }
+
+                //Convert to platform assignment data (IOneOf conversion)
+                if (ticketStatus.Type == typeof(MultiplayAssignment))
+                {
+                    assignment = ticketStatus.Value as MultiplayAssignment;
+                }
+
+                switch (assignment?.Status)
+                {
+                    case MultiplayAssignment.StatusOptions.Found:
+                        gotAssignment = true;
+                        break;
+                    case MultiplayAssignment.StatusOptions.InProgress:
+                        //...
+                        break;
+                    case MultiplayAssignment.StatusOptions.Failed:
+                        gotAssignment = true;
+                        Debug.LogError("Failed to get ticket status. Error: " + assignment.Message);
+                        break;
+                    case MultiplayAssignment.StatusOptions.Timeout:
+                        gotAssignment = true;
+                        Debug.LogError("Failed to get ticket status. Ticket timed out.");
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+
+            } while (!gotAssignment);
+
+            LinkServer(assignment);
+        }
+
         public void HostingReady(in string joinCode, uint groupIndex)
         {
             SendProtocol(new HostingReadyProtocol { _joinCode = joinCode, _groupIndex = groupIndex });
+        }
+
+        public void ServerLinkEnd()
+        {
+            MatchmakerService.Instance.DeleteTicketAsync(_ticketId);
         }
     }
 }

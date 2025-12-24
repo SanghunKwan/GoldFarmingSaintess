@@ -15,14 +15,14 @@ public partial struct ServerNewIDSystem : ISystem
 {
     EntityQuery _networkQuery;
     EntityQuery _newNetworkIdQuery;
-    
-    
+
+
     public void OnCreate(ref SystemState state)
     {
         using var builder = new EntityQueryBuilder(Allocator.Temp);
         _newNetworkIdQuery = state.GetEntityQuery(builder.WithAll<NetworkId>().WithNone<InitializedClient>());
         state.RequireForUpdate(_newNetworkIdQuery);
-        
+
         _networkQuery = state.GetEntityQuery(typeof(RoomFull));
     }
 
@@ -36,13 +36,11 @@ public partial struct ServerNewIDSystem : ISystem
             state.EntityManager.BroadcastMessage("Client connect with id = " + id.ValueRO.Value);
 
 #if UNITY_SERVER
-            var successProtocol = new PageProtocol { _pageType = PageType.Login, _id = id.ValueRO.Value };
-            state.EntityManager.Broadcast(successProtocol, entity);
+            state.EntityManager.Broadcast(new PageProtocol { _pageType = PageType.Login, _id = id.ValueRO.Value }, entity);
 #else
             if (SceneManager.GetActiveScene().buildIndex == 0)
             {
-                var successProtocol = new PageProtocol { _pageType = PageType.Login, _id = id.ValueRO.Value };
-                state.EntityManager.Broadcast(successProtocol, entity);
+                state.EntityManager.Broadcast(new PageProtocol { _pageType = PageType.Login, _id = id.ValueRO.Value }, entity);
 
             }
             else

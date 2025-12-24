@@ -1,3 +1,4 @@
+using GFSUtilities;
 using GFSUtilities.Protocol;
 using Unity.Collections;
 using Unity.Entities;
@@ -19,12 +20,15 @@ public partial struct ClientPageSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-
         var entity = SystemAPI.GetSingletonEntity<PageProtocol>();
         var data = state.EntityManager.GetComponentData<PageProtocol>(entity);
 
-        LoginSceneManager.Instance.ServerLinkSuccss(data);
+        LoginSceneManager manager = LoginSceneManager.Instance;
+
+        manager.ServerLinkSuccss(data);
+
+        state.EntityManager.Broadcast(new PlayerData { _playerId = manager.GetPlayerId(), _ticketId = manager.GetTicketId() });
+
         state.EntityManager.DestroyEntity(entity);
     }
 

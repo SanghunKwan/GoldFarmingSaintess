@@ -25,9 +25,9 @@ public partial struct ServerDisconnectedInMatchingSystem : ISystem
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (clean, init, disconnectEntity) in SystemAPI.Query<DisconnectCleanUp, InitializedClient>().WithNone<NetworkId>().WithEntityAccess())
+        foreach (var (clean, init, playerId, disconnectEntity) in SystemAPI.Query<RefRO<DisconnectCleanUp>, InitializedClient, RefRO<PlayerCleanUp>>().WithNone<NetworkId>().WithEntityAccess())
         {
-            _matchedQuery.SetSharedComponentFilter(new MatchedGroupIndex { _groupIndex = clean._bufferEntityShared });
+            _matchedQuery.SetSharedComponentFilter(new MatchedGroupIndex { _groupIndex = clean.ValueRO._bufferEntityShared });
 
             var entity = _matchedQuery.GetSingletonEntity();
             var buffer = state.EntityManager.GetBuffer<MatchedEntityBuffer>(entity);
@@ -39,6 +39,8 @@ public partial struct ServerDisconnectedInMatchingSystem : ISystem
                 buffer.RemoveAt(i);
                 break;
             }
+            ServerSceneManager.Instance.ExitClient(playerId.ValueRO._playerId, playerId.ValueRO._ticketId);
+            commandBuffer.DestroyEntity(disconnectEntity);
         }
 
         commandBuffer.Playback(state.EntityManager);

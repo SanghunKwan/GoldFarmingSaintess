@@ -1,8 +1,10 @@
 using GFSManagers;
 using GFSUtilities;
+using GFSUtilities.Protocol;
 using GFSUtilities.UI;
 using System.Collections;
 using TMPro;
+using Unity.Entities;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +13,8 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
 {
     [SerializeField] GameObject[] _pages;
     [SerializeField] InputField _nickNameInputField;
+
+    [SerializeField] Button _loginButton;
 
     [SerializeField] TextMeshProUGUI _matchingCountText;
     [SerializeField] TextMeshProUGUI _matchingTimeText;
@@ -73,6 +77,8 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
 
         if (isOn)
         {
+            enabled = true;
+            _timeCorrectionValue = Time.time;
             _controller.FadeGraphicAtOnce(index, 0, 0f);
             StartCoroutine(GFSManager.WaitForSecond(0.25f, () =>
             {
@@ -90,8 +96,6 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
     }
     public void UpdateMatchingData(float endTime)
     {
-        enabled = true;
-
         StartCoroutine(ShowCountDown(endTime));
     }
     IEnumerator ShowCountDown(float endTime)
@@ -103,13 +107,35 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
 
             yield return null;
         }
+    }
+    public void ShowCurrentMatchingPlayer(int playerCount)
+    {
+        _matchingCountText.text = playerCount.ToString();
+    }
+    public void ButtonInteractableFalse()
+    {
+        _loginButton.interactable = false;
+    }
 
+    public void SendPacketServer(in World world)
+    {
+        StartCoroutine(SendPacketTimer(world));
+    }
+    IEnumerator SendPacketTimer(World world)
+    {
+        var delay = new WaitForSeconds(10);
+
+        while (world.IsCreated)
+        {
+            world.EntityManager.BroadcastZoroSize<LinkPacket>();
+
+            yield return delay;
+        }
     }
 
     #region Event
     public void OnClickLoginButton()
     {
-        _manager.LinkServer();
         _manager.Authentication();
     }
     public void OnSubmitNickName()

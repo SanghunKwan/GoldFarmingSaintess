@@ -25,6 +25,13 @@ namespace GFSUtilities.Protocol
         Login,
         Match,
     }
+
+    public struct PlayerData : IRpcCommand
+    {
+        public FixedString64Bytes _playerId;
+        public FixedString64Bytes _ticketId;
+    }
+
     public struct UserSettingProtocol : IRpcCommand
     {
         public FixedString64Bytes _nickName;
@@ -42,6 +49,10 @@ namespace GFSUtilities.Protocol
     public struct MatchingProtocol : IRpcCommand
     {
         public bool _isMatching;
+    }
+    public struct MatchingStatusProtocol : IRpcCommand
+    {
+        public int _matchingCount;
     }
     public struct SetHostProtocol : IRpcCommand
     {
@@ -149,6 +160,10 @@ namespace GFSUtilities.Protocol
         public FixedString32Bytes _joinCode;
         public uint _groupIndex;
         public int _size;
+    }
+    public struct LinkPacket : IRpcCommand
+    {
+
     }
     #endregion RpcCommand
 

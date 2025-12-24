@@ -34,7 +34,7 @@ public class TrainingWindow : BaseBGWindow<TrainingWindow, TrainingManager, None
 
     public void GetAllData()
     {
-        for (UpgradeType type = UpgradeType.HealAmount; type < UpgradeType.Max; type++)
+        for (UpgradeType type = UpgradeType.HealCount; type < UpgradeType.Max; type++)
             GetData(type);
     }
     public void GetData(UpgradeType type)

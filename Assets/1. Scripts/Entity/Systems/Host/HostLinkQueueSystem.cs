@@ -34,7 +34,7 @@ public partial struct HostLinkQueueSystem : ISystem
 
             commandBuffer.AddComponent<NetworkStreamInGame>(queue.ValueRO._requestTarget);
 
-            state.EntityManager.BroadcastZoroSize(new HostSendGoIn());
+            state.EntityManager.BroadcastZoroSize<HostSendGoIn>();
 
             commandBuffer.DestroyEntity(entity);
         }

@@ -16,7 +16,6 @@ namespace GFSManagers
     {
         Allocation _allocation;
 
-
         public async Task<string> InitRelay(int alloSize)
         {
             _allocation = await RelayService.Instance.CreateAllocationAsync(alloSize);

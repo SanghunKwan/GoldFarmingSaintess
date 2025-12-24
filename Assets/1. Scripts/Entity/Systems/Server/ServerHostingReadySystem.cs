@@ -2,14 +2,10 @@ using GFSManagers;
 using GFSUtilities;
 using GFSUtilities.Protocol;
 using GFSUtilities.ResourcesData;
-using System;
 using System.Text;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 
 
@@ -36,9 +32,9 @@ public partial struct ServerHostingReadySystem : ISystem
     {
         using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (host, rpc, entity) in SystemAPI.Query<HostingReadyProtocol, ReceiveRpcCommandRequest>().WithEntityAccess())
+        foreach (var (host, rpc, entity) in SystemAPI.Query<RefRO<HostingReadyProtocol>, ReceiveRpcCommandRequest>().WithEntityAccess())
         {
-            _matchedQuery.SetSharedComponentFilter(new MatchedGroupIndex { _groupIndex = host._groupIndex });
+            _matchedQuery.SetSharedComponentFilter(new MatchedGroupIndex { _groupIndex = host.ValueRO._groupIndex });
 
 
             commandBuffer.DestroyEntity(entity);
@@ -49,7 +45,7 @@ public partial struct ServerHostingReadySystem : ISystem
 
             StringBuilder strbuilder = new StringBuilder();
 
-            if (buffer.Length == _matchingCount)
+            if (buffer.Length >= _matchingCount)
             {
                 for (int i = 0; i < buffer.Length; i++)
                 {
@@ -62,7 +58,7 @@ public partial struct ServerHostingReadySystem : ISystem
                 for (int i = 0; i < buffer.Length; i++)
                 {
                     state.EntityManager.BroadcastMessage("게임시작");
-                    state.EntityManager.Broadcast(new GameStartProtocol { _nickNames = nickNames, _index = i + 1, _joinCode = host._joinCode }, buffer[i]._matchedConnection);
+                    state.EntityManager.Broadcast(new GameStartProtocol { _nickNames = nickNames, _index = i + 1, _joinCode = host.ValueRO._joinCode }, buffer[i]._matchedConnection);
                 }
             }
             else

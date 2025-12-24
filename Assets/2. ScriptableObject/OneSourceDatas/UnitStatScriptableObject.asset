@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stat:
   - stat:
-      _hp: 999
+      _hp: 25
       _attack: 7
       _defend: 3
       _range: 1
@@ -54,7 +54,7 @@ MonoBehaviour:
     force: 1
     growthRate: 0.7
   - stat:
-      _hp: 999
+      _hp: 31
       _attack: 6
       _defend: 5
       _range: 1

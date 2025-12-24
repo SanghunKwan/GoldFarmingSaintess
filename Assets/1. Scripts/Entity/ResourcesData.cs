@@ -104,7 +104,7 @@ namespace GFSUtilities.ResourcesData
         Anger,
         Bidding,
         BidSubmit,
-        
+
         Smile = 5,
         Laugh,
         Expressionless,
@@ -152,5 +152,9 @@ namespace GFSUtilities.ResourcesData
     {
         public uint _bufferEntityShared;
     }
-
+    public struct PlayerCleanUp : ICleanupComponentData
+    {
+        public FixedString64Bytes _playerId;
+        public FixedString64Bytes _ticketId;
+    }
 }

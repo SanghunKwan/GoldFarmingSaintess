@@ -67,14 +67,21 @@ public class LoginSceneManager : MonoBehaviour
     {
         _loginManager.ServerLinkSuccss(pageProtocol);
     }
+    public string GetTicketId() => _loginManager._ticketId;
+    public string GetPlayerId() => _loginManager._playerId;
+    public void ShowLinkStatus(in MatchingStatusProtocol statusProtocol)
+    {
+        _loginManager.TransferMatchingStatus(statusProtocol);
+    }
     public void NickNameDetermined(in UserSettingProtocol settingProtocol)
     {
         _loginManager.NickNameDetermined(settingProtocol);
     }
-    public void GameStart(in GameStartProtocol pageProtocol)
+    public void GameStart(in GameStartProtocol startProtocol)
     {
-        _loginManager.MatchingComplete(pageProtocol);
+        _loginManager.MatchingComplete(startProtocol);
         _loginManager.UpdateMatchingStatus(Time.time + 3);
+        //_loginManager.ServerLinkEnd();
 
         StartCoroutine(GFSManager.WaitForSecond(3, () => SceneManager.LoadScene(1, LoadSceneMode.Single)));
     }

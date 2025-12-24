@@ -1,3 +1,5 @@
+using GFSUtilities;
+using GFSUtilities.Protocol;
 using GFSUtilities.ResourcesData;
 using Unity.Collections;
 using Unity.Entities;
@@ -34,16 +36,19 @@ public partial struct ServerDisconnectedSystem : ISystem
         var entity = _matchingFirstQuery.GetSingletonEntity();
         var buffer = _matchingLookup[entity];
 
-        foreach (var (init, disconnectEntity) in SystemAPI.Query<InitializedClient>().WithNone<NetworkId, DisconnectCleanUp>().WithEntityAccess())
+        foreach (var (init, playerId, disconnectEntity) in SystemAPI.Query<InitializedClient, RefRO<PlayerCleanUp>>().WithNone<NetworkId, DisconnectCleanUp>().WithEntityAccess())
         {
             for (int i = 0; i < buffer.Length; i++)
             {
                 if (buffer[i]._matchedConnection != disconnectEntity) continue;
 
-                commandBuffer.SetBuffer<MatchedEntityBuffer>(entity).RemoveAt(i);
+                buffer.RemoveAt(i);
                 break;
             }
+            ServerSceneManager.Instance.ExitClient(playerId.ValueRO._playerId, playerId.ValueRO._ticketId);
+            commandBuffer.DestroyEntity(disconnectEntity);
         }
         commandBuffer.Playback(state.EntityManager);
+        state.EntityManager.Broadcast(new MatchingStatusProtocol { _matchingCount = buffer.Length });
     }
 }

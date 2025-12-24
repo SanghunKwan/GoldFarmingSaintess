@@ -66,6 +66,9 @@ public partial struct ServerMatchingSystem : ISystem
         commandBuffer.Playback(state.EntityManager);
         commandBuffer.Dispose();
 
+        state.EntityManager.Broadcast(new MatchingStatusProtocol { _matchingCount = buffer.Length });
+
+
         _matchingLookup.Update(ref state);
 
         buffer = _matchingLookup[_matchingEntity];
@@ -85,7 +88,9 @@ public partial struct ServerMatchingSystem : ISystem
             {
                 strbuilder.Append(state.EntityManager.GetComponentData<UserSettingData>(buffer[i]._matchedConnection)._nickName);
                 strbuilder.Append(' ');
+
                 //state.EntityManager.Broadcast(new GameStartProtocol { _nickNames = strbuilder.ToString(), _index = i + 1 }, _matchingList[i]);
+
                 commandBuffer.AppendToBuffer(newMatchedEntity, new MatchedEntityBuffer { _matchedConnection = buffer[i]._matchedConnection });
                 commandBuffer.AddComponent(buffer[i]._matchedConnection, new DisconnectCleanUp { _bufferEntityShared = _matchedPartyCount });
             }
@@ -94,7 +99,6 @@ public partial struct ServerMatchingSystem : ISystem
 
             buffer.RemoveRange(0, _matchCount);
         }
-
         commandBuffer.Playback(state.EntityManager);
     }
 }

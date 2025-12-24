@@ -12,27 +12,22 @@ public partial struct ClientGameStartSystem : ISystem
 {
 
 
-    
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<GameStartProtocol>();
     }
 
 
-    
+
     public void OnUpdate(ref SystemState state)
     {
-        using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        var entity = SystemAPI.GetSingletonEntity<GameStartProtocol>();
+        var data = state.EntityManager.GetComponentData<GameStartProtocol>(entity);
 
-        foreach (var (request, matching, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<GameStartProtocol>>().WithEntityAccess())
-        {
-            LoginSceneManager.Instance.GameStart(matching.ValueRO);
-            Debug.Log(matching.ValueRO._nickNames);
-            commandBuffer.DestroyEntity(entity);
-        }
+        LoginSceneManager.Instance.GameStart(data);
 
-
-        commandBuffer.Playback(state.EntityManager);
-
+        Debug.Log(data._nickNames);
+        state.EntityManager.DestroyEntity(entity);
     }
 }
