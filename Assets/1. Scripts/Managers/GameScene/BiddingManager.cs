@@ -104,12 +104,17 @@ namespace GFSManagers
         {
             _window.FadeOut();
 
-            if (_currentCost < secondCost) return;
+            if (_currentCost < secondCost)
+            {
+                _inventoryManager.FadeOut();
+                return;
+            }
 
             if (_currentCost == secondCost)
             {
                 //2µî»ó
                 _bgManager._CurrentGold += _secondPrize;
+                _inventoryManager.FadeOut();
             }
             else
             {

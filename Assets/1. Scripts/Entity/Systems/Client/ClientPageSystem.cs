@@ -27,7 +27,7 @@ public partial struct ClientPageSystem : ISystem
 
         manager.ServerLinkSuccss(data);
 
-        state.EntityManager.Broadcast(new PlayerData { _playerId = manager.GetPlayerId(), _ticketId = manager.GetTicketId() });
+        state.EntityManager.Broadcast(new PlayerData { _playerId = manager.GetPlayerId() });
 
         state.EntityManager.DestroyEntity(entity);
     }

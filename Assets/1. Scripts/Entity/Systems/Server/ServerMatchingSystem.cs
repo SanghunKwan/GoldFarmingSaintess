@@ -29,8 +29,9 @@ public partial struct ServerMatchingSystem : ISystem
         _matchedPartyCount = 0;
 
         _matchingEntity = state.EntityManager.CreateEntity(typeof(MatchedEntityBuffer), typeof(MatchedGroupIndex));
-        _matchingLookup = SystemAPI.GetBufferLookup<MatchedEntityBuffer>();
         state.EntityManager.AddSharedComponent(_matchingEntity, new MatchedGroupIndex { _groupIndex = _matchedPartyCount++ });
+
+        _matchingLookup = SystemAPI.GetBufferLookup<MatchedEntityBuffer>();
 
     }
 
@@ -73,32 +74,24 @@ public partial struct ServerMatchingSystem : ISystem
 
         buffer = _matchingLookup[_matchingEntity];
 
-        commandBuffer = new EntityCommandBuffer(Allocator.Temp);
         if (buffer.Length >= _matchCount)
         {
-            var newMatchedEntity = commandBuffer.CreateEntity();
-            commandBuffer.AddComponent(newMatchedEntity, typeof(MatchedGroupIndex));
-            commandBuffer.AddComponent(newMatchedEntity, typeof(MatchedEntityBuffer));
-            commandBuffer.AddSharedComponent(newMatchedEntity, new MatchedGroupIndex { _groupIndex = _matchedPartyCount });
+            var newMatchedEntity = state.EntityManager.CreateEntity(typeof(MatchedEntityBuffer));
+            state.EntityManager.AddSharedComponent(newMatchedEntity, new MatchedGroupIndex { _groupIndex = _matchedPartyCount });
+            var matchedBuffer = state.EntityManager.GetBuffer<MatchedEntityBuffer>(newMatchedEntity);
+
 
             state.EntityManager.Broadcast(new SetHostProtocol { _matchingSize = _matchCount, _groupIndex = _matchedPartyCount }, buffer[0]._matchedConnection);
 
-            StringBuilder strbuilder = new StringBuilder();
             for (int i = 0; i < _matchCount; i++)
             {
-                strbuilder.Append(state.EntityManager.GetComponentData<UserSettingData>(buffer[i]._matchedConnection)._nickName);
-                strbuilder.Append(' ');
-
-                //state.EntityManager.Broadcast(new GameStartProtocol { _nickNames = strbuilder.ToString(), _index = i + 1 }, _matchingList[i]);
-
-                commandBuffer.AppendToBuffer(newMatchedEntity, new MatchedEntityBuffer { _matchedConnection = buffer[i]._matchedConnection });
-                commandBuffer.AddComponent(buffer[i]._matchedConnection, new DisconnectCleanUp { _bufferEntityShared = _matchedPartyCount });
+                matchedBuffer.Add(new MatchedEntityBuffer { _matchedConnection = buffer[i]._matchedConnection });
+                var cleanupEntity = SystemAPI.GetComponentRO<InitializedClient>(buffer[i]._matchedConnection).ValueRO._cleanUpEntity;
+                state.EntityManager.AddComponentData(cleanupEntity, new DisconnectCleanUp { _bufferEntityShared = _matchedPartyCount });
             }
             _matchedPartyCount++;
-            strbuilder.Remove(strbuilder.Length - 1, 1);
 
             buffer.RemoveRange(0, _matchCount);
         }
-        commandBuffer.Playback(state.EntityManager);
     }
 }

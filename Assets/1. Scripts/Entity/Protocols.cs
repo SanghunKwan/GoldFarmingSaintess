@@ -1,4 +1,6 @@
 using GFSUtilities.ResourcesData;
+using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -29,7 +31,6 @@ namespace GFSUtilities.Protocol
     public struct PlayerData : IRpcCommand
     {
         public FixedString64Bytes _playerId;
-        public FixedString64Bytes _ticketId;
     }
 
     public struct UserSettingProtocol : IRpcCommand
@@ -177,4 +178,6 @@ namespace GFSUtilities.Protocol
         public NetworkTick Tick { get; set; }
     }
     #endregion CommandData
+
+
 }

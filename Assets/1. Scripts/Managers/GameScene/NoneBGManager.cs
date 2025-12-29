@@ -48,7 +48,7 @@ namespace GFSManagers
 
         public bool TryChangeGold(int add)
         {
-            if (add < -_CurrentGold)
+            if (_CurrentGold < -add)
             {
                 ErrorMoney();
                 return false;

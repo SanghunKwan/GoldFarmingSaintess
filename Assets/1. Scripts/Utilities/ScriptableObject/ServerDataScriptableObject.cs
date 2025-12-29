@@ -7,6 +7,7 @@ public class ServerDataScriptableObject : ScriptableObject
     public ushort _port;
 
     public int _matchingCount;
+    public int _serverSize;
 
     public void CopyValue(ServerDataScriptableObject copyObject)
     {
@@ -14,5 +15,6 @@ public class ServerDataScriptableObject : ScriptableObject
         _port = copyObject._port;
 
         _matchingCount = copyObject._matchingCount;
+        _serverSize = copyObject._serverSize;
     }
 }

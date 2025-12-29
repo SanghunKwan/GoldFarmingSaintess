@@ -3,6 +3,7 @@ using GFSUtilities;
 using GFSUtilities.Protocol;
 using GFSUtilities.UI;
 using System.Collections;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Entities;
 using UnityEditor;
@@ -124,6 +125,7 @@ public class LoginWindow : BaseBGWindow<LoginWindow, LoginManager, LoginNoneBGMa
     IEnumerator SendPacketTimer(World world)
     {
         var delay = new WaitForSeconds(10);
+        yield return delay;
 
         while (world.IsCreated)
         {

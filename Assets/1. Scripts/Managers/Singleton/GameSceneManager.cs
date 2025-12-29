@@ -456,10 +456,10 @@ namespace GFSManagers
                     _spawnManager.DisturbSpawnUnit((StarCount)disturb._intensity, _effectManager);
                     break;
                 case DisturbType.MonsterBuff:
-                    _battleManager.ReinforceDamage(_enemy, disturb._intensity, Instantiate(GetBuffEffect(Force.Enemy)));
+                    _battleManager.ReinforceDamage(_enemy, disturb._intensity, GetBuffEffect(Force.Enemy));
                     break;
                 case DisturbType.HeroHurt:
-                    _battleManager.DamagePercent(_ally, disturb._intensity, Instantiate(GetBuffEffect(Force.Ally)));
+                    _battleManager.DamagePercent(_ally, disturb._intensity, GetBuffEffect(Force.Ally));
                     break;
             }
         }

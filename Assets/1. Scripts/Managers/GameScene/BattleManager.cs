@@ -1,6 +1,5 @@
 using GFSManagers;
 using GFSUtilities;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -97,21 +96,21 @@ namespace GFSBattle
         public int GetPercent(BaseUnit defender, float percent)
             => Mathf.FloorToInt(defender._RefFullStat._hp * percent);
 
-        public void DamagePercent(LinkedList<BaseUnit> list, int intensity, GameObject effect)
+        public void DamagePercent(LinkedList<BaseUnit> list, int intensity, GameObject effectPrefab)
         {
             float percent = intensity / 100f;
             foreach (BaseUnit unit in list)
             {
                 unit.HpChangeAction(GetPercent(unit, percent));
-                unit.ShowEffect(effect, GFSUtilities.Unit.UnitEffectType.WeaponEffect, 1);
+                unit.ShowEffect(Object.Instantiate(effectPrefab), GFSUtilities.Unit.UnitEffectType.WeaponEffect, 1);
             }
         }
-        public void ReinforceDamage(LinkedList<BaseUnit> list, int intensity, GameObject effect)
+        public void ReinforceDamage(LinkedList<BaseUnit> list, int intensity, GameObject effectPrefab)
         {
             _enemyAttackBuff += intensity / 100f;
 
             foreach (BaseUnit unit in list)
-                unit.ShowEffect(effect, GFSUtilities.Unit.UnitEffectType.WeaponEffect, 1);
+                unit.ShowEffect(Object.Instantiate(effectPrefab), GFSUtilities.Unit.UnitEffectType.WeaponEffect, 1);
         }
         public void RegisterBattleItems(ItemAutoUseType type, int slotIndex)
         {

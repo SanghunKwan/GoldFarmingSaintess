@@ -7,10 +7,9 @@ using Unity.Services.Core;
 using Unity.Services.Matchmaker.Models;
 
 using Unity.Services.Matchmaker;
-using System.Linq;
 using GFSUtilities;
 using System.Collections;
-using System;
+using System.Threading.Tasks;
 
 
 
@@ -27,31 +26,45 @@ public class ServerManager : MonoBehaviour
     string _ip;
     ushort _portNum;
     string _ticketId;
-    List<Player> _players;
-    BackfillTicket _ticket;
-    Queue<Action> _playerChangeBuffer;
+    int _serverSize;
+    const float _waitTime = 30;
+
+    HashSet<string> _linkedId = new HashSet<string>();
+
+    Dictionary<string, float> _waitForConnect = new Dictionary<string, float>();
+    Dictionary<string, float> _waitForApprove = new Dictionary<string, float>();
+
+    Dictionary<string, float> _kickList = new Dictionary<string, float>();
+
+    Queue<string> _playerExitBuffer = new Queue<string>();
+    Queue<string> _playerEnterBuffer = new Queue<string>();
 
 
     private void OnEnable()
     {
-        StartCoroutine(ApproveBackFillCoroutine());
+        StartCoroutine(UpdateBackFillCoroutine());
     }
-    IEnumerator ApproveBackFillCoroutine()
+    IEnumerator UpdateBackFillCoroutine()
     {
-        var wait = new WaitForSeconds(1);
-        while (true)
+        var wait = new WaitForSecondsRealtime(1);
+        int i = 0;
+        yield return wait;
+        while (enabled)
         {
-            ApproveBackFill();
+            var task = UpdateBackFill();
+            yield return new WaitUntil(() => task.IsCompleted);
+            if (i == 0)
+                ClearKickList();
+
             yield return wait;
+            i = (i + 1) % 10;
         }
     }
 
     public async void InitManager()
     {
+        _serverSize = GameManager.Instance._ServerScriptableObject._serverSize;
 #if UNITY_SERVER
-        _players = new List<Player>();
-        _playerChangeBuffer = new Queue<Action>();
-
         await UnityServices.InitializeAsync();
 
         var data = MultiplayService.Instance.ServerConfig;
@@ -59,75 +72,173 @@ public class ServerManager : MonoBehaviour
         _portNum = data.Port;
 
         var _endPoint = NetworkEndpoint.AnyIpv4.WithPort(_portNum);
-
+        //savedpayLoad = await MultiplayService.Instance.GetPayloadAllocationAsPlainText();
         World serverWorld = ClientServerBootstrap.ServerWorld;
         using var query = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
         query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(_endPoint);
         await MultiplayService.Instance.ReadyServerForPlayersAsync();
 
-        CreateBackFillTicket();
+        await CreateBackFillTicket();
+
+        enabled = true;
 #endif
     }
 
-    public async void CreateBackFillTicket()
+    public async Task CreateBackFillTicket()
     {
+#if UNITY_SERVER
+
+        BackfillTicketProperties payload = null;
+        for (int i = 0; i <= 3; i++)
+        {
+            try
+            {
+                payload = await MultiplayService.Instance.GetPayloadAllocationFromJsonAs<BackfillTicketProperties>(false);
+                Debug.Log("payload 积己 己傍");
+
+
+                if (payload != null && payload.MatchProperties.Teams.Count == 1 && payload.MatchProperties.Teams[0].PlayerIds.Count == 1)
+                    break;
+            }
+            catch
+            {
+                Debug.LogError("Allocation 积己 角菩");
+            }
+
+            if (i == 3)
+                Application.Quit();
+        }
+
         // Set the Match Properties. These properties can also be found in the Allocation Payload (cf Allocation Payload)
-        List<string> names = new List<string>(_players.Count);
-        for (int i = 0; i < names.Count; i++)
-            names[i] = _players[i].Id;
-
-
-        var teams = new List<Team>
-        {
-                    new Team( "Saintess", "9c8e302e-9cf3-4ad6-a005-b2604e6851e3", names)
-        };
-
-        // Define the Players of the match with their data.
-        var matchProperties = new MatchProperties(teams, _players);
-        var backfillTicketProperties = new BackfillTicketProperties(matchProperties);
         // Set options for matchmaking
-        var options = new CreateBackfillTicketOptions("DefaultQueue", _ip + ":" + _portNum, null, backfillTicketProperties);
+        var options = new CreateBackfillTicketOptions("DefaultQueue", _ip + ":" + _portNum, null, payload);
         // Create backfill ticket
-        _ticketId = await MatchmakerService.Instance.CreateBackfillTicketAsync
-        (options);
-        // Print the created ticket id
-        Debug.Log(_ticketId);
+        _ticketId = await MatchmakerService.Instance.CreateBackfillTicketAsync(options);
+#endif
     }
 
-
-
-    public async void ApproveBackFill()
+    public async Task UpdateBackFill()
     {
-        _ticket = await MatchmakerService.Instance.ApproveBackfillTicketAsync(_ticketId);
 
-        while (_playerChangeBuffer.Count > 0)
-            _playerChangeBuffer.Dequeue()();
+        var backticket = await MatchmakerService.Instance.ApproveBackfillTicketAsync(_ticketId);
+        ClientServerBootstrap.ServerWorld.EntityManager.BroadcastMessage(backticket.Properties.MatchProperties.Players.Count.ToString());
+        ClientServerBootstrap.ServerWorld.EntityManager.BroadcastMessage("傅农id : " + _linkedId.Count + "   approve : " + _waitForApprove.Count + "    connect : " + _waitForConnect.Count);
+        var ids = backticket.Properties.MatchProperties.Teams[0].PlayerIds;
 
-        await MatchmakerService.Instance.UpdateBackfillTicketAsync(_ticketId, _ticket);
-    }
-
-    public void TicketEnter(string playerId)
-    {
-        _playerChangeBuffer.Enqueue(() =>
+        string tempId;
+        bool needUpdate = false;
+        for (int i = 0; i < ids.Count; i++)
         {
-            _ticket.Properties.MatchProperties.Teams[0].PlayerIds.Add(playerId);
-            _ticket.Properties.MatchProperties.Players.Add(new Player(playerId));
-        });
-    }
-    public void TicketExit(string playerId, string ticketId)
-    {
-        _playerChangeBuffer.Enqueue(() =>
-        {
-            _ticket.Properties.MatchProperties.Teams[0].PlayerIds.Remove(playerId);
-            var removePlayer = _ticket.Properties.MatchProperties.Players.FirstOrDefault(p => p.Id.Equals(playerId));
-            _ticket.Properties.MatchProperties.Players.Remove(removePlayer);
+            tempId = ids[i];
+            if (_linkedId.Contains(tempId)) continue;
+            needUpdate = true;
+            if (_kickList.TryGetValue(tempId, out float expire))
+            {
+                if (expire >= Time.unscaledTime)
+                {
+                    ExitId(tempId, backticket);
+                    continue;
+                }
+                else
+                    _kickList.Remove(tempId);
+            }
 
-            MatchmakerService.Instance.DeleteTicketAsync(ticketId);
-        });
+            if (_waitForApprove.ContainsKey(tempId))
+            {
+                _linkedId.Add(tempId);
+                _waitForApprove.Remove(tempId);
+                continue;
+            }
+
+            if (!_waitForConnect.TryGetValue(tempId, out float expire2))
+            {
+                ClientServerBootstrap.ServerWorld.EntityManager.BroadcastMessage(tempId);
+                _waitForConnect.Add(tempId, Time.unscaledTime + _waitTime);
+                continue;
+            }
+
+            if (expire2 >= Time.unscaledTime) continue;
+
+            _waitForConnect.Remove(tempId);
+            ExitId(tempId, backticket);
+            _kickList.Add(tempId, Time.unscaledTime + _waitTime);
+        }
+
+        bool isExit = false;
+        while (_playerExitBuffer.Count > 0)
+        {
+            needUpdate = true;
+            isExit = true;
+            string exitId = _playerExitBuffer.Dequeue();
+            ExitId(exitId, backticket);
+            _linkedId.Remove(exitId);
+        }
+
+        if (isExit && _waitForApprove.Count + _waitForConnect.Count + _linkedId.Count == 0)
+        {
+            enabled = false;
+            DeleteBackFillTicket();
+            needUpdate = false;
+        }
+
+        if (!needUpdate) return;
+        await MatchmakerService.Instance.UpdateBackfillTicketAsync(_ticketId, backticket);
+    }
+    void ExitId(string tempId, in BackfillTicket backticket)
+    {
+        backticket.Properties.MatchProperties.Teams[0].PlayerIds.Remove(tempId);
+        var player = backticket.Properties.MatchProperties.Players.Find((p) => p.Id == tempId);
+        backticket.Properties.MatchProperties.Players.Remove(player);
+    }
+
+    public bool TicketEnter(string playerId)
+    {
+        ClientServerBootstrap.ServerWorld.EntityManager.BroadcastMessage(playerId);
+        if (_kickList.TryGetValue(playerId, out float expire))
+        {
+            if (expire >= Time.unscaledTime) return false;
+
+            _kickList.Remove(playerId);
+        }
+
+        if (_waitForConnect.ContainsKey(playerId))
+        {
+            _waitForConnect.Remove(playerId);
+            _linkedId.Add(playerId);
+        }
+        else
+            _waitForApprove.Add(playerId, Time.unscaledTime + _waitTime);
+
+        return true;
+    }
+    public void TicketExit(string playerId)
+    {
+        _playerExitBuffer.Enqueue(playerId);
+
+        if (_waitForApprove.Count + _waitForConnect.Count + _linkedId.Count < _serverSize)
+            enabled = true;
     }
 
     public async void DeleteBackFillTicket()
     {
+#if UNITY_SERVER
+        await MultiplayService.Instance.UnreadyServerAsync();
         await MatchmakerService.Instance.DeleteBackfillTicketAsync(_ticketId);
+        Application.Quit();
+#endif
+    }
+
+    void ClearKickList()
+    {
+        List<string> removeBuffer = new List<string>();
+        foreach (var item in _kickList)
+        {
+            if (item.Value >= Time.unscaledTime) continue;
+
+            removeBuffer.Add(item.Key);
+        }
+
+        for (int i = 0; i < removeBuffer.Count; i++)
+            _kickList.Remove(removeBuffer[i]);
     }
 }

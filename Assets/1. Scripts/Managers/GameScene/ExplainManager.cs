@@ -3,6 +3,7 @@ using GFSUtilities.Item;
 using GFSUtilities.UI;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace GFSManagers
 {
@@ -33,7 +34,8 @@ namespace GFSManagers
 
         public void ShowAtMousPosition(ExplainType explainType, in string details, bool showButtons = false)
         {
-            CallWindow(explainType, Input.mousePosition);
+            
+            CallWindow(explainType, Mouse.current.position.ReadValue());
             _window.SetMoreDetailText(details);
             _window.SetSize(showButtons);
         }

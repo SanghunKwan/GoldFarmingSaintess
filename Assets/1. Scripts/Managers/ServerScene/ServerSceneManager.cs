@@ -11,21 +11,18 @@ public class ServerSceneManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-    }
-
-    void Start()
-    {
         Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 0;
         _serverManager = GetComponent<ServerManager>();
         _serverManager.InitManager();
     }
 
-    public void NewClient(in FixedString64Bytes playerId)
+    public bool NewClient(in FixedString64Bytes playerId)
     {
-        _serverManager.TicketEnter(playerId.ToString());
+        return _serverManager.TicketEnter(playerId.ToString());
     }
-    public void ExitClient(in FixedString64Bytes playerId, in FixedString64Bytes ticketId)
+    public void ExitClient(in FixedString64Bytes playerId)
     {
-        _serverManager.TicketExit(playerId.ToString(), ticketId.ToString());
+        _serverManager.TicketExit(playerId.ToString());
     }
 }

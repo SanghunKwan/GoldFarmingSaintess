@@ -125,15 +125,16 @@ namespace GFSManagers
         }
         public bool SelectDisturb(DisturbType type)
         {
-            if (CantDisturb((int)type))
+            int typeIndex = (int)type;
+            if (_noneBGManager.TryChangeGold(-_disturbCost[typeIndex]))
             {
                 //비용 부족
-                _noneBGManager.ErrorMoney();
                 return false;
             }
 
+
             GameSceneManager.Instance.SetEmotion(GFSUtilities.ResourcesData.EmotionType.Annoying);
-            _hostManager.SendRPC(new ClientDisturbRPC { _type = type, _intensity = _disturbIntensity[(int)type] });
+            _hostManager.SendRPC(new ClientDisturbRPC { _type = type, _intensity = _disturbIntensity[typeIndex] });
             _disturbAllCount++;
 
             IncreaseExceptSelected(type);
@@ -145,7 +146,6 @@ namespace GFSManagers
 
             return true;
         }
-        bool CantDisturb(int index) => _disturbCost[index] > _noneBGManager._CurrentGold;
 
         void IncreaseExceptSelected(DisturbType type)
         {

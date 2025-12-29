@@ -1,6 +1,7 @@
 using GFSBattle;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace GFSManagers
 {
@@ -47,7 +48,7 @@ namespace GFSManagers
         {
             Vector3 beforePosition = _unit.transform.position;
 
-            Vector3 lastVec = Input.mousePosition + Input.mousePositionDelta;
+            Vector3 lastVec = Mouse.current.position.ReadValue() + Mouse.current.delta.ReadValue();
             Ray ray;
             Vector3 tempPosition;
 
@@ -60,7 +61,7 @@ namespace GFSManagers
 
             do
             {
-                tempPosition = Input.mousePosition;
+                tempPosition = Mouse.current.position.ReadValue();
                 if (lastVec != tempPosition)
                 {
                     ray = _cam.ScreenPointToRay(tempPosition);

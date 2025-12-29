@@ -226,25 +226,49 @@ namespace GFSManagers
 
         public void AutoLogin(string nickName)
         {
-            Authentication();
+            Authen();
             _serverLinkEvent += () => SendProtocol(new UserSettingProtocol { _nickName = nickName });
         }
+
         public async void Authentication()
         {
             _window.ButtonInteractableFalse();
 
-            await UnityServices.InitializeAsync();
+            for (int i = 0; i <= 3; i++)
+            {
+                try
+                {
+                    await UnityServices.InitializeAsync();
+                    break;
+                }
+                catch
+                {
+                    Debug.LogError("초기화에 실패했습니다.");
+
+                    if (i == 3)
+                        Application.Quit();
+                    await Task.Delay(1000);
+                }
+            }
+
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            _playerId = AuthenticationService.Instance.PlayerId;
+
+            Authen();
+        }
+        async void Authen()
+        {
             _playerId = AuthenticationService.Instance.PlayerId;
 
             var ticket = await MatchmakerService.Instance.CreateTicketAsync(new List<Player>
             {
                 new Player(_playerId)
-            }, new CreateTicketOptions("DefaultQueue"));
+            }, new CreateTicketOptions());
 
             _ticketId = ticket.Id;
 
             Debug.Log(_ticketId);
+            Debug.Log(_playerId);
 
             PullMatchMaking();
         }
@@ -300,11 +324,7 @@ namespace GFSManagers
         {
             SendProtocol(new HostingReadyProtocol { _joinCode = joinCode, _groupIndex = groupIndex });
         }
-
-        public void ServerLinkEnd()
-        {
-            MatchmakerService.Instance.DeleteTicketAsync(_ticketId);
-        }
     }
 }
+
 

@@ -8,9 +8,9 @@ using UnityEngine;
 namespace GFSUtilities.ResourcesData
 {
 
-    public struct InitializedClient : ICleanupComponentData
+    public struct InitializedClient : IComponentData
     {
-
+        public Entity _cleanUpEntity;
     }
 
     public struct UserSettingData : IComponentData
@@ -148,13 +148,17 @@ namespace GFSUtilities.ResourcesData
     {
         public Entity _bufferEntity;
     }
-    public struct DisconnectCleanUp : ICleanupComponentData
+    public struct DisconnectCleanUp : IComponentData
     {
         public uint _bufferEntityShared;
     }
-    public struct PlayerCleanUp : ICleanupComponentData
+    public struct PlayerCleanUp : IComponentData
     {
         public FixedString64Bytes _playerId;
-        public FixedString64Bytes _ticketId;
+    }
+    public struct ConnectionCleanupEntityData : IBufferElementData
+    {
+        public Entity _connection;
+        public Entity _cleanUp;
     }
 }
