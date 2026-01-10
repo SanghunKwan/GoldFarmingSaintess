@@ -45,7 +45,7 @@ public class HostManager : MonoBehaviour
     public void InitManager()
     {
         _manager = GameManager.Instance;
-        var serverData = _manager._ServerScriptableObject;
+
         var data = _manager._SceneChangeDataScriptableObject;
 
         Debug.Log("Start");
@@ -58,22 +58,17 @@ public class HostManager : MonoBehaviour
 
             var em = ClientServerBootstrap.ServerWorld.EntityManager;
 
-            var query = em.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            ref var driver = ref query.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-
             _ghostQuerys = new EntityQuery[]
             {
                 em.CreateEntityQuery(typeof(PlayerTimer)),
                 em.CreateEntityQuery(typeof(DisturbCounter))
             };
-
-            query.Dispose();
         }
         else
             _isHost = false;
 
         {
-            data = _manager._SceneChangeDataScriptableObject;
+            Debug.Log("Relay Ready");
             JoinRelay(data._joinCode);
         }
 
@@ -84,19 +79,25 @@ public class HostManager : MonoBehaviour
     public async void JoinRelay(string joinCode)
     {
         var allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+        Debug.Log(allocation.AllocationId);
 
         var em = ClientServerBootstrap.ClientWorld.EntityManager;
 
-        var relay = AllocationUtils.ToRelayServerData(allocation, "dtls");
+        var relay = allocation.ToRelayServerData(Unity.Services.Multiplayer.RelayProtocol.DTLS);
         var settings = DefaultDriverBuilder.GetNetworkClientSettings();
         settings.WithRelayParameters(ref relay);
+
         var netDebug = em.CreateEntityQuery(typeof(NetDebug)).GetSingleton<NetDebug>();
         var driverStore = new NetworkDriverStore();
         DefaultDriverBuilder.RegisterClientUdpDriver(ClientServerBootstrap.ClientWorld, ref driverStore, netDebug, settings);
+
         var networkStreamDriver = em.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingleton<NetworkStreamDriver>();
         networkStreamDriver.ResetDriverStore(ClientServerBootstrap.ClientWorld.Unmanaged, ref driverStore);
 
         networkStreamDriver.Connect(em, relay.Endpoint);
+        //Debug.Log("joinConnect");
+        //Debug.Log("Ä¿³Ø¼Ç count : " + em.CreateEntityQuery(typeof(NetworkStreamConnection)).CalculateEntityCount());
+
     }
     #region HostAlert
     public void AlertServerPhaseEnd(GamePhaseType type)

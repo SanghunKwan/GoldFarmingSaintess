@@ -97,5 +97,9 @@ public class LoginSceneManager : MonoBehaviour
         _loginManager.HostingReady(await _relayManager.InitRelay(protocol._matchingSize), protocol._groupIndex);
         _relayManager.LinkRelay();
     }
+    public void CancelHost()
+    {
+        _relayManager.CancelRelay();
+    }
     #endregion ManagerTransfer
 }

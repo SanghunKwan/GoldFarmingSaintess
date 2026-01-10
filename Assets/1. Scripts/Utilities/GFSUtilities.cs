@@ -2,9 +2,11 @@ using GFSUtilities.Protocol;
 using GFSUtilities.Unit;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Services.Core;
 using UnityEngine;
 
 namespace GFSUtilities
@@ -126,6 +128,26 @@ namespace GFSUtilities
         {
             MessageRpcCommand protocol = new MessageRpcCommand { _text = text };
             manager.Broadcast(protocol);
+        }
+
+        public static async Task UnityServiceInitialize(int delay)
+        {
+            for (int i = 0; i <= 3; i++)
+            {
+                try
+                {
+                    await UnityServices.InitializeAsync();
+                    break;
+                }
+                catch
+                {
+                    Debug.LogError("초기화에 실패했습니다.");
+
+                    if (i == 3)
+                        Application.Quit();
+                    await Task.Delay(delay);
+                }
+            }
         }
     }
 

@@ -43,7 +43,7 @@ public partial struct HostLinkSystem : ISystem
         _lookup.Update(ref state);
         foreach (var (request, identify, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<HostClientIdentify>>().WithEntityAccess())
         {
-
+            UnityEngine.Debug.Log("¿¬°á");
             ref var element = ref _lookup[_bufferEntity].ElementAt(identify.ValueRO._currentIndex - 1);
 
             if (element._beforeIndex != 0)

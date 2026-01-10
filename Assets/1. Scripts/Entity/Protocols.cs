@@ -162,6 +162,9 @@ namespace GFSUtilities.Protocol
         public uint _groupIndex;
         public int _size;
     }
+    public struct HostingStopProtocol : IRpcCommand
+    {
+    }
     public struct LinkPacket : IRpcCommand
     {
 

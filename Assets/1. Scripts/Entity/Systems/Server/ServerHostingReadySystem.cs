@@ -55,15 +55,16 @@ public partial struct ServerHostingReadySystem : ISystem
                 strbuilder.Remove(strbuilder.Length - 1, 1);
                 string nickNames = strbuilder.ToString();
 
+                state.EntityManager.BroadcastMessage("게임시작");
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    state.EntityManager.BroadcastMessage("게임시작");
                     state.EntityManager.Broadcast(new GameStartProtocol { _nickNames = nickNames, _index = i + 1, _joinCode = host.ValueRO._joinCode }, buffer[i]._matchedConnection);
                 }
             }
             else
             {
                 //매칭 중단
+                state.EntityManager.BroadcastZoroSize<HostingStopProtocol>(rpc.SourceConnection);
                 var originalBuffer = _matchWaitQuery.GetSingletonBuffer<MatchedEntityBuffer>();
                 originalBuffer.AddRange(buffer.AsNativeArray());
                 commandBuffer.DestroyEntity(bufferEntity);

@@ -234,46 +234,35 @@ namespace GFSManagers
         {
             _window.ButtonInteractableFalse();
 
-            for (int i = 0; i <= 3; i++)
-            {
-                try
-                {
-                    await UnityServices.InitializeAsync();
-                    break;
-                }
-                catch
-                {
-                    Debug.LogError("초기화에 실패했습니다.");
-
-                    if (i == 3)
-                        Application.Quit();
-                    await Task.Delay(1000);
-                }
-            }
+            await GFSManager.UnityServiceInitialize(1000);
 
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            _playerId = AuthenticationService.Instance.PlayerId;
 
             Authen();
         }
         async void Authen()
         {
             _playerId = AuthenticationService.Instance.PlayerId;
-
-            var ticket = await MatchmakerService.Instance.CreateTicketAsync(new List<Player>
+            MultiplayAssignment assignment = null;
+            do
+            {
+                var ticket = await MatchmakerService.Instance.CreateTicketAsync(new List<Player>
             {
                 new Player(_playerId)
             }, new CreateTicketOptions());
 
-            _ticketId = ticket.Id;
+                _ticketId = ticket.Id;
 
-            Debug.Log(_ticketId);
-            Debug.Log(_playerId);
+                Debug.Log(_ticketId);
+                Debug.Log(_playerId);
 
-            PullMatchMaking();
+                assignment = await PullMatchMaking();
+            } while (assignment.Status != MultiplayAssignment.StatusOptions.Found);
+
+            LinkServer(assignment);
         }
 
-        async void PullMatchMaking()
+        async Task<MultiplayAssignment> PullMatchMaking()
         {
             MultiplayAssignment assignment = null;
             bool gotAssignment = false;
@@ -317,7 +306,7 @@ namespace GFSManagers
 
             } while (!gotAssignment);
 
-            LinkServer(assignment);
+            return assignment;
         }
 
         public void HostingReady(in string joinCode, uint groupIndex)

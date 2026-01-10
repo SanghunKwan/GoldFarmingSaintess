@@ -37,7 +37,6 @@ public class ServerManager : MonoBehaviour
     Dictionary<string, float> _kickList = new Dictionary<string, float>();
 
     Queue<string> _playerExitBuffer = new Queue<string>();
-    Queue<string> _playerEnterBuffer = new Queue<string>();
 
 
     private void OnEnable()
@@ -64,8 +63,8 @@ public class ServerManager : MonoBehaviour
     public async void InitManager()
     {
         _serverSize = GameManager.Instance._ServerScriptableObject._serverSize;
+        await GFSManager.UnityServiceInitialize(100);
 #if UNITY_SERVER
-        await UnityServices.InitializeAsync();
 
         var data = MultiplayService.Instance.ServerConfig;
         _ip = data.IpAddress;
@@ -81,12 +80,10 @@ public class ServerManager : MonoBehaviour
         await CreateBackFillTicket();
 
         enabled = true;
-#endif
     }
 
     public async Task CreateBackFillTicket()
     {
-#if UNITY_SERVER
 
         BackfillTicketProperties payload = null;
         for (int i = 0; i <= 3; i++)
