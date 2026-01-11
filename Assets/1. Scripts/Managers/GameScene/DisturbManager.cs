@@ -126,7 +126,8 @@ namespace GFSManagers
         public bool SelectDisturb(DisturbType type)
         {
             int typeIndex = (int)type;
-            if (_noneBGManager.TryChangeGold(-_disturbCost[typeIndex]))
+            Debug.Log(-_disturbCost[typeIndex]);
+            if (!_noneBGManager.TryChangeGold(-_disturbCost[typeIndex]))
             {
                 //비용 부족
                 return false;

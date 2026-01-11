@@ -1,6 +1,7 @@
 using GFSManagers;
 using GFSUtilities;
 using GFSUtilities.Protocol;
+using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -30,7 +31,6 @@ public class LoginSceneManager : MonoBehaviour
         _bgManager.InitManager();
 
         var data = GameManager.Instance._SceneChangeDataScriptableObject;
-
         if (data._nameIndex <= 0)
         {
             ShowUnitychanLogo();

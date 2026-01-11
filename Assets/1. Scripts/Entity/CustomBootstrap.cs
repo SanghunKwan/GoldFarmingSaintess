@@ -1,8 +1,4 @@
-using GFSManagers;
-using Unity.Entities;
 using Unity.NetCode;
-using Unity.Networking.Transport;
-using UnityEngine;
 using UnityEngine.Scripting;
 
 
@@ -11,11 +7,21 @@ public class CustomBootstrap : ClientServerBootstrap
 {
     public override bool Initialize(string defaultWorldName)
     {
-        return base.Initialize(defaultWorldName);
+        //return base.Initialize(defaultWorldName);
+
+        if (!DetermineIfBootstrappingEnabled())
+            return false;
+
+        CreateDefaultClientServerWorlds();
+
+        return true;
     }
     protected override void CreateDefaultClientServerWorlds()
     {
-        base.CreateDefaultClientServerWorlds();
+        //base.CreateDefaultClientServerWorlds();
+
+        if (RequestedPlayType == PlayType.Client || RequestedPlayType == PlayType.ClientAndServer)
+            CreateClientWorld("ClientWorld");
 
         //ServerDataScriptableObject data = GameManager.Instance._ServerScriptableObject;
 
