@@ -28,7 +28,10 @@ public class ServerManager : MonoBehaviour
     string _ticketId;
     int _serverSize;
     const float _waitTime = 30;
+#if UNITY_SERVER
 
+    //IServerQueryHandler _handler;
+#endif
     HashSet<string> _linkedId = new HashSet<string>();
 
     Dictionary<string, float> _waitForConnect = new Dictionary<string, float>();
@@ -53,7 +56,12 @@ public class ServerManager : MonoBehaviour
             var task = UpdateBackFill();
             yield return new WaitUntil(() => task.IsCompleted);
             if (i == 0)
+            {
+#if UNITY_SERVER
+                //_handler.UpdateServerCheck();
+#endif
                 ClearKickList();
+            }
 
             yield return wait;
             i = (i + 1) % 10;
@@ -65,7 +73,6 @@ public class ServerManager : MonoBehaviour
         _serverSize = GameManager.Instance._ServerScriptableObject._serverSize;
         await GFSManager.UnityServiceInitialize(100);
 #if UNITY_SERVER
-
         var data = MultiplayService.Instance.ServerConfig;
         _ip = data.IpAddress;
         _portNum = data.Port;
@@ -75,8 +82,10 @@ public class ServerManager : MonoBehaviour
         World serverWorld = ClientServerBootstrap.ServerWorld;
         using var query = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
         query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(_endPoint);
-        await MultiplayService.Instance.ReadyServerForPlayersAsync();
 
+
+        //_handler = await MultiplayService.Instance.StartServerQueryHandlerAsync((ushort)_serverSize, $"server{_portNum}", "normal", "normal", "normal");
+        await MultiplayService.Instance.ReadyServerForPlayersAsync();
         await CreateBackFillTicket();
 
         enabled = true;

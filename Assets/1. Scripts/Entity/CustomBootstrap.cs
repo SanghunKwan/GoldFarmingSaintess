@@ -19,7 +19,10 @@ public class CustomBootstrap : ClientServerBootstrap
     protected override void CreateDefaultClientServerWorlds()
     {
         //base.CreateDefaultClientServerWorlds();
-
+#if UNITY_SERVER
+        if (RequestedPlayType == PlayType.Server || RequestedPlayType == PlayType.ClientAndServer)
+            CreateServerWorld("ServerWorld");
+#endif
         if (RequestedPlayType == PlayType.Client || RequestedPlayType == PlayType.ClientAndServer)
             CreateClientWorld("ClientWorld");
 
