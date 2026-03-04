@@ -116,6 +116,7 @@ namespace GFSManagers
                 _bgManager._CurrentGold += _secondPrize;
                 _inventoryManager.FadeOut();
             }
+            //1등상
             else
             {
                 //1등상

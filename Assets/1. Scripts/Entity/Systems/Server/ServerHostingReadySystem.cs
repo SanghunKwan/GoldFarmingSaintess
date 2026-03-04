@@ -36,15 +36,13 @@ public partial struct ServerHostingReadySystem : ISystem
         {
             _matchedQuery.SetSharedComponentFilter(new MatchedGroupIndex { _groupIndex = host.ValueRO._groupIndex });
 
-
             commandBuffer.DestroyEntity(entity);
             if (!_matchedQuery.TryGetSingletonEntity<MatchedEntityBuffer>(out var bufferEntity)) continue;
-
 
             var buffer = state.EntityManager.GetBuffer<MatchedEntityBuffer>(bufferEntity);
 
             StringBuilder strbuilder = new StringBuilder();
-
+            //매칭 성공 및 플레이어 데이터 공유
             if (buffer.Length >= _matchingCount)
             {
                 for (int i = 0; i < buffer.Length; i++)
@@ -57,13 +55,12 @@ public partial struct ServerHostingReadySystem : ISystem
 
                 state.EntityManager.BroadcastMessage("게임시작");
                 for (int i = 0; i < buffer.Length; i++)
-                {
                     state.EntityManager.Broadcast(new GameStartProtocol { _nickNames = nickNames, _index = i + 1, _joinCode = host.ValueRO._joinCode }, buffer[i]._matchedConnection);
-                }
+
             }
+            //매칭 중단
             else
             {
-                //매칭 중단
                 state.EntityManager.BroadcastZoroSize<HostingStopProtocol>(rpc.SourceConnection);
                 var originalBuffer = _matchWaitQuery.GetSingletonBuffer<MatchedEntityBuffer>();
                 originalBuffer.AddRange(buffer.AsNativeArray());

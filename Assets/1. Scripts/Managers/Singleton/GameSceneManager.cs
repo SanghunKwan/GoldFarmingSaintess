@@ -172,6 +172,7 @@ namespace GFSManagers
         }
         void StageInitReady()
         {
+            //Lazy Init
             if (_effectManager == null)
             {
                 _effectManager = new EffectManager();

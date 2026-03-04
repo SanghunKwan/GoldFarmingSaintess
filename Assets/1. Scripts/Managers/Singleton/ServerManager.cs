@@ -28,10 +28,7 @@ public class ServerManager : MonoBehaviour
     string _ticketId;
     int _serverSize;
     const float _waitTime = 30;
-#if UNITY_SERVER
 
-    //IServerQueryHandler _handler;
-#endif
     HashSet<string> _linkedId = new HashSet<string>();
 
     Dictionary<string, float> _waitForConnect = new Dictionary<string, float>();
@@ -53,15 +50,12 @@ public class ServerManager : MonoBehaviour
         yield return wait;
         while (enabled)
         {
+            //ApproveBackfill 및 UpdateBackfill 호출
             var task = UpdateBackFill();
             yield return new WaitUntil(() => task.IsCompleted);
             if (i == 0)
-            {
-#if UNITY_SERVER
-                //_handler.UpdateServerCheck();
-#endif
+                //연결 실패한 클라이언트 데이터 삭제
                 ClearKickList();
-            }
 
             yield return wait;
             i = (i + 1) % 10;
@@ -78,13 +72,11 @@ public class ServerManager : MonoBehaviour
         _portNum = data.Port;
 
         var _endPoint = NetworkEndpoint.AnyIpv4.WithPort(_portNum);
-        //savedpayLoad = await MultiplayService.Instance.GetPayloadAllocationAsPlainText();
         World serverWorld = ClientServerBootstrap.ServerWorld;
         using var query = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
         query.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(_endPoint);
 
 
-        //_handler = await MultiplayService.Instance.StartServerQueryHandlerAsync((ushort)_serverSize, $"server{_portNum}", "normal", "normal", "normal");
         await MultiplayService.Instance.ReadyServerForPlayersAsync();
         await CreateBackFillTicket();
 
@@ -133,6 +125,7 @@ public class ServerManager : MonoBehaviour
 
         string tempId;
         bool needUpdate = false;
+        //연결이 끊어진 클라이언트 정보 정리
         for (int i = 0; i < ids.Count; i++)
         {
             tempId = ids[i];
@@ -171,6 +164,7 @@ public class ServerManager : MonoBehaviour
         }
 
         bool isExit = false;
+        //연결이 끊어진 클라이언트 BackfillTicket에 반영
         while (_playerExitBuffer.Count > 0)
         {
             needUpdate = true;

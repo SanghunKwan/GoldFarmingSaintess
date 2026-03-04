@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72c5b6fa106ffea48bfd7df893263d5d, type: 3}
   m_Name: TurnScriptableObject
   m_EditorClassIdentifier: 
-  _maxTurn: 10
+  _maxTurn: 4
   _eventFailAdventage: 0
   _warnLeftTime: 5
   _voteOpenDelay: 0.7

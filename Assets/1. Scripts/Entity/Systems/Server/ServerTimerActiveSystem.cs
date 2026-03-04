@@ -55,6 +55,10 @@ public partial struct ServerTimerActiveSystem : ISystem
     {
         if (type != GamePhaseType.Turn) return 0;
 
+        //턴 이벤트
+        if (SystemAPI.TryGetSingletonRW<DisturbCounter>(out var disturbCounter))
+            disturbCounter.ValueRW.ResetCount();
+
         if (Random.Range(0f, 1f) > _failAdventage * _accumulatedEventFailCount)
         {
             _accumulatedEventFailCount++;

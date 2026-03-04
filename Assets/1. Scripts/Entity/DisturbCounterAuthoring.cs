@@ -8,6 +8,13 @@ public struct DisturbCounter : IComponentData
     [GhostField] public int _monsterSpawnCount;
     [GhostField] public int _monsterBuffCount;
     [GhostField] public int _heroHurtCount;
+
+    public void ResetCount()
+    {
+        _monsterSpawnCount = 0;
+        _monsterBuffCount = 0;
+        _heroHurtCount = 0;
+    }
 }
 
 public class DisturbCounterAuthoring : MonoBehaviour
